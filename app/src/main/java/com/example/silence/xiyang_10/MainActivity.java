@@ -98,7 +98,7 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
         if (fromUser) {
             getBottomNavigation().getBadgeProvider().remove(itemId);
             if (null != getViewPager()) {
-                getViewPager().setCurrentItem(position);
+                getViewPager().setCurrentItem(position);// 获取当前position的碎片视图
             }
         }
     }
@@ -106,9 +106,9 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
     @Override
     public void onMenuItemReselect(@IdRes final int itemId, final int position, final boolean fromUser) {
 
-        if (fromUser) {
-            final FragmentManager manager = getSupportFragmentManager();
-            MainActivityFragment fragment = (MainActivityFragment) manager.findFragmentById(R.id.fragment);// 通过manager获取碎片实例
+        if (fromUser&&position==0) {
+           MainActivityFragment fragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(
+                    "android:switcher:"+R.id.ViewPager01+":0");// 通过manager获取碎片实例
             if (null != fragment) {
                 fragment.scrollToTop();
             }
