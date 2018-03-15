@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:bbn_itemColorActive="#FFFFFFFF"
+    app:bbn_itemColorInactive="#7FFFFFFF"
+    app:bbn_badgeColor="#FFCC0000"
+    app:bbn_rippleColor="#99FFFFFF">
+
+
+    <item
+        android:id="@+id/bbn_item2"
+        android:color="@android:color/holo_green_dark"
+        android:icon="@drawable/ic_cast_connected_white_24dp"
+        android:title="主页" />
+    <item
+        android:id="@+id/bbn_item5"
+        android:color="#FF9800"
+        android:icon="@drawable/ic_add_circle_white_24dp"
+        android:title="Add New" />
+    <item
+        android:id="@+id/bbn_item4"
+        android:color="#FF5252"
+        android:icon="@drawable/ic_format_list_numbered_white_24dp"
+        android:title="我的" />
+
+</menu>
