@@ -32,14 +32,26 @@
         app:allow_random_color="true"
         app:enable_flashing="true"
         app:siShape="@raw/heart"/>
-    <DatePicker
-        android:layout_width="wrap_content"
+    <Button
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="手账"/>
-    </DatePicker>
+        android:textSize="20sp"
+        android:text="昵称:夏露泛银"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="性别:男"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="QQ:779854387"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="手机:17764590520"/>
+
     
 </LinearLayout>
