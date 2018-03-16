@@ -131,6 +131,7 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
                 return new MainActivityFragment();
             else
                 return new MainActivityFragment2();
+
         }
 
         @Override
