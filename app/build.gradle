@@ -16,14 +16,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
     //新增库
+
+    compile 'com.sackcentury:shinebutton:0.2.0'
     compile 'com.bigkoo:convenientbanner:2.0.5'
     compile files('libs/universal-image-loader-1.9.4.jar')
-    compile 'com.stephentuso:welcome:1.4.1'
     compile 'it.sephiroth.android.library.bottomnavigation:bottom-navigation:2.0.1-rc1'
+    api("com.stephentuso:welcome:1.4.1"){
+        exclude group:'com.android.support'
+    }// 删除旧版的相关依赖包，保证版本一致
     compile 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:1.2.32@aar'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:design:26.1.0'
