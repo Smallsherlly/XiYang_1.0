@@ -8,11 +8,27 @@
     android:background="#d9dada"
     android:orientation="vertical">
     <com.example.silence.xiyang_10.RoundImageView
+        android:id="@+id/round_touxiang"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:scaleType="fitXY"
         android:layout_gravity="center"
         android:src="@drawable/ic_touxiang"/>
-    
+    <Button
+        android:id="@+id/change_touxiang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="更换头像"
+        android:gravity="center"
+        android:layout_gravity="center"/>
+    <DatePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="手账"/>
+    </DatePicker>
     
 </LinearLayout>
