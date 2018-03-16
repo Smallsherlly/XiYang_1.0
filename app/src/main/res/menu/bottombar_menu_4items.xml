@@ -16,7 +16,12 @@
         android:id="@+id/bbn_item5"
         android:color="#FF9800"
         android:icon="@drawable/ic_add_circle_white_24dp"
-        android:title="Add New" />
+        android:title="新建手账" />
+    <item
+        android:id="@+id/search"
+        android:color="#00b2ff"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="搜索"/>
     <item
         android:id="@+id/bbn_item4"
         android:color="#FF5252"

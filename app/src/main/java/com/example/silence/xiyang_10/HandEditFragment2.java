@@ -1,12 +1,15 @@
 package com.example.silence.xiyang_10;
 
+/**
+ * Created by Silence on 2018/3/15.
+ */
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,21 +19,8 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.ToxicBakery.viewpager.transforms.ABaseTransformer;
-import com.bigkoo.convenientbanner.ConvenientBanner;
-import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
-import com.bigkoo.convenientbanner.listener.OnItemClickListener;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.squareup.picasso.Picasso;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 
@@ -39,32 +29,27 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
  * Created by Silence on 2018/3/14.
  */
 
-public class MainActivityFragment extends Fragment implements ViewPager.OnPageChangeListener,OnItemClickListener {
+public class HandEditFragment2 extends Fragment {
     RecyclerView mRecyclerView;
     CoordinatorLayout mCoordinatorLayout;
-    private ConvenientBanner convenientBanner;
-    private ArrayList<Integer> localImages = new ArrayList<Integer>();
     ViewGroup mRoot;
     String name;
-    public MainActivityFragment(){
+    public HandEditFragment2(){
 
     }
+
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);// 将布局加载到碎片实例中
-
-        return view;
+        return inflater.inflate(R.layout.fragment_second, container, false);// 将布局加载到碎片实例中
     }
     @Override
     public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView01);
-        initViews();
-        init();
     }// @Nullable  意味着可以传入null值
-
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -94,70 +79,6 @@ public class MainActivityFragment extends Fragment implements ViewPager.OnPageCh
 
 
     }
-
-    private void init() {
-
-        loadTestDatas();
-        //本地图片例子
-        convenientBanner.setPages(
-                new CBViewHolderCreator<LocalImageHolderView>() {
-                    @Override
-                    public LocalImageHolderView createHolder() {
-                        return new LocalImageHolderView();
-                    }
-                }, localImages)
-                //设置两个点图片作为翻页指示器，不设置则没有指示器，可以根据自己需求自行配合自己的指示器,不需要圆点指示器可用不设
-                .setPageIndicator(new int[]{R.drawable.ic_page_indicator, R.drawable.ic_page_indicator_focused})
-                //设置指示器的方向
-//                .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.ALIGN_PARENT_RIGHT)
-
-                .setOnItemClickListener(this);
-    }
-
-
-    /*
-    加入测试Views
-    * */
-    private void loadTestDatas() {
-        //本地图片集合
-        for (int position = 0; position < 3; position++)
-            localImages.add(getResId("ic_test_" + position, R.drawable.class));
-    }
-
-    /**
-     * 通过文件名获取资源id 例子：getResId("icon", R.drawable.class);
-     *
-     * @param variableName
-     * @param c
-     * @return
-     */
-    public static int getResId(String variableName, Class<?> c) {
-        try {
-            Field idField = c.getDeclaredField(variableName);
-            return idField.getInt(idField);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
-    private void initViews() {
-        convenientBanner = (ConvenientBanner) getView().findViewById(R.id.convenientBanner);
-
-
-        try {
-            Class cls = Class.forName("com.ToxicBakery.viewpager.transforms.RotateDownTransformer");//设置翻页效果
-            ABaseTransformer transforemer = (ABaseTransformer) cls.newInstance();
-            convenientBanner.getViewPager().setPageTransformer(true, transforemer);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (java.lang.InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     private void createAdater(int height) {
         mRecyclerView.setHasFixedSize(true);
@@ -244,7 +165,7 @@ public class MainActivityFragment extends Fragment implements ViewPager.OnPageCh
 
             final Book item = data[position];
             holder.title.setText(item.title);
-            holder.description.setText("By zhuye" );
+            holder.description.setText("By qita" );
             holder.imageView.setImageBitmap(null);
 
             picasso.cancelRequest(holder.imageView);
@@ -287,40 +208,6 @@ public class MainActivityFragment extends Fragment implements ViewPager.OnPageCh
             this.author = author;
             this.imageUrl = imageUrl;
         }
-    }
-    // 开始自动翻页
-    @Override
-    public void onResume() {
-        super.onResume();
-        //开始自动翻页
-        convenientBanner.startTurning(5000);
-    }
-
-    // 停止自动翻页
-    @Override
-    public void onPause() {
-        super.onPause();
-        //停止翻页
-        convenientBanner.stopTurning();
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-    }
-
-    @Override
-    public void onItemClick(int position) {
-
     }
 }
 

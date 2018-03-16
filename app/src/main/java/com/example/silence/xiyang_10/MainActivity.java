@@ -1,31 +1,13 @@
 package com.example.silence.xiyang_10;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.ToxicBakery.viewpager.transforms.ABaseTransformer;
-import com.bigkoo.convenientbanner.ConvenientBanner;
-import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
-import com.bigkoo.convenientbanner.listener.OnItemClickListener;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.stephentuso.welcome.WelcomeHelper;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 
@@ -107,7 +89,7 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
     public void onMenuItemReselect(@IdRes final int itemId, final int position, final boolean fromUser) {
 
         if (fromUser&&position==0) {
-           MainActivityFragment fragment = (MainActivityFragment) getSupportFragmentManager().findFragmentByTag(
+           MainPageFragment fragment = (MainPageFragment) getSupportFragmentManager().findFragmentByTag(
                     "android:switcher:"+R.id.ViewPager01+":0");// 通过manager获取碎片实例
             if (null != fragment) {
                 fragment.scrollToTop();
@@ -128,10 +110,11 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
         @Override
         public Fragment getItem(final int position) {
             if (position == 0)
-                return new MainActivityFragment();
+                return new MainPageFragment();
+            else if(position == 1)
+                return new HandEditFragment2();
             else
-                return new MainActivityFragment2();
-
+                return new MineFragment();
         }
 
         @Override
