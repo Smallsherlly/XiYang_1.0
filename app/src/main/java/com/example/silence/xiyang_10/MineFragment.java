@@ -2,11 +2,14 @@ package com.example.silence.xiyang_10;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.sackcentury.shinebuttonlib.ShineButton;
 
 /**
  * Created by Silence on 2018/3/16.
@@ -30,5 +33,12 @@ public class MineFragment extends Fragment {
             }
         });
 
+    }
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        final BaseActivity activity = (BaseActivity) getActivity();
+        ShineButton shineButton = (ShineButton) getView().findViewById(R.id.shine_button);
+        shineButton.init(activity);
     }
 }
