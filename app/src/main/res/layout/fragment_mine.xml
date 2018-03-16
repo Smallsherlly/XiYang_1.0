@@ -21,6 +21,17 @@
         android:text="更换头像"
         android:gravity="center"
         android:layout_gravity="center"/>
+    <com.sackcentury.shinebuttonlib.ShineButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:src="@android:color/darker_gray"
+        android:id="@+id/shine_button"
+        app:btn_color="@android:color/darker_gray"
+        app:btn_fill_color="#ff000d"
+        app:allow_random_color="true"
+        app:enable_flashing="true"
+        app:siShape="@raw/heart"/>
     <DatePicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
