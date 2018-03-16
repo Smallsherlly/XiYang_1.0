@@ -37,6 +37,7 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 
 /**
  * Created by Silence on 2018/3/14.
+ * 这是主页的碎片类
  */
 
 public class MainPageFragment extends Fragment implements ViewPager.OnPageChangeListener,OnItemClickListener {

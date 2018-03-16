@@ -13,6 +13,7 @@ import com.sackcentury.shinebuttonlib.ShineButton;
 
 /**
  * Created by Silence on 2018/3/16.
+ * 这是“我的”模块的碎片类
  */
 
 public class MineFragment extends Fragment {

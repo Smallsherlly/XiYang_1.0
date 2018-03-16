@@ -7,6 +7,7 @@ import com.stephentuso.welcome.WelcomeConfiguration;
 
 /**
  * Created by Silence on 2018/3/8.
+ * 这是引导页的类
  */
 
 public class MyWelcomeActivity extends WelcomeActivity {
@@ -15,16 +16,16 @@ public class MyWelcomeActivity extends WelcomeActivity {
         return new WelcomeConfiguration.Builder(this)
                 .defaultBackgroundColor(R.color.colorAccent)
                 .page(new TitlePage(R.mipmap.hand3,
-                        "Title")
+                        "全新的无纸手账体验")
                 )
-                .page(new BasicPage(R.drawable.ic_launcher_background,
-                        "Header",
-                        "More text.")
+                .page(new BasicPage(R.drawable.date,
+                        "日历式浏览，井然有序",
+                        "梦想计划一览无余.")
                         .background(R.color.colorPrimary)
                 )
-                .page(new BasicPage(R.drawable.ic_launcher_background,
-                        "Lorem ipsum",
-                        "dolor sit amet.")
+                .page(new BasicPage(R.drawable.hudong,
+                        "好友互动，欢乐加倍",
+                        "互赞互爱~.")
                 )
                 .swipeToDismiss(true)
                 .build();

@@ -10,6 +10,7 @@ import android.support.v7.widget.AppCompatImageView;
 
 /**
  * Created by Silence on 2018/3/16.
+ * 这是一个圆角图片类
  */
 
 public class RoundImageView extends AppCompatImageView {

@@ -43,7 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BottomNa
 
 
 
-    public SystemBarTintManager getSystemBarTint() {
+    public SystemBarTintManager getSystemBarTint() {// 沉浸式状态栏？
         if (null == mSystemBarTint) {
             mSystemBarTint = new SystemBarTintManager(this);
         }
