@@ -4,4 +4,11 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorButton">#991041</color>
+    <color name="gray_bg">#e2e2e2</color>
+    <color name="text_color">#b9000000</color>
+    <color name="text_color_lighter">#9b000000</color>
+    <color name="kitkat_gray_dark">#25000000</color>
+    <color name="kitkat_gray_light">#19000000</color>
+    <color name="selected">#8833B5E5</color>
+    <color name="location_text">@color/text_color_lighter</color>
 </resources>

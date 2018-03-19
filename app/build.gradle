@@ -21,7 +21,7 @@ android {
 
 dependencies {
     //新增库
-
+    compile 'com.github.federicoiosue:pixlui:2.6'
     compile 'com.sackcentury:shinebutton:0.2.0'
     compile 'com.bigkoo:convenientbanner:2.0.5'
     compile files('libs/universal-image-loader-1.9.4.jar')

@@ -54,13 +54,13 @@ public class LoginActivity extends AppCompatActivity {
 
                 getWindow().setExitTransition(explode);
                 getWindow().setEnterTransition(explode);
-                if(username.getText().toString().equals("silence")&&password.getText().toString().equals("123456")){
+              //  if(username.getText().toString().equals("silence")&&password.getText().toString().equals("123456")){
                     ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);
                     Intent i2 = new Intent(LoginActivity.this,MainActivity.class);
                     startActivity(i2, oc2.toBundle());
-                }else {
+               // }else {
                     Toast.makeText(LoginActivity.this, "账号或密码错误!", Toast.LENGTH_SHORT).show();
-                }
+                //}
             }
         });
         fab.setOnClickListener(new View.OnClickListener() {

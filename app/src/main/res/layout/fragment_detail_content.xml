@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:pixlui="http://schemas.android.com/apk/com.neopixl.pixlui"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:paddingStart="8dp"
+              android:paddingEnd="8dp">
+
+    <com.neopixl.pixlui.components.textview.TextView
+            android:id="@+id/location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/icon_selector"
+            android:freezesText="true"
+            android:gravity="center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:textColor="@color/location_text"
+            android:visibility="gone"
+            pixlui:typeface="Roboto-Regular.ttf"/>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingLeft="6dp">
+
+        <com.neopixl.pixlui.components.edittext.EditText
+                android:id="@+id/detail_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:background="@null"
+                android:hint="content"
+                android:inputType="textCapSentences|textMultiLine"
+                android:linksClickable="false"
+                android:textColorHint="@color/text_color_lighter"
+                android:textColor="@color/text_color"
+                android:imeOptions="actionDone"
+                pixlui:typeface="RobotoSlab-Regular.ttf"
+                android:textCursorDrawable="@null"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/reminder_layout"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/icon_selector"
+            android:orientation="horizontal"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:gravity="center_vertical">
+
+        <ImageView
+                android:id="@+id/reminder_icon"
+                android:layout_height="20dp"
+                android:layout_width="20dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:contentDescription="reminder"
+                android:src="@drawable/ic_alarm_add_black_18dp"/>
+
+        <com.neopixl.pixlui.components.textview.TextView
+                android:id="@+id/datetime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:freezesText="true"
+                android:gravity="center_vertical"
+                android:hint="Add reminder"
+                android:textColorHint="@color/text_color_lighter"
+                android:textColor="@color/text_color_lighter"
+                pixlui:typeface="Roboto-Regular.ttf"/>
+    </LinearLayout>
+</LinearLayout>
