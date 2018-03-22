@@ -187,6 +187,7 @@ public class MineFragment extends Fragment {
         }
     }
 
+    //圆角裁剪函数，待分析
     public static Bitmap toRoundCorner(Bitmap bitmap, int pixels) {
 
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);

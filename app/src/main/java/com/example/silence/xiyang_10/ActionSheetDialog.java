@@ -7,6 +7,7 @@ package com.example.silence.xiyang_10;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,19 +36,22 @@ public class ActionSheetDialog {
     private boolean showTitle = false;
     private List<SheetItem> sheetItemList;
     private Display display;
+    Point psize = new Point();
 
     public ActionSheetDialog(Context context) {
         this.context = context;
         WindowManager windowManager = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         display = windowManager.getDefaultDisplay();
+
+        display.getSize(psize);
     }
 
     public ActionSheetDialog builder() {
         View view = LayoutInflater.from(context).inflate(
                 R.layout.view_actionsheet, null);
 
-        view.setMinimumWidth(display.getWidth());
+        view.setMinimumWidth(psize.x);
 
         sLayout_content = (ScrollView) view.findViewById(R.id.sLayout_content);
         lLayout_content = (LinearLayout) view
@@ -115,7 +119,7 @@ public class ActionSheetDialog {
         if (size >= 7) {
             LayoutParams params = (LayoutParams) sLayout_content
                     .getLayoutParams();
-            params.height = display.getHeight() / 2;
+            params.height = (psize.y) / 2;
             sLayout_content.setLayoutParams(params);
         }
 
