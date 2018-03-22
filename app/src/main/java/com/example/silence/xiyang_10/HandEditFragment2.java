@@ -4,13 +4,17 @@ package com.example.silence.xiyang_10;
  * Created by Silence on 2018/3/15.
  */
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import butterknife.BindView;
 
 
 /**
@@ -21,6 +25,10 @@ import android.view.ViewGroup;
 public class HandEditFragment2 extends Fragment {
     CoordinatorLayout mCoordinatorLayout;
     ViewGroup mRoot;
+    private SharedPreferences prefs;
+    @BindView(R.id.reminder_layout)
+    LinearLayout reminder_layout;
+
     public HandEditFragment2(){
 
     }
@@ -42,6 +50,7 @@ public class HandEditFragment2 extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         final BaseActivity activity = (BaseActivity) getActivity();
+        prefs = activity.prefs;
         mRoot = (ViewGroup) activity.findViewById(R.id.CoordinatorLayout01);
 
         if (mRoot instanceof CoordinatorLayout) {// 判断mRoot是否属于Coordinatorlayout实例
@@ -49,7 +58,6 @@ public class HandEditFragment2 extends Fragment {
         }
 
     }
-
 
 }
 

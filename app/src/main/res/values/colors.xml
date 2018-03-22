@@ -11,4 +11,8 @@
     <color name="kitkat_gray_light">#19000000</color>
     <color name="selected">#8833B5E5</color>
     <color name="location_text">@color/text_color_lighter</color>
+    <color name="text_gray">#2d2d2d</color>
+    <color name="actionsheet_gray">#8F8F8F</color>
+
+    <color name="actionsheet_blue">#037BFF</color>
 </resources>

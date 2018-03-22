@@ -1,5 +1,6 @@
 package com.example.silence.xiyang_10;
 
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BottomNa
     private ViewPager mViewPager;
     private SystemBarTintManager mSystemBarTint;
     private BottomNavigation mBottomNavigation;
+    protected SharedPreferences prefs;
 
 
     public ViewPager getViewPager() {

@@ -11,4 +11,10 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_size_normal">100dp</dimen>
     <dimen name="text_size">12sp</dimen>
+
+    <!-- Attachment dialog -->
+    <dimen name="attachment_dialog_text_size">16sp</dimen>
+    <dimen name="attachment_dialog_drawable_padding">10dp</dimen>
+    <dimen name="attachment_dialog_items_padding">10dp</dimen>
+
 </resources>

@@ -16,11 +16,21 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
 }
 
 dependencies {
     //新增库
+    compile 'com.github.federicoiosue:Omni-Notes-Commons:1.2.0'
+    compile 'be.billington.calendar.recurrencepicker:library:1.1.1'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile 'com.github.federicoiosue:pixlui:2.6'
     compile 'com.sackcentury:shinebutton:0.2.0'
     compile 'com.bigkoo:convenientbanner:2.0.5'
