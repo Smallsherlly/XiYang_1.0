@@ -99,6 +99,7 @@ public class MRichEditor extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 TakePhotoUtils.getGalleryImg(mActivity, CamaraRequestCode.CAMARA_GET_IMG);//相册选择图片
+
             }
         });
         tvInsertPhoto.setOnClickListener(new OnClickListener() {
