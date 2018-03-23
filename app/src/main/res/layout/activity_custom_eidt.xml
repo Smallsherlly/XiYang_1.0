@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF">
+
+    <LinearLayout
+        android:id="@+id/ll_editor_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#1000"
+        android:orientation="horizontal"
+        android:padding="2dp">
+
+        <TextView
+            android:id="@+id/tv_custom_edit_insert_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawableTop="@mipmap/titile"
+            android:gravity="center"
+            android:text="标题" />
+
+        <TextView
+            android:id="@+id/tv_custom_edit_insert_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawableTop="@mipmap/content"
+            android:gravity="center"
+            android:text="内容" />
+
+        <TextView
+            android:id="@+id/tv_custom_edit_insert_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawableTop="@mipmap/img"
+            android:gravity="center_horizontal"
+            android:text="图片" />
+
+        <TextView
+            android:id="@+id/tv_custom_edit_insert_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawableTop="@mipmap/photo"
+            android:gravity="center_horizontal"
+            android:text="拍照" />
+
+
+        <TextView
+            android:id="@+id/tv_custom_edit_insert_preview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawableTop="@mipmap/preview"
+            android:gravity="center"
+            android:text="预览" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll_editor_toolbar">
+
+        <LinearLayout
+            android:id="@+id/et_custom_editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</RelativeLayout>
