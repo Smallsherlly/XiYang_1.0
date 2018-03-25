@@ -45,7 +45,7 @@ public class MRichEditor extends RelativeLayout {
     private TextView tvPreview;//保存按钮
     private TextView tvInsertContent;//插入内容按钮
     private TextView tvInsertTitle;//插入标题按钮
-    private LinearLayout editor;//编辑器面板-----思想就是添加addview子控件
+    private RelativeLayout editor;//编辑器面板-----思想就是添加addview子控件
     private Activity mActivity;//用于启动拍照
     private Context context;//上下文对象
     private InputDialog dialog;//内容、标题输入框
@@ -82,7 +82,7 @@ public class MRichEditor extends RelativeLayout {
      */
     private void initView() {
         View view = LayoutInflater.from(context).inflate(R.layout.activity_custom_eidt, this);
-        editor = (LinearLayout) view.findViewById(R.id.et_custom_editor);
+        editor = (RelativeLayout) view.findViewById(R.id.et_custom_editor);
         tvInsertContent = (TextView) view.findViewById(R.id.tv_custom_edit_insert_content);
         tvInsertTitle = (TextView) view.findViewById(R.id.tv_custom_edit_insert_title);
         tvInsertImg = (TextView) view.findViewById(R.id.tv_custom_edit_insert_img);

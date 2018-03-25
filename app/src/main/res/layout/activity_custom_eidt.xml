@@ -70,14 +70,14 @@
         android:layout_height="match_parent"
         android:layout_above="@id/ll_editor_toolbar">
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/et_custom_editor"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="2dp"
-            android:orientation="vertical">
+            >
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </ScrollView>
 

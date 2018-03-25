@@ -17,10 +17,13 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.silence.xiyang_10.RichEditor.CamaraRequestCode;
@@ -41,7 +44,7 @@ import butterknife.BindView;
 public class HandEditFragment2 extends Fragment {
     CoordinatorLayout mCoordinatorLayout;
     ViewGroup mRoot;
-    private MRichEditor editor;//编辑器
+    private RelativeLayout editor;//编辑器
     private String urlpath;//图片路径
     private DragScaleView dragScaleView;
     private TextView tvInsertImg;//插入图片按钮
@@ -54,7 +57,7 @@ public class HandEditFragment2 extends Fragment {
     }
 
     private void initMRichEditor() {
-        editor = (MRichEditor) getView().findViewById(R.id.mre_editor);
+        //editor = (MRichEditor) getView().findViewById(R.id.et_custom_editor);
         //editor.setServerImgDir(IMG_URL);//设置图片存放的路径
     }
     @Override
@@ -77,7 +80,8 @@ public class HandEditFragment2 extends Fragment {
         mRoot = (ViewGroup) activity.findViewById(R.id.CoordinatorLayout01);
         dragScaleView = new DragScaleView(getContext());
         tvInsertImg = (TextView) getView().findViewById(R.id.tv_custom_edit_insert_img);
-        editor = (MRichEditor) getView().findViewById(R.id.mre_editor);
+        editor = (RelativeLayout) getView().findViewById(R.id.et_custom_editor);
+
         if (mRoot instanceof CoordinatorLayout) {// 判断mRoot是否属于Coordinatorlayout实例
             mCoordinatorLayout = (CoordinatorLayout) mRoot;
         }
@@ -121,6 +125,7 @@ public class HandEditFragment2 extends Fragment {
                 }
 
             });
+
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
