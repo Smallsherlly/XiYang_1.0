@@ -1,5 +1,6 @@
 package com.example.silence.xiyang_10.RichEditor;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Paint;
 import android.support.v7.widget.AppCompatImageView;
@@ -7,6 +8,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+
+import com.example.silence.xiyang_10.R;
 
 /**
  * Created by Silence on 2018/3/21.
@@ -60,8 +64,10 @@ public class DragScaleView extends AppCompatImageView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
+        getParent().requestDisallowInterceptTouchEvent(true);
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+
                 oriLeft = getLeft();
                 oriRight = getRight();
                 oriTop = getTop();
@@ -74,6 +80,11 @@ public class DragScaleView extends AppCompatImageView {
             case MotionEvent.ACTION_UP:
                 break;
             case MotionEvent.ACTION_MOVE:
+
+
+                //LinearLayout line = (LinearLayout) ((Activity)getContext()).findViewById(R.id.et_custom_editor);
+                //ScrollView scrollView = (ScrollView) ((Activity)(line.getContext())).findViewById(R.id.ll_editor_toolbar);
+
                 int tempRawX = (int)event.getRawX();
                 int tempRawY = (int)event.getRawY();
 
