@@ -10,6 +10,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -22,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.silence.xiyang_10.RichEditor.ContentType;
 import com.example.silence.xiyang_10.RichEditor.DragScaleView;
@@ -31,6 +34,8 @@ import com.example.silence.xiyang_10.RichEditor.TakePhotoUtils;
 
 import java.io.File;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindView;
@@ -48,6 +53,12 @@ public class MyEditClass extends AppCompatActivity {
     private String urlpath;//图片路径
     private DragScaleView dragScaleView;
     private TextView tvInsertImg;//插入图片按钮
+    private long firstTime;
+    private int count = 0;
+    private TimerTask task;
+    private long interval = 500;
+    private Handler handler;
+    private Timer delayTimer;
     private SharedPreferences prefs;
     @BindView(R.id.reminder_layout)
     LinearLayout reminder_layout;
@@ -217,33 +228,58 @@ public class MyEditClass extends AppCompatActivity {
     public void insertImg(Uri bitmapUri) {
         final long tag = System.currentTimeMillis();//使用当前时间的毫秒值来标记当前内容，便于删除列表中的记录
         final DragScaleView imageView = new DragScaleView(this);
-        //处理长按事件（删除）
-        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+        //处理点击事件（删除）
+        imageView.setOnClickListener(new View.OnClickListener(){
             @Override
-            public boolean onLongClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MyEditClass.this);
-                builder.setTitle("删除");
-                builder.setIcon(R.mipmap.delete);
-                builder.setMessage("您确定要删除这张图片吗?");
-                builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        editor.removeView(imageView);//移除图片
-                        removeEditorBeanByTag(tag);
-                    }
-                });
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View v){
+                long secondTime = System.currentTimeMillis();
+                // 判断每次点击的事件间隔是否符合连击的有效范围
+                // 不符合时，有可能是连击的开始，否则就仅仅是单击
+                if (secondTime - firstTime <= interval) {
+                    ++count;
+                } else {
+                    count = 1;
+                }
+                // 延迟，用于判断用户的点击操作是否结束
+                delay();
+                firstTime = secondTime;
 
-                    }
-                });
-                builder.create().show();
-                return true;
             }
         });
-        //LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400);//为了便于预览格式，这里讲图片的高度固定为400dp了，不然图片太大整个页面都是图片，不便于浏览文字
-        //imageView.setLayoutParams(params);
+        // 点击事件结束后的事件处理
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (count == 1) {
+
+                } else if (count > 1) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MyEditClass.this);
+                    builder.setTitle("删除");
+                    builder.setIcon(R.mipmap.delete);
+                    builder.setMessage("您确定要删除这张图片吗?");
+                    builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            editor.removeView(imageView);//移除图片
+                            removeEditorBeanByTag(tag);
+                        }
+                    });
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder.create().show();
+                }
+                delayTimer.cancel();
+                count = 0;
+                super.handleMessage(msg);
+            }
+        };
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(300, 300);//为了便于预览格式，这里讲图片的高度固定为400dp了，不然图片太大整个页面都是图片，不便于浏览文字
+        imageView.setLayoutParams(params);
         imageView.setClickable(true);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         /**
@@ -263,7 +299,24 @@ public class MyEditClass extends AppCompatActivity {
         editor.addView(imageView);//添加到编辑器中
         editorList.add(new EditorBean(ContentType.IMG, Uri.fromFile(new File(filePath)).toString(), tag));//添加到列表中
     }
+    // 延迟时间是连击的时间间隔有效范围
+    private void delay() {
+        if (task != null)
+            task.cancel();
 
+        task = new TimerTask() {
+            @Override
+            public void run() {
+
+                Message message = new Message();
+                // message.what = 0;
+                handler.sendMessage(message);
+
+            }
+        };
+        delayTimer = new Timer();
+        delayTimer.schedule(task, interval);
+    }
     /**
      * 移除对象---按tag
      *
