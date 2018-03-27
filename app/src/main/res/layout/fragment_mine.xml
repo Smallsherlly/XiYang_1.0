@@ -39,6 +39,7 @@
         app:enable_flashing="false"
         app:siShape="@raw/heart"/>
     <Button
+        android:id="@+id/Edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"

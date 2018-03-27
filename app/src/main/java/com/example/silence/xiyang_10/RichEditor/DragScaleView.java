@@ -64,7 +64,7 @@ public class DragScaleView extends AppCompatImageView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
-        getParent().requestDisallowInterceptTouchEvent(true);
+
         switch (action) {
             case MotionEvent.ACTION_DOWN:
 
@@ -81,7 +81,7 @@ public class DragScaleView extends AppCompatImageView {
                 break;
             case MotionEvent.ACTION_MOVE:
 
-
+                getParent().requestDisallowInterceptTouchEvent(true);
                 //LinearLayout line = (LinearLayout) ((Activity)getContext()).findViewById(R.id.et_custom_editor);
                 //ScrollView scrollView = (ScrollView) ((Activity)(line.getContext())).findViewById(R.id.ll_editor_toolbar);
 

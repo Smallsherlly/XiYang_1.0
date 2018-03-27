@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.transition.Explode;
 import android.view.View;
 
+import com.example.silence.xiyang_10.runtimepermissions.PermissionsManager;
+import com.example.silence.xiyang_10.runtimepermissions.PermissionsResultAction;
 import com.stephentuso.welcome.WelcomeHelper;
 
 import java.io.File;
@@ -38,6 +40,17 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+
+        PermissionsManager.getInstance().requestAllManifestPermissionsIfNecessary(this, new PermissionsResultAction() {
+            @Override
+            public void onGranted() {//权限通过了
+            }
+
+            @Override
+            public void onDenied(String permission) {//权限拒绝了
+
+            }
+        });
 
         // 补间动画
         Explode explode = new Explode();
@@ -129,7 +142,7 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
         public Fragment getItem(final int position) {
             if (position == 0)
                 return new MainPageFragment();
-            else if(position == 3)
+            else if(position == 2)
                 return new MineFragment();
             else
                 return new HandEditFragment2();

@@ -46,6 +46,8 @@
         android:background="#FFF"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:padding="4dp">
 
         <TextView
@@ -82,7 +84,6 @@
         android:id="@+id/mre_editor"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="60dp"
         android:background="#FFF" />
 
 </LinearLayout>

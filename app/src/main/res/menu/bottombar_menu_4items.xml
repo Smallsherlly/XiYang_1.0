@@ -12,11 +12,11 @@
         android:color="@android:color/holo_green_dark"
         android:icon="@drawable/ic_cast_connected_white_24dp"
         android:title="主页" />
-    <item
-        android:id="@+id/bbn_item5"
-        android:color="#FF9800"
-        android:icon="@drawable/ic_add_circle_white_24dp"
-        android:title="新建手账" />
+    <!--<item-->
+        <!--android:id="@+id/bbn_item5"-->
+        <!--android:color="#FF9800"-->
+        <!--android:icon="@drawable/ic_add_circle_white_24dp"-->
+        <!--android:title="新建手账" />-->
     <item
         android:id="@+id/search"
         android:color="#00b2ff"

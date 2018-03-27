@@ -95,13 +95,13 @@ public class MRichEditor extends RelativeLayout {
      * 初始化监听器
      */
     private void initListener() {
-        tvInsertImg.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TakePhotoUtils.getGalleryImg(mActivity, CamaraRequestCode.CAMARA_GET_IMG);//相册选择图片
-
-            }
-        });
+//        tvInsertImg.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                photoUri = TakePhotoUtils.getGalleryImg(mActivity, CamaraRequestCode.CAMARA_GET_IMG);//相册选择图片
+//
+//            }
+//        });
         tvInsertPhoto.setOnClickListener(new OnClickListener() {
 
 
