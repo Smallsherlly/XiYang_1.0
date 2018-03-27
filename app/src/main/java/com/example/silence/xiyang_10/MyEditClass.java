@@ -190,11 +190,6 @@ public class MyEditClass extends AppCompatActivity {
             //图片路径
             urlpath = FileUtilcll.saveFile(this, "temphead.jpg", photo);
             System.out.println("----------路径----------" + urlpath);
-//            dragScaleView.setImageBitmap(photo);
-//            dragScaleView.setBackgroundColor(getResources().getColor(R.color.blue));
-//            dragScaleView.setClickable(true);
-//            dragScaleView.setScaleType(ImageView.ScaleType.FIT_XY);
-//            editor.addView(dragScaleView);
         }
     }
     /**

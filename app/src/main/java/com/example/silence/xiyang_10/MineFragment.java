@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +36,8 @@ import java.io.File;
 public class MineFragment extends Fragment {
     private int count;
     private String urlpath;//图片路径
-    RoundImageButton test_button;
+    private RoundImageButton test_button;
+    private FloatingActionButton create;
     public MineFragment(){
         count = 0;
     }
@@ -48,8 +50,8 @@ public class MineFragment extends Fragment {
     public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState){
         Button button_change = (Button) getView().findViewById(R.id.change_touxiang);
         final RoundImageButton roundImageView = (RoundImageButton) getView().findViewById(R.id.round_touxiang);
-        Button button_edit = (Button) getView().findViewById(R.id.Edit);
-        button_edit.setOnClickListener(new View.OnClickListener() {
+        create = getView().findViewById(R.id.create);
+        create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent edit_intent = new Intent(getActivity(),MyEditClass.class);
