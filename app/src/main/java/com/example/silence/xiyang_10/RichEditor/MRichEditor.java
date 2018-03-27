@@ -10,6 +10,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -21,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import com.example.silence.xiyang_10.MyEditClass;
 import com.example.silence.xiyang_10.R;
 
 import java.io.ByteArrayInputStream;
@@ -28,6 +31,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -59,6 +64,13 @@ public class MRichEditor extends RelativeLayout {
     private TitleType titleType = TitleType.H3;//标题类型
     private String titleTypeStr = "h3";//标题类型的字符串
 
+    private long firstTime;
+    private int count = 0;
+    private TimerTask task;
+    private long interval = 500;
+    private Handler handler;
+    private Timer delayTimer;
+
 
     public MRichEditor(Context context) {
         this(context, null);
@@ -86,7 +98,6 @@ public class MRichEditor extends RelativeLayout {
         tvInsertContent = (TextView) view.findViewById(R.id.tv_custom_edit_insert_content);
         tvInsertTitle = (TextView) view.findViewById(R.id.tv_custom_edit_insert_title);
         tvInsertImg = (TextView) view.findViewById(R.id.tv_custom_edit_insert_img);
-        tvInsertPhoto = (TextView) view.findViewById(R.id.tv_custom_edit_insert_photo);
         tvPreview = (TextView) view.findViewById(R.id.tv_custom_edit_insert_preview);
     }
 
@@ -95,21 +106,6 @@ public class MRichEditor extends RelativeLayout {
      * 初始化监听器
      */
     private void initListener() {
-//        tvInsertImg.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                photoUri = TakePhotoUtils.getGalleryImg(mActivity, CamaraRequestCode.CAMARA_GET_IMG);//相册选择图片
-//
-//            }
-//        });
-        tvInsertPhoto.setOnClickListener(new OnClickListener() {
-
-
-            @Override
-            public void onClick(View v) {
-                photoUri = TakePhotoUtils.takePhotoAndroid6(mActivity);//拍照
-            }
-        });
         tvInsertContent.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -358,30 +354,55 @@ public class MRichEditor extends RelativeLayout {
         /**
          * 长按就删除
          */
-        tvContent.setOnLongClickListener(new OnLongClickListener() {
+        tvContent.setOnClickListener(new OnClickListener() {
             @Override
-            public boolean onLongClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("删除");
-                builder.setIcon(R.mipmap.delete);
-                builder.setMessage("您确定要删除  " + tvContent.getText().toString() + "  吗?");
-                builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        editor.removeView(tvContent);
-                        removeEditorBeanByTag(tag);
+            public void onClick(View v) {
+                    long secondTime = System.currentTimeMillis();
+                    // 判断每次点击的事件间隔是否符合连击的有效范围
+                    // 不符合时，有可能是连击的开始，否则就仅仅是单击
+                    if (secondTime - firstTime <= interval) {
+                        ++count;
+                    } else {
+                        count = 1;
                     }
-                });
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    // 延迟，用于判断用户的点击操作是否结束
+                    delay();
+                    firstTime = secondTime;
 
+                }
+            });
+            // 点击事件结束后的事件处理
+            handler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    if (count == 1) {
+
+                    } else if (count > 1) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setTitle("删除");
+                        builder.setIcon(R.mipmap.delete);
+                        builder.setMessage("您确定要删除  " + tvContent.getText().toString() + "  吗?");
+                        builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                editor.removeView(tvContent);
+                                removeEditorBeanByTag(tag);
+                            }
+                        });
+                        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                        builder.create().show();
                     }
-                });
-                builder.create().show();
-                return true;
-            }
-        });
+                    delayTimer.cancel();
+                    count = 0;
+                    super.handleMessage(msg);
+                }
+
+            };
 
 
         //内容就空两格
@@ -390,7 +411,24 @@ public class MRichEditor extends RelativeLayout {
         editor.addView(tvContent);//添加到编辑器视图中
         editorList.add(new EditorBean(type, contentStr, tag));//添加到编辑器列表中
     }
+    // 延迟时间是连击的时间间隔有效范围
+    private void delay() {
+        if (task != null)
+            task.cancel();
 
+        task = new TimerTask() {
+            @Override
+            public void run() {
+
+                Message message = new Message();
+                // message.what = 0;
+                handler.sendMessage(message);
+
+            }
+        };
+        delayTimer = new Timer();
+        delayTimer.schedule(task, interval);
+    }
     /**
      * 设置内容显示的大小,默认18
      *

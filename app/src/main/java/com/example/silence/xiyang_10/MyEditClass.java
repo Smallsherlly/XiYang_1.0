@@ -44,7 +44,7 @@ import butterknife.BindView;
  * Created by Silence on 2018/3/27.
  */
 
-public class MyEditClass extends AppCompatActivity {
+public class MyEditClass extends AppCompatActivity implements View.OnClickListener{
     CoordinatorLayout mCoordinatorLayout;
     ViewGroup mRoot;
     private int imgQuality = 20;//保存图片的质量,默认为20%（即压缩率为80%）
@@ -125,6 +125,22 @@ public class MyEditClass extends AppCompatActivity {
             }
 
         });
+
+    }
+
+    @Override
+    public void onClick(View v){
+        long secondTime = System.currentTimeMillis();
+        // 判断每次点击的事件间隔是否符合连击的有效范围
+        // 不符合时，有可能是连击的开始，否则就仅仅是单击
+        if (secondTime - firstTime <= interval) {
+            ++count;
+        } else {
+            count = 1;
+        }
+        // 延迟，用于判断用户的点击操作是否结束
+        delay();
+        firstTime = secondTime;
 
     }
     @Override
