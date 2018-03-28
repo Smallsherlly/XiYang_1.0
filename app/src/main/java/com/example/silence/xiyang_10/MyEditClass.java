@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.zip.Inflater;
 
 import butterknife.BindView;
 
@@ -84,6 +86,13 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
         mRoot = (ViewGroup) getView().findViewById(R.id.CoordinatorLayout01);
         dragScaleView = new DragScaleView(getActivity());
         tvInsertImg = (TextView) getView().findViewById(R.id.tv_custom_edit_insert_img);
+        ViewStub myViewStub = (ViewStub)getView().findViewById(R.id.myViewStub);
+        myViewStub.setLayoutResource(R.layout.myricheditor);
+        if (myViewStub != null) {
+            myViewStub.inflate();
+            //或者是下面的形式加载
+            //myViewStub.setVisibility(View.VISIBLE);
+        }
         editor = (RelativeLayout) getView().findViewById(R.id.et_custom_editor);
 
 
@@ -156,14 +165,14 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
             switch (requestCode) {
                 // 如果是直接从相册获取
                 case 1:
-                    startPhotoZoom(data.getData());
+                    //startPhotoZoom(data.getData());
                     insertImg(data.getData());
                     break;
                 // 如果是调用相机拍照时
                 case 2:
                     File temp = new File(Environment.getExternalStorageDirectory()
                             + "/xiaoma.jpg");
-                    startPhotoZoom(Uri.fromFile(temp));
+                    //startPhotoZoom(Uri.fromFile(temp));
                     insertImg(data);
                     break;
                 // 取得裁剪后的图片
@@ -295,7 +304,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
             }
         };
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(300, 300);//为了便于预览格式，这里讲图片的高度固定为400dp了，不然图片太大整个页面都是图片，不便于浏览文字
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);//为了便于预览格式，这里讲图片的高度固定为400dp了，不然图片太大整个页面都是图片，不便于浏览文字
         imageView.setLayoutParams(params);
         imageView.setClickable(true);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);

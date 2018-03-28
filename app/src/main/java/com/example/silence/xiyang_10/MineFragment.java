@@ -37,7 +37,6 @@ public class MineFragment extends Fragment {
     private int count;
     private String urlpath;//图片路径
     private RoundImageButton test_button;
-    private FloatingActionButton create;
     public MineFragment(){
         count = 0;
     }
@@ -50,14 +49,6 @@ public class MineFragment extends Fragment {
     public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState){
         Button button_change = (Button) getView().findViewById(R.id.change_touxiang);
         final RoundImageButton roundImageView = (RoundImageButton) getView().findViewById(R.id.round_touxiang);
-        create = getView().findViewById(R.id.create);
-        create.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent edit_intent = new Intent(getActivity(),MyEditClass.class);
-                startActivity(edit_intent);
-            }
-        });
         roundImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

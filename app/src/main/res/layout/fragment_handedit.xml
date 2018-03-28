@@ -73,12 +73,10 @@
             android:textSize="18sp" />
     </LinearLayout>
 
-
-
     <com.example.silence.xiyang_10.RichEditor.MRichEditor
         android:id="@+id/mre_editor"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="60dp"
         android:background="#FFF" />

@@ -60,15 +60,6 @@
         android:textSize="20sp"
         android:text="手机:17764590520"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/create"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        app:fabSize="normal"
-        android:src="@drawable/plus"
-        android:transitionName="loginFab"
-        android:layout_gravity="right"
-        android:layout_marginRight="10dp"
-        />
+
     
 </LinearLayout>
