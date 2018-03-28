@@ -22,11 +22,6 @@ import com.ToxicBakery.viewpager.transforms.ABaseTransformer;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Field;
@@ -69,7 +64,6 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         final BaseActivity activity = (BaseActivity) getActivity();
         mRoot = (ViewGroup) activity.findViewById(R.id.CoordinatorLayout01);
 
@@ -124,7 +118,11 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
         for (int position = 0; position < 3; position++)
             localImages.add(getResId("ic_test_" + position, R.drawable.class));
     }
-
+    @Override
+    public void onDestroyView(){
+        super.onDestroyView();
+        localImages.clear();// 防止图片重复加载
+    }
     /**
      * 通过文件名获取资源id 例子：getResId("icon", R.drawable.class);
      *

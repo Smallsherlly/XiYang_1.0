@@ -13,11 +13,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.transition.Explode;
 import android.view.View;
 
+import com.ToxicBakery.viewpager.transforms.ABaseTransformer;
+import com.bigkoo.convenientbanner.ConvenientBanner;
+import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
+import com.bigkoo.convenientbanner.listener.OnItemClickListener;
 import com.example.silence.xiyang_10.runtimepermissions.PermissionsManager;
 import com.example.silence.xiyang_10.runtimepermissions.PermissionsResultAction;
 import com.stephentuso.welcome.WelcomeHelper;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 
@@ -26,8 +32,7 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
  * 这是主活动
  */
 
-public class MainActivity extends BaseActivity implements BottomNavigation.OnMenuItemSelectionListener {
-
+public class MainActivity extends BaseActivity implements BottomNavigation.OnMenuItemSelectionListener{
 
 
 
@@ -61,9 +66,8 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
         initializeBottomNavigation(savedInstanceState);// 初始化底部导航栏
         initializeUI(savedInstanceState);// 初始化界面
 
-
-
     }
+
 
 
     private void initializeUI(Bundle savedInstanceState) {
@@ -155,4 +159,5 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
             return mCount;
         }
     }
+
 }

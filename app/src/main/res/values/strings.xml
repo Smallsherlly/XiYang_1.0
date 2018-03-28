@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">惜扬手账1.2</string>
+    <string name="app_name">惜扬手账1.4</string>
     <string name="login_success">login success</string>
     <string name="login">LOGIN</string>
     <string name="Username">Username</string>
