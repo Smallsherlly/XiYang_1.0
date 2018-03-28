@@ -85,8 +85,8 @@ public class MRichEditor extends RelativeLayout {
         this.context = context;
         mActivity = (Activity) context;
         initView();//初始化视图
-        initInputDialog();//初始化输入对话框
-        initListener();//初始化监听器
+//        initInputDialog();//初始化输入对话框
+//        initListener();//初始化监听器
     }
 
     /**

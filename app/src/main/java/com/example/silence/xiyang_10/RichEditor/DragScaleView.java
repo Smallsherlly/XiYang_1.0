@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
 import com.example.silence.xiyang_10.R;
+import com.nineoldandroids.view.ViewHelper;
 
 /**
  * Created by Silence on 2018/3/21.
@@ -37,7 +38,8 @@ public class DragScaleView extends AppCompatImageView {
     private static final int CENTER = 0x19;
     private int offset = 20;
     protected Paint paint = new Paint();
-
+    private float scale;
+    private float preScale = 1;// 默认前一次缩放比例为1
     /**
      * 初始化获取屏幕宽高
      */
@@ -67,7 +69,7 @@ public class DragScaleView extends AppCompatImageView {
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-
+                getParent().requestDisallowInterceptTouchEvent(true);
                 oriLeft = getLeft();
                 oriRight = getRight();
                 oriTop = getTop();
@@ -82,8 +84,7 @@ public class DragScaleView extends AppCompatImageView {
             case MotionEvent.ACTION_MOVE:
 
                 getParent().requestDisallowInterceptTouchEvent(true);
-                //LinearLayout line = (LinearLayout) ((Activity)getContext()).findViewById(R.id.et_custom_editor);
-                //ScrollView scrollView = (ScrollView) ((Activity)(line.getContext())).findViewById(R.id.ll_editor_toolbar);
+
 
                 int tempRawX = (int)event.getRawX();
                 int tempRawY = (int)event.getRawY();
@@ -94,20 +95,13 @@ public class DragScaleView extends AppCompatImageView {
                 lastY = tempRawY;
 
                 switch (dragDirection) {
-                    case LEFT:
-                        left( dx);
+
+                    case RIGHT_BOTTOM:
+                        right_bottom(dx,dy);
                         break;
-                    case RIGHT:
-                        right( dx);
-                        break;
-                    case BOTTOM:
-                        bottom(dy);
-                        break;
-                    case TOP:
-                        top( dy);
-                        break;
+
                     case CENTER:
-                        center( dx, dy);
+                       center( dx, dy);
                         break;
                 }
 
@@ -151,46 +145,25 @@ public class DragScaleView extends AppCompatImageView {
         oriBottom = bottom;
     }
 
-    /**
-     * 触摸点为上边缘
-     *
 
-     * @param dy
-     */
-    private void top(int dy) {
-        oriTop += dy;
-        if (oriTop < -offset) {
-            oriTop = -offset;
-        }
-        if (oriBottom - oriTop - 2 * offset < 200) {
-            oriTop = oriBottom - 2 * offset - 200;
-        }
-    }
+
 
     /**
-     * 触摸点为下边缘
+     * 触摸点为右下边缘
      *
      * @param v
      * @param dy
      */
-    private void bottom(int dy) {
+    private void right_bottom(int dx,int dy) {
+        oriRight += dx;
         oriBottom += dy;
+
         if (oriBottom > screenHeight + offset) {
             oriBottom = screenHeight + offset;
         }
         if (oriBottom - oriTop - 2 * offset < 200) {
             oriBottom = 200 + oriTop + 2 * offset;
         }
-    }
-
-    /**
-     * 触摸点为右边缘
-     *
-     * @param v
-     * @param dx
-     */
-    private void right(int dx) {
-        oriRight += dx;
         if (oriRight > screenWidth + offset) {
             oriRight = screenWidth + offset;
         }
@@ -199,21 +172,6 @@ public class DragScaleView extends AppCompatImageView {
         }
     }
 
-    /**
-     * 触摸点为左边缘
-     *
-
-     * @param dx
-     */
-    private void left(int dx) {
-        oriLeft += dx;
-        if (oriLeft < -offset) {
-            oriLeft = -offset;
-        }
-        if (oriRight - oriLeft - 2 * offset < 200) {
-            oriLeft = oriRight - 2 * offset - 200;
-        }
-    }
 
     /**
      * 获取触摸点flag

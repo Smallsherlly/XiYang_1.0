@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,6 +19,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +33,9 @@ import android.widget.Toast;
 import com.example.silence.xiyang_10.RichEditor.ContentType;
 import com.example.silence.xiyang_10.RichEditor.DragScaleView;
 import com.example.silence.xiyang_10.RichEditor.EditorBean;
+import com.example.silence.xiyang_10.RichEditor.InputDialog;
 import com.example.silence.xiyang_10.RichEditor.MRichEditor;
+import com.example.silence.xiyang_10.RichEditor.MyText;
 import com.example.silence.xiyang_10.RichEditor.TakePhotoUtils;
 
 import java.io.File;
@@ -62,10 +66,18 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
     private long interval = 500;
     private Handler handler;
     private Timer delayTimer;
+    private InputDialog dialog;//内容、标题输入框
+    private static int contentSize = 16;//内容字体大小
+    private static int contentColor = Color.GRAY;//内容字体颜色
+    private static int titleSize = 18;//标题字体大小
+    private static int titleColor = Color.BLACK;//标题字体颜色
+    private TextView tvInsertContent;//插入内容按钮
+    private TextView tvInsertTitle;//插入标题按钮
     private SharedPreferences prefs;
     @BindView(R.id.reminder_layout)
     LinearLayout reminder_layout;
-
+    private float scale;
+    private float preScale = 1;// 默认前一次缩放比例为1
 
 
     @Override
@@ -94,9 +106,11 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
             //myViewStub.setVisibility(View.VISIBLE);
         }
         editor = (RelativeLayout) getView().findViewById(R.id.et_custom_editor);
+        tvInsertContent = (TextView) getView().findViewById(R.id.tv_custom_edit_insert_content);
+        tvInsertTitle = (TextView) getView().findViewById(R.id.tv_custom_edit_insert_title);
 
-
-
+        initInputDialog();//初始化输入对话框
+        initListener();//初始化监听器
         if (mRoot instanceof CoordinatorLayout) {// 判断mRoot是否属于Coordinatorlayout实例
             mCoordinatorLayout = (CoordinatorLayout) mRoot;
         }
@@ -141,6 +155,174 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
 
         });
 
+    }
+
+    /**
+     * 初始化监听器
+     */
+    private void initListener() {
+        tvInsertContent.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.show(ContentType.CONTENT);//弹出输入内容的对话框
+            }
+        });
+        tvInsertTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show(ContentType.TITLE);//弹出输入标题的对话框
+            }
+        });
+
+    }
+
+    /**
+     * 初始化输入对话框
+     */
+    private void initInputDialog() {
+        dialog = new InputDialog(getContext());
+        dialog.setPositiveButton("确定", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (dialog.getType()) {
+                    case CONTENT:
+                        insertContent(contentSize, contentColor, ContentType.CONTENT);
+                        break;
+                    case TITLE:
+                        insertContent(titleSize, titleColor, ContentType.TITLE);
+                        break;
+                    case IMG:
+                        break;
+                }
+                dialog.dismiss();
+                dialog.clearText();
+            }
+        });
+        dialog.setNegativeButton("取消", new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                dialog.clearText();
+            }
+        });
+    }
+    /**
+     * 插入内容,标题
+     *
+     * @param size
+     * @param color
+     * @param type
+     */
+    private void insertContent(int size, final int color, final ContentType type) {
+        final long tag = System.currentTimeMillis();//使用当前的时间做标记----标记的作用就是要知道哪条是哪条,删除的时候好操作
+        final MyText tvContent = new MyText(getContext());
+        /**
+         *初始化修改对话框--------之所以写在这里 是因为要对象序列化--局部有效原则----如果弄成全局的,那么tvContent永远是最新一个--删除就会出错哦
+         */
+        final InputDialog updateDialog = new InputDialog(getContext());
+        updateDialog.setNegativeButton("取消", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateDialog.dismiss();
+                updateDialog.clearText();
+            }
+        });
+        updateDialog.setPositiveButton("确定", new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String content = updateDialog.getContent();
+                updateDialog.clearText();
+                updateDialog.dismiss();
+                if (TextUtils.isEmpty(content)) {
+                    editor.removeView(tvContent);
+                    removeEditorBeanByTag(tag);
+                    return;
+                }
+                String befor = (type == ContentType.CONTENT) ? "    " : "";
+                tvContent.setText(befor + content);//修改的是内容,就空两格
+                for (EditorBean editorBean : editorList) {
+                    if (editorBean.getTag() == tag) {
+                        editorBean.setContent(content);
+                        break;
+                    }
+                }
+            }
+        });
+
+        tvContent.setTextSize(size);
+        tvContent.setTextColor(color);
+        /**
+         * 单击就修改
+         */
+        tvContent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateDialog.show(ContentType.CONTENT);
+                updateDialog.setText(tvContent.getText().toString().replace("    ", ""));
+            }
+        });
+        /**
+         * 长按就删除
+         */
+        tvContent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long secondTime = System.currentTimeMillis();
+                // 判断每次点击的事件间隔是否符合连击的有效范围
+                // 不符合时，有可能是连击的开始，否则就仅仅是单击
+                if (secondTime - firstTime <= interval) {
+                    ++count;
+                } else {
+                    count = 1;
+                }
+                // 延迟，用于判断用户的点击操作是否结束
+                delay();
+                firstTime = secondTime;
+
+            }
+        });
+        // 点击事件结束后的事件处理
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                if (count == 1) {
+
+                } else if (count > 1) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("删除");
+                    builder.setIcon(R.mipmap.delete);
+                    builder.setMessage("您确定要删除  " + tvContent.getText().toString() + "  吗?");
+                    builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            editor.removeView(tvContent);
+                            removeEditorBeanByTag(tag);
+                        }
+                    });
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder.create().show();
+                }
+                delayTimer.cancel();
+                count = 0;
+                super.handleMessage(msg);
+            }
+
+        };
+
+
+        //内容就空两格
+        String contentStr = (type == ContentType.CONTENT) ? "    " + dialog.getContent() : dialog.getContent();
+        tvContent.setText(contentStr);
+        editor.addView(tvContent);//添加到编辑器视图中
+        editorList.add(new EditorBean(type, contentStr, tag));//添加到编辑器列表中
     }
 
     @Override
