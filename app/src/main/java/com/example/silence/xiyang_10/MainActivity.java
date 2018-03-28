@@ -67,14 +67,14 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
 
 
     private void initializeUI(Bundle savedInstanceState) {
-        final ViewPager viewPager = getViewPager();// 获取视图页面
-        if (null != viewPager) {
+        final CustomViewPager viewPager = getViewPager();// 获取视图页面
+       if (null != viewPager) {
 
             getBottomNavigation().setOnMenuChangedListener(new BottomNavigation.OnMenuChangedListener() {
                 @Override
                 public void onMenuChanged(final BottomNavigation parent) {
-
-                    viewPager.setAdapter(new ViewPagerAdapter(MainActivity.this, parent.getMenuItemCount()));
+                    viewPager.setScanScroll(false);
+                    viewPager.setAdapter(new ViewPagerAdapter(MainActivity.this, getBottomNavigation().getMenuItemCount()));
                     viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                         @Override
                         public void onPageScrolled(
@@ -95,7 +95,7 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
                 }
             });
 
-        }
+       }
     }
 
     private void initializeBottomNavigation(Bundle savedInstanceState) {
@@ -142,10 +142,12 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
         public Fragment getItem(final int position) {
             if (position == 0)
                 return new MainPageFragment();
-            else if(position == 2)
+            else if(position == 3)
                 return new MineFragment();
+            else if(position == 2)
+                return new SearchViewFragment();
             else
-                return new HandEditFragment2();
+                return new MyEditClass();
         }
 
         @Override

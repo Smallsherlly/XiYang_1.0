@@ -8,7 +8,7 @@
     android:padding="0dp"
     tools:context=".MainActivity">
 
-    <android.support.v4.view.ViewPager
+    <com.example.silence.xiyang_10.CustomViewPager
         android:id="@+id/ViewPager01"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,7 +20,6 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_gravity="bottom"
-        app:bbn_badgeProvider="@string/bbn_badgeProvider"
         app:bbn_entries="@menu/bottombar_menu_4items"
         app:bbn_scrollEnabled="false"
         app:layout_behavior="@string/bbn_phone_view_behavior"/>  <!--设置列表最后一项完整显示-->

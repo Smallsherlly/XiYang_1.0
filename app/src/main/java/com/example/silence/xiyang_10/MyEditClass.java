@@ -15,6 +15,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -44,7 +45,7 @@ import butterknife.BindView;
  * Created by Silence on 2018/3/27.
  */
 
-public class MyEditClass extends AppCompatActivity implements View.OnClickListener{
+public class MyEditClass extends Fragment implements View.OnClickListener{
     CoordinatorLayout mCoordinatorLayout;
     ViewGroup mRoot;
     private int imgQuality = 20;//保存图片的质量,默认为20%（即压缩率为80%）
@@ -65,22 +66,27 @@ public class MyEditClass extends AppCompatActivity implements View.OnClickListen
 
 
 
+    @Override
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_handedit, container, false);// 将布局加载到碎片实例中
+    }
+    @Override
+    public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
+    }// @Nullable  意味着可以传入null值
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_handedit);
-        mRoot = (ViewGroup) findViewById(R.id.CoordinatorLayout01);
-        dragScaleView = new DragScaleView(this);
-        tvInsertImg = (TextView) findViewById(R.id.tv_custom_edit_insert_img);
-        editor = (RelativeLayout) findViewById(R.id.et_custom_editor);
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mRoot = (ViewGroup) getView().findViewById(R.id.CoordinatorLayout01);
+        dragScaleView = new DragScaleView(getActivity());
+        tvInsertImg = (TextView) getView().findViewById(R.id.tv_custom_edit_insert_img);
+        editor = (RelativeLayout) getView().findViewById(R.id.et_custom_editor);
 
 
-        // 隐藏标题栏
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
 
         if (mRoot instanceof CoordinatorLayout) {// 判断mRoot是否属于Coordinatorlayout实例
             mCoordinatorLayout = (CoordinatorLayout) mRoot;
@@ -88,7 +94,7 @@ public class MyEditClass extends AppCompatActivity implements View.OnClickListen
         tvInsertImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new ActionSheetDialog(MyEditClass.this)
+                new ActionSheetDialog(getActivity())
                         .builder()
                         .setCancelable(true)
                         .setCanceledOnTouchOutside(true)
@@ -204,7 +210,7 @@ public class MyEditClass extends AppCompatActivity implements View.OnClickListen
         if (extras != null) {
             Bitmap photo = extras.getParcelable("data");
             //图片路径
-            urlpath = FileUtilcll.saveFile(this, "temphead.jpg", photo);
+            urlpath = FileUtilcll.saveFile(getActivity(), "temphead.jpg", photo);
             System.out.println("----------路径----------" + urlpath);
         }
     }
@@ -238,7 +244,7 @@ public class MyEditClass extends AppCompatActivity implements View.OnClickListen
 
     public void insertImg(Uri bitmapUri) {
         final long tag = System.currentTimeMillis();//使用当前时间的毫秒值来标记当前内容，便于删除列表中的记录
-        final DragScaleView imageView = new DragScaleView(this);
+        final DragScaleView imageView = new DragScaleView(getActivity());
         //处理点击事件（删除）
         imageView.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -264,7 +270,7 @@ public class MyEditClass extends AppCompatActivity implements View.OnClickListen
                 if (count == 1) {
 
                 } else if (count > 1) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MyEditClass.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle("删除");
                     builder.setIcon(R.mipmap.delete);
                     builder.setMessage("您确定要删除这张图片吗?");
@@ -296,9 +302,9 @@ public class MyEditClass extends AppCompatActivity implements View.OnClickListen
         /**
          * 下面是对图片进行压缩处理---并且统一复制到sdcard的takephoto文件夹
          */
-        String filePath = TakePhotoUtils.getRealFilePathByUri(this, bitmapUri);//图片的真实路径
+        String filePath = TakePhotoUtils.getRealFilePathByUri(getActivity(), bitmapUri);//图片的真实路径
         try {
-            filePath = TakePhotoUtils.saveFile(this, BitmapFactory.decodeFile(filePath), filePath, imgQuality);//压缩图片得到真实路径，imgQuality为图片的质量，按100制，默认图片质量20%（即压缩80%），现在主流手机使用20%最佳---平均下来150k左右
+            filePath = TakePhotoUtils.saveFile(getActivity(), BitmapFactory.decodeFile(filePath), filePath, imgQuality);//压缩图片得到真实路径，imgQuality为图片的质量，按100制，默认图片质量20%（即压缩80%），现在主流手机使用20%最佳---平均下来150k左右
         } catch (Exception e) {
             e.printStackTrace();
         }

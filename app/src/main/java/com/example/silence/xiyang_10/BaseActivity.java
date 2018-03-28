@@ -14,13 +14,13 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
  */
 
 public abstract class BaseActivity extends AppCompatActivity implements BottomNavigation.OnMenuItemSelectionListener {
-    private ViewPager mViewPager;
+    private CustomViewPager mViewPager;
     private SystemBarTintManager mSystemBarTint;
     private BottomNavigation mBottomNavigation;
     protected SharedPreferences prefs;
 
 
-    public ViewPager getViewPager() {
+    public CustomViewPager getViewPager() {
         return mViewPager;
     }
 
@@ -33,7 +33,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BottomNa
     @Override
     public void onContentChanged() {
         super.onContentChanged();
-        mViewPager = (ViewPager) findViewById(R.id.ViewPager01);
+        mViewPager = (CustomViewPager) findViewById(R.id.ViewPager01);
         mBottomNavigation = (BottomNavigation) findViewById(R.id.BottomNavigation);
         if (null != mBottomNavigation) {
             Typeface typeface = Typeface.createFromAsset(getAssets(), "Roboto-Light.ttf");
