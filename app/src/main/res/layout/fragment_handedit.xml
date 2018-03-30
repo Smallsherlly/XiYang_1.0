@@ -21,14 +21,20 @@
 
             android:src="@mipmap/back" />
         <!--android:onClick="onGetImgPath"-->
-        <TextView
-            android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/et_main_title"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
-            android:text="MyRichEditor"
-            android:textColor="#fff"
-            android:textSize="20sp" />
+            android:layout_weight="1"
+            android:background="@null"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:hint="在这里输入文章标题"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:singleLine="true"
+            android:textSize="18sp" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -40,44 +46,11 @@
         <!--android:onClick="onFinished"-->
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:background="#FFF"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:padding="4dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="标题:"
-            android:textSize="18sp" />
-
-        <EditText
-            android:id="@+id/et_main_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null"
-            android:clickable="true"
-            android:ellipsize="end"
-            android:hint="在这里输入文章标题"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:singleLine="true"
-            android:textSize="18sp" />
-    </LinearLayout>
 
     <com.example.silence.xiyang_10.RichEditor.MRichEditor
         android:id="@+id/mre_editor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="60dp"
         android:background="#FFF" />
 

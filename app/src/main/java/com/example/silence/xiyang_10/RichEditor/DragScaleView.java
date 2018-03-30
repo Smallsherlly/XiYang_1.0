@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -43,9 +45,23 @@ public class DragScaleView extends AppCompatImageView {
     /**
      * 初始化获取屏幕宽高
      */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        //获取SingleTouchView所在父布局的中心点
+        ViewGroup mViewGroup = (ViewGroup) getParent();
+        if(null != mViewGroup){
+            screenWidth = mViewGroup.getWidth();
+            screenHeight = mViewGroup.getHeight();
+        }
+
+    }
     protected void initScreenW_H() {
-        screenHeight = getResources().getDisplayMetrics().heightPixels - 40;
-        screenWidth = getResources().getDisplayMetrics().widthPixels;
+
+        //screenHeight = getResources().getDisplayMetrics().heightPixels - 40;
+
+        //screenWidth = getResources().getDisplayMetrics().widthPixels;
     }
 
     public DragScaleView(Context context, AttributeSet attrs, int defStyle) {
@@ -121,11 +137,11 @@ public class DragScaleView extends AppCompatImageView {
         int top = getTop() + dy;
         int right = getRight() + dx;
         int bottom = getBottom() + dy;
-
         if (left < 0) {
             left = 0;
             right = left + getWidth();
         }
+
         if (right > screenWidth ) {
             right = screenWidth ;
             left = right - getWidth();
@@ -134,6 +150,7 @@ public class DragScaleView extends AppCompatImageView {
             top = 0;
             bottom = top + getHeight();
         }
+
         if (bottom > screenHeight ) {
             bottom = screenHeight ;
             top = bottom - getHeight();
