@@ -29,10 +29,12 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cuiweiyou.numberpickerdialog.NumberPickerDialog;
 import com.example.silence.xiyang_10.RichEditor.ContentType;
 import com.example.silence.xiyang_10.RichEditor.DragScaleView;
 import com.example.silence.xiyang_10.RichEditor.EditorBean;
@@ -89,6 +91,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
     private float preScale = 1;// 默认前一次缩放比例为1
     private int pos_left;
     private int pos_top;
+
     @Override
     public void onColorSelected(int newColor, String tag) {
 
@@ -223,6 +226,8 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
      */
     private void initInputDialog() {
         dialog = new InputDialog(getContext());
+        dialog.getEdit().setTextColor(contentColor);
+        dialog.getEdit().setTextSize(contentSize);
         dialog.setPositiveButton("确定", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -277,6 +282,25 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
                 dialog.clearText();
             }
         });
+        dialog.setSizeButton("字号", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new NumberPickerDialog(
+                        getContext(),
+                        new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                contentSize = newVal;
+                                dialog.getEdit().setTextSize(contentSize);
+                            }
+                        },
+                        60, // 最大值
+                        10, // 最小值
+                        20) // 默认值
+                        .setCurrentValue(contentSize) // 更新默认值
+                        .show();
+            }
+        });
     }
     /**
      * 插入内容,标题
@@ -294,6 +318,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
          */
         final InputDialog updateDialog = new InputDialog(getContext());
         updateDialog.getEdit().setTextColor(contentColor);
+        updateDialog.getEdit().setTextSize(contentSize);
         updateDialog.setNegativeButton("取消", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -331,6 +356,28 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
                         .show();
             }
         });
+
+        updateDialog.setSizeButton("字号", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new NumberPickerDialog(
+                        getContext(),
+                        new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                contentSize = newVal;
+                                updateDialog.getEdit().setTextSize(contentSize);
+                                tvContent.setTextSize(contentSize);
+                            }
+                        },
+                        60, // 最大值
+                        10, // 最小值
+                        20) // 默认值
+                        .setCurrentValue(contentSize) // 更新默认值
+                        .show();
+            }
+        });
+
         updateDialog.setPositiveButton("确定", new View.OnClickListener() {
 
             @Override
@@ -354,20 +401,11 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
             }
         });
 
-        tvContent.setTextSize(size);
+        tvContent.setTextSize(contentSize);
         tvContent.setTextColor(contentColor);
         pos_left = tvContent.getLeft();
         pos_top = tvContent.getTop();
-//        /**
-//         * 单击就修改
-//         */
-//        tvContent.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                updateDialog.show(ContentType.CONTENT);
-//                updateDialog.setText(tvContent.getText().toString().replace("    ", ""));
-//            }
-//        });
+
         /**
          * 长按就删除
          */

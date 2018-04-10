@@ -21,6 +21,7 @@ public class InputDialog {
     private TextView tvCancle;
     private EditText etContent;
     private TextView tvcolor;
+    private TextView tvsize;
 
     public InputDialog(Context context) {
         this.context = context;
@@ -37,6 +38,7 @@ public class InputDialog {
         tvOk = (TextView) view.findViewById(R.id.tv_dialog_editor_ok);
         etContent = (EditText) view.findViewById(R.id.et_dialog_editor_content);
         tvcolor = (TextView) view.findViewById(R.id.tv_dialog_editor_color);
+        tvsize = (TextView) view.findViewById(R.id.tv_dialog_editor_size);
         builder.setView(view);
         dialog = builder.create();
     }
@@ -65,6 +67,11 @@ public class InputDialog {
     public void setNegativeButton(String cancle, View.OnClickListener onClickListener) {
         tvCancle.setText(cancle);
         tvCancle.setOnClickListener(onClickListener);
+    }
+
+    public void setSizeButton(String size, View.OnClickListener onClickListener) {
+        tvsize.setText(size);
+        tvsize.setOnClickListener(onClickListener);
     }
 
     /**
