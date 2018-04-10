@@ -32,6 +32,15 @@
             android:drawableTop="@mipmap/content"
             android:gravity="center"
             android:text="内容" />
+        <TextView
+            android:id="@+id/tv_custom_edit_change_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawableTop="@drawable/ic_color_lens"
+            android:gravity="center"
+            android:text="颜色" />
 
         <TextView
             android:id="@+id/tv_custom_edit_insert_img"

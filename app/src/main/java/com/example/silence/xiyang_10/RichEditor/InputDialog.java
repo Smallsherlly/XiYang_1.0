@@ -20,6 +20,7 @@ public class InputDialog {
     private TextView tvOk;
     private TextView tvCancle;
     private EditText etContent;
+    private TextView tvcolor;
 
     public InputDialog(Context context) {
         this.context = context;
@@ -35,6 +36,7 @@ public class InputDialog {
         tvCancle = (TextView) view.findViewById(R.id.tv_dialog_editor_cancel);
         tvOk = (TextView) view.findViewById(R.id.tv_dialog_editor_ok);
         etContent = (EditText) view.findViewById(R.id.et_dialog_editor_content);
+        tvcolor = (TextView) view.findViewById(R.id.tv_dialog_editor_color);
         builder.setView(view);
         dialog = builder.create();
     }
@@ -50,6 +52,10 @@ public class InputDialog {
         tvOk.setOnClickListener(onClickListener);
     }
 
+    public void setColorButton(CharSequence color, View.OnClickListener onClickListener){
+        tvcolor.setText(color);
+        tvcolor.setOnClickListener(onClickListener);
+    }
     /**
      * 设置取消按钮
      *
@@ -69,6 +75,7 @@ public class InputDialog {
     public String getContent() {
         return etContent.getText().toString();
     }
+    public EditText getEdit(){return etContent;}
 
     /**
      * 设置输入框的提示内容

@@ -25,6 +25,7 @@ android {
 
 dependencies {
     //新增库
+    compile 'com.larswerkman:lobsterpicker:1.0.1'
     //implementation 'com.github.kizitonwose.colorpreference:support:1.0.6'
     api("com.github.kizitonwose.colorpreference:support:1.0.6"){
         exclude group:'com.android.support'

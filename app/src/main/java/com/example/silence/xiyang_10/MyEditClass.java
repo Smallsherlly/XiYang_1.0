@@ -13,6 +13,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -37,6 +40,11 @@ import com.example.silence.xiyang_10.RichEditor.InputDialog;
 import com.example.silence.xiyang_10.RichEditor.MRichEditor;
 import com.example.silence.xiyang_10.RichEditor.MyText;
 import com.example.silence.xiyang_10.RichEditor.TakePhotoUtils;
+import com.kizitonwose.colorpreference.ColorDialog;
+import com.kizitonwose.colorpreference.ColorPreference;
+import com.kizitonwose.colorpreference.ColorShape;
+import com.larswerkman.lobsterpicker.LobsterPicker;
+import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider;
 
 import java.io.File;
 import java.util.List;
@@ -51,7 +59,7 @@ import butterknife.BindView;
  * Created by Silence on 2018/3/27.
  */
 
-public class MyEditClass extends Fragment implements View.OnClickListener{
+public class MyEditClass extends Fragment implements View.OnClickListener,ColorDialog.OnColorSelectedListener{
     CoordinatorLayout mCoordinatorLayout;
     ViewGroup mRoot;
     private int imgQuality = 20;//保存图片的质量,默认为20%（即压缩率为80%）
@@ -73,13 +81,18 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
     private static int titleColor = Color.BLACK;//标题字体颜色
     private TextView tvInsertContent;//插入内容按钮
     private TextView tvInsertTitle;//插入标题按钮
+    private TextView tvchangecolor;//插入标题按钮
     private SharedPreferences prefs;
     @BindView(R.id.reminder_layout)
     LinearLayout reminder_layout;
     private float scale;
     private float preScale = 1;// 默认前一次缩放比例为1
+    private int pos_left;
+    private int pos_top;
+    @Override
+    public void onColorSelected(int newColor, String tag) {
 
-
+    }
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -108,6 +121,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
         editor = (RelativeLayout) getView().findViewById(R.id.et_custom_editor);
         tvInsertContent = (TextView) getView().findViewById(R.id.tv_custom_edit_insert_content);
         tvInsertTitle = (TextView) getView().findViewById(R.id.tv_custom_edit_insert_title);
+        tvchangecolor = (TextView) getView().findViewById(R.id.tv_custom_edit_change_content);
 
         initInputDialog();//初始化输入对话框
         initListener();//初始化监听器
@@ -165,6 +179,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
 
             @Override
             public void onClick(View v) {
+
                 dialog.show(ContentType.CONTENT);//弹出输入内容的对话框
             }
         });
@@ -172,6 +187,32 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
             @Override
             public void onClick(View v) {
                 dialog.show(ContentType.TITLE);//弹出输入标题的对话框
+            }
+        });
+        tvchangecolor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View colorView = inflater.inflate(R.layout.dialog_color, null);
+                final LobsterPicker lobsterPicker = (LobsterPicker) colorView.findViewById(R.id.lobsterPicker);
+                LobsterShadeSlider shadeSlider = (LobsterShadeSlider) colorView.findViewById(R.id.shadeSlider);
+
+                lobsterPicker.addDecorator(shadeSlider);
+                lobsterPicker.setColorHistoryEnabled(true);
+                lobsterPicker.setHistory(contentColor);
+                lobsterPicker.setColor(contentColor);
+
+                new AlertDialog.Builder(getActivity())
+                        .setView(colorView)
+                        .setTitle("Choose Color")
+                        .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                contentColor = lobsterPicker.getColor();
+                            }
+                        })
+                        .setNegativeButton("CLOSE", null)
+                        .show();
             }
         });
 
@@ -199,6 +240,35 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
                 dialog.clearText();
             }
         });
+
+        dialog.setColorButton("颜色", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        LayoutInflater inflater = getActivity().getLayoutInflater();
+                        View colorView = inflater.inflate(R.layout.dialog_color, null);
+                        final LobsterPicker lobsterPicker = (LobsterPicker) colorView.findViewById(R.id.lobsterPicker);
+                        LobsterShadeSlider shadeSlider = (LobsterShadeSlider) colorView.findViewById(R.id.shadeSlider);
+
+                        lobsterPicker.addDecorator(shadeSlider);
+                        lobsterPicker.setColorHistoryEnabled(true);
+                        lobsterPicker.setHistory(contentColor);
+                        lobsterPicker.setColor(contentColor);
+
+                        new AlertDialog.Builder(getContext())
+                                .setView(colorView)
+                                .setTitle("Choose Color")
+                                .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        contentColor = lobsterPicker.getColor();
+                                        dialog.getEdit().setTextColor(contentColor);
+                                    }
+                                })
+                                .setNegativeButton("CLOSE", null)
+                                .show();
+                    }
+
+                });
         dialog.setNegativeButton("取消", new View.OnClickListener() {
 
             @Override
@@ -218,15 +288,47 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
     private void insertContent(int size, final int color, final ContentType type) {
         final long tag = System.currentTimeMillis();//使用当前的时间做标记----标记的作用就是要知道哪条是哪条,删除的时候好操作
         final MyText tvContent = new MyText(getContext());
+
         /**
          *初始化修改对话框--------之所以写在这里 是因为要对象序列化--局部有效原则----如果弄成全局的,那么tvContent永远是最新一个--删除就会出错哦
          */
         final InputDialog updateDialog = new InputDialog(getContext());
+        updateDialog.getEdit().setTextColor(contentColor);
         updateDialog.setNegativeButton("取消", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateDialog.dismiss();
-                updateDialog.clearText();
+               updateDialog.dismiss();
+               updateDialog.clearText();
+            }
+        });
+
+        updateDialog.setColorButton("颜色", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View colorView = inflater.inflate(R.layout.dialog_color, null);
+                final LobsterPicker lobsterPicker = (LobsterPicker) colorView.findViewById(R.id.lobsterPicker);
+                LobsterShadeSlider shadeSlider = (LobsterShadeSlider) colorView.findViewById(R.id.shadeSlider);
+
+                lobsterPicker.addDecorator(shadeSlider);
+                lobsterPicker.setColorHistoryEnabled(true);
+                lobsterPicker.setHistory(contentColor);
+                lobsterPicker.setColor(contentColor);
+
+                new AlertDialog.Builder(getContext())
+                        .setView(colorView)
+                        .setTitle("Choose Color")
+                        .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                contentColor = lobsterPicker.getColor();
+                                updateDialog.getEdit().setTextColor(contentColor);
+                                tvContent.setTextColor(contentColor);
+                            }
+                        })
+                        .setNegativeButton("CLOSE", null)
+                        .show();
             }
         });
         updateDialog.setPositiveButton("确定", new View.OnClickListener() {
@@ -253,17 +355,19 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
         });
 
         tvContent.setTextSize(size);
-        tvContent.setTextColor(color);
-        /**
-         * 单击就修改
-         */
-        tvContent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateDialog.show(ContentType.CONTENT);
-                updateDialog.setText(tvContent.getText().toString().replace("    ", ""));
-            }
-        });
+        tvContent.setTextColor(contentColor);
+        pos_left = tvContent.getLeft();
+        pos_top = tvContent.getTop();
+//        /**
+//         * 单击就修改
+//         */
+//        tvContent.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                updateDialog.show(ContentType.CONTENT);
+//                updateDialog.setText(tvContent.getText().toString().replace("    ", ""));
+//            }
+//        });
         /**
          * 长按就删除
          */
@@ -289,7 +393,13 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
             @Override
             public void handleMessage(Message msg) {
                 if (count == 1) {
-
+                    if(Math.abs(tvContent.getLeft()-pos_left)<5&&Math.abs(tvContent.getTop()-pos_top)<5) {// 允许单击抖动
+                        updateDialog.show(ContentType.CONTENT);
+                        updateDialog.setText(tvContent.getText().toString().replace("    ", ""));
+                    }else{
+                        pos_left = tvContent.getLeft();
+                        pos_top = tvContent.getTop();
+                    }
                 } else if (count > 1) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("删除");
@@ -538,4 +648,6 @@ public class MyEditClass extends Fragment implements View.OnClickListener{
             }
         }
     }
+
+
 }

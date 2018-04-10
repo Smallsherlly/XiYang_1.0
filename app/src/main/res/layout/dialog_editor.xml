@@ -34,6 +34,20 @@
             android:text="取消" />
 
         <TextView
+            android:id="@+id/tv_dialog_editor_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="2dp"
+            android:background="@drawable/shape_dialog_editor_ok"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:text="颜色"
+            android:textColor="#FFF" />
+
+        <TextView
             android:id="@+id/tv_dialog_editor_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
