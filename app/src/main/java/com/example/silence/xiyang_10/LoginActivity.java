@@ -19,9 +19,9 @@ import com.stephentuso.welcome.WelcomeHelper;
  * Created by Silence on 2018/3/16.
  */
 
-public class LoginActivity extends AppCompatActivity {
-    private EditText username;
-    private EditText password;
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+    private EditText edt_username;
+    private EditText edt_password;
     private Button go;
     private CardView cv;
     private FloatingActionButton fab;
@@ -32,47 +32,74 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initView();
-        setListener();
+        //setListener();
+        go.setOnClickListener(this);
+        fab.setOnClickListener(this);
         welcomeScreen = new WelcomeHelper(this, MyWelcomeActivity.class);
         welcomeScreen.show(savedInstanceState);
     }
 
     private void initView() {
-        username = findViewById(R.id.et_username);
-        password = findViewById(R.id.et_password);
+        edt_username = findViewById(R.id.et_username);
+        edt_password = findViewById(R.id.et_password);
         go = findViewById(R.id.bt_go);
-        cv = findViewById(R.id.cv);
         fab = findViewById(R.id.fab);
     }
 
-    private void setListener() {
-        go.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        String username=edt_username.getText().toString();
+        String password=edt_password.getText().toString();
+
+        switch(v.getId()){
+            case R.id.bt_go:
+                doget(username,password);
+                break;
+            case R.id.fab:
+                reget();
+        }
+    }
+    private void doget(final String username, final String password) {
+
+
+        new Thread(new Runnable() {
+
             @Override
-            public void onClick(View view) {
+            public void run() {
                 Explode explode = new Explode();
                 explode.setDuration(500);
 
                 getWindow().setExitTransition(explode);
                 getWindow().setEnterTransition(explode);
-              //  if(username.getText().toString().equals("silence")&&password.getText().toString().equals("123456")){
-                    ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);
-                    Intent i2 = new Intent(LoginActivity.this,MainActivity.class);
-                    startActivity(i2, oc2.toBundle());
-               // }else {
-                    Toast.makeText(LoginActivity.this, "账号或密码错误!", Toast.LENGTH_SHORT).show();
-                //}
+                final String state=NetUilts.loginOfGet(username, password);
+
+                runOnUiThread(new Runnable() {//执行任务在主线程中
+                    @Override
+                    public void run() {//就是在主线程中操作
+                        if(state.equals("登录成功")){
+                            Toast.makeText(LoginActivity.this, state, Toast.LENGTH_SHORT).show();
+                            ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);
+                            Intent i2 = new Intent(LoginActivity.this,MainActivity.class);
+                            startActivity(i2, oc2.toBundle());
+                        }else{
+                            Toast.makeText(LoginActivity.this, "账号或密码错误!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
-        });
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getWindow().setExitTransition(null);
-                getWindow().setEnterTransition(null);
-                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(LoginActivity.this, fab, fab.getTransitionName());
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class), options.toBundle());
-            }
-        });
+        }).start();
+
     }
+
+    private void reget() {
+
+        getWindow().setExitTransition(null);
+        getWindow().setEnterTransition(null);
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(LoginActivity.this, fab, fab.getTransitionName());
+        startActivity(new Intent(LoginActivity.this, RegisterActivity.class), options.toBundle());
+    }
+
+
 
     @Override
     protected void onRestart() {

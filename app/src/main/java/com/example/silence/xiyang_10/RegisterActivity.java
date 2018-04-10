@@ -15,10 +15,16 @@ import android.transition.TransitionInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class RegisterActivity extends AppCompatActivity {
-
+    private EditText edt_username;
+    private EditText edt_password;
+    private EditText edt_repassword;
     private FloatingActionButton fab;
+    private Button go;
     private CardView cvAdd;
 
     @Override
@@ -33,11 +39,40 @@ public class RegisterActivity extends AppCompatActivity {
                 animateRevealClose();
             }
         });
+        go.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username=edt_username.getText().toString();
+                String password=edt_password.getText().toString();
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        final String state=NetUilts.registerOfGet(username, password);
+
+                        runOnUiThread(new Runnable() {//执行任务在主线程中
+                            @Override
+                            public void run() {//就是在主线程中操作
+
+                                if(state.equals("注册成功")){
+                                    animateRevealClose();
+                                }
+                                Toast.makeText(RegisterActivity.this, state, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
     }
 
     private void initView() {
-        fab = findViewById(R.id.fab);
+        edt_username = findViewById(R.id.et_username);
+        edt_password = findViewById(R.id.et_password);
+        edt_repassword = findViewById(R.id.et_repeatpassword);
         cvAdd = findViewById(R.id.cv_add);
+        fab = findViewById(R.id.fab);
+        go = findViewById(R.id.bt_go);
     }
 
     private void ShowEnterAnimation() {

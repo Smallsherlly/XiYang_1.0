@@ -25,6 +25,10 @@ android {
 
 dependencies {
     //新增库
+    //implementation 'com.github.kizitonwose.colorpreference:support:1.0.6'
+    api("com.github.kizitonwose.colorpreference:support:1.0.6"){
+        exclude group:'com.android.support'
+    }
     compile 'com.github.federicoiosue:Omni-Notes-Commons:1.2.0'
     compile 'be.billington.calendar.recurrencepicker:library:1.1.1'
     implementation 'com.jakewharton:butterknife:8.8.1'
