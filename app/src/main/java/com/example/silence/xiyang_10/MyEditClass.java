@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,6 +14,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -20,6 +23,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -42,6 +46,9 @@ import com.example.silence.xiyang_10.RichEditor.InputDialog;
 import com.example.silence.xiyang_10.RichEditor.MRichEditor;
 import com.example.silence.xiyang_10.RichEditor.MyText;
 import com.example.silence.xiyang_10.RichEditor.TakePhotoUtils;
+import com.example.silence.xiyang_10.models.Attachment;
+import com.example.silence.xiyang_10.models.ONStyle;
+import com.example.silence.xiyang_10.models.StorageHelper;
 import com.kizitonwose.colorpreference.ColorDialog;
 import com.kizitonwose.colorpreference.ColorPreference;
 import com.kizitonwose.colorpreference.ColorShape;
@@ -91,6 +98,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
     private float preScale = 1;// 默认前一次缩放比例为1
     private int pos_left;
     private int pos_top;
+    private Uri attachmentUri;
 
     @Override
     public void onColorSelected(int newColor, String tag) {
@@ -174,6 +182,37 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
 
     }
 
+    private void takeSketch() {
+        MainActivity mainActivity = (MainActivity)getActivity();
+        File f = StorageHelper.createNewAttachmentFile(mainActivity, ".png");
+        if (f == null) {
+            //mainActivity.showMessage("error", ONStyle.ALERT);
+            return;
+        }
+        attachmentUri = Uri.fromFile(f);
+
+        // Forces portrait orientation to this fragment only
+        mainActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        // Fragments replacing
+        FragmentTransaction transaction = mainActivity.getSupportFragmentManager().beginTransaction();
+        //mainActivity.animateTransition(transaction, mainActivity.TRANSITION_HORIZONTAL);
+        //SketchFragment mSketchFragment = new SketchFragment();
+        Bundle b = new Bundle();
+        b.putParcelable(MediaStore.EXTRA_OUTPUT, attachmentUri);
+//        if (attachment != null) {
+//            b.putParcelable("base", attachment.getUri());
+//        }
+//        mSketchFragment.setArguments(b);
+//        transaction.replace(R.id.ViewPager01,mSketchFragment,"Sketch")
+//                .addToBackStack("Sketch").commit();
+        SketchFragment fragment = (SketchFragment) getActivity().getSupportFragmentManager().findFragmentByTag(
+                "Sketch");// 通过manager获取碎片实例
+        fragment.setArguments(b);
+        ((MainActivity) getActivity()).getViewPager().setCurrentItem(2);
+    }
+
+
     /**
      * 初始化监听器
      */
@@ -195,27 +234,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
         tvchangecolor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                View colorView = inflater.inflate(R.layout.dialog_color, null);
-                final LobsterPicker lobsterPicker = (LobsterPicker) colorView.findViewById(R.id.lobsterPicker);
-                LobsterShadeSlider shadeSlider = (LobsterShadeSlider) colorView.findViewById(R.id.shadeSlider);
-
-                lobsterPicker.addDecorator(shadeSlider);
-                lobsterPicker.setColorHistoryEnabled(true);
-                lobsterPicker.setHistory(contentColor);
-                lobsterPicker.setColor(contentColor);
-
-                new AlertDialog.Builder(getActivity())
-                        .setView(colorView)
-                        .setTitle("Choose Color")
-                        .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                contentColor = lobsterPicker.getColor();
-                            }
-                        })
-                        .setNegativeButton("CLOSE", null)
-                        .show();
+                takeSketch();
             }
         });
 

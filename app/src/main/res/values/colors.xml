@@ -28,6 +28,11 @@
         <item>@color/color_3</item>
     </array>
 
+    <!-- toasts -->
+    <color name="confirm">#303F9F</color>
+    <color name="warning">#ff9800</color>
+    <color name="alert">#e51c23</color>
+    <color name="info">#ee33B5E5</color>
 
     <string-array name="color_choices">
         <item>#f44336</item>

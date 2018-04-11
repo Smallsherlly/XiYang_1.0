@@ -25,6 +25,15 @@ android {
 
 dependencies {
     //新增库
+    //compile 'com.android.support:support-v13:+'
+    compile 'de.keyboardsurfer.android.widget:crouton:1.8.4@aar'
+    compile ('com.github.federicoiosue:checklistview:3.2.1') {
+        transitive=false
+    }
+    compile('com.github.afollestad.material-dialogs:core:0.8.5.6@aar') {
+        transitive = true
+    }
+    compile 'com.larswerkman:HoloColorPicker:1.4'
     compile 'com.github.731942771:NumberPickerDialog:1.0'
     compile 'com.larswerkman:lobsterpicker:1.0.1'
     //implementation 'com.github.kizitonwose.colorpreference:support:1.0.6'

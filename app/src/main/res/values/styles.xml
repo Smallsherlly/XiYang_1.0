@@ -25,9 +25,23 @@
         <item name="android:windowIsTranslucent">true</item>
 
     </style>
+    <style name="Text" parent="android:TextAppearance.Holo.Medium.Inverse">
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textColorHint">@color/text_color_lighter</item>
+        <item name="android:textCursorDrawable">@null</item>
+    </style>
+    <style name="Text.Small">
+        <item name="android:textSize">11sp</item>
+    </style>
+
     <style name="TextLabel" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorControlActivated">#FFCC00</item>
+    </style>
+
+    <style name="crouton_text">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!-- 自定义仿IOS的ActionSheet底部Dialog的样式 ，有模糊效果 -->

@@ -1,13 +1,17 @@
 package com.example.silence.xiyang_10;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Explode;
@@ -25,6 +29,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import de.keyboardsurfer.android.widget.crouton.Style;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 
 /**
@@ -34,8 +39,8 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 
 public class MainActivity extends BaseActivity implements BottomNavigation.OnMenuItemSelectionListener{
 
-
-
+    public Uri sketchUri;
+    FragmentManager mFragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,9 +70,36 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
 
         initializeBottomNavigation(savedInstanceState);// 初始化底部导航栏
         initializeUI(savedInstanceState);// 初始化界面
-
+        mFragmentManager = getSupportFragmentManager();
     }
 
+    public void onBackPressed() {
+
+        Fragment f;
+        // SketchFragment
+        f = checkFragmentInstance("Sketch", SketchFragment.class);
+        if (f != null) {
+            ((SketchFragment) f).save();
+
+
+            // Removes forced portrait orientation for this fragment
+            setRequestedOrientation(
+                    ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+
+            mFragmentManager.popBackStack();
+            return;
+        }
+    }
+    private Fragment checkFragmentInstance(String tag, Object instanceClass) {
+        Fragment result = null;
+        if (mFragmentManager != null) {
+            Fragment fragment = mFragmentManager.findFragmentByTag(tag);
+            if (instanceClass.equals(fragment.getClass())) {
+                result = fragment;
+            }
+        }
+        return result;
+    }
 
 
     private void initializeUI(Bundle savedInstanceState) {
@@ -77,7 +109,7 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
             getBottomNavigation().setOnMenuChangedListener(new BottomNavigation.OnMenuChangedListener() {
                 @Override
                 public void onMenuChanged(final BottomNavigation parent) {
-                    viewPager.setScanScroll(false);
+                    viewPager.setScanScroll(false);// 禁止左右滑动切换页面
                     viewPager.setAdapter(new ViewPagerAdapter(MainActivity.this, getBottomNavigation().getMenuItemCount()));
                     viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                         @Override
@@ -86,7 +118,7 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
                         }
 
                         @Override
-                        public void onPageSelected(final int position) {
+                        public void onPageSelected(final int position) {// 底部导航图标随页面切换而改变，禁止滑动下无效
                             if (getBottomNavigation().getSelectedIndex() != position) {
                                 getBottomNavigation().setSelectedIndex(position, false);
                             }
@@ -133,7 +165,7 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
 
     }
 
-    public static class ViewPagerAdapter extends FragmentPagerAdapter {
+    public  class ViewPagerAdapter extends FragmentPagerAdapter {
 
         private final int mCount;
 
@@ -144,12 +176,19 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
 
         @Override
         public Fragment getItem(final int position) {
+
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+                    .beginTransaction();
             if (position == 0)
                 return new MainPageFragment();
             else if(position == 3)
                 return new MineFragment();
-            else if(position == 2)
-                return new SearchViewFragment();
+            else if(position == 2){
+                SketchFragment sketchFragment = new SketchFragment();
+                fragmentTransaction.add(sketchFragment, "Sketch").commit();
+                return new SketchFragment();
+            }
+
             else
                 return new MyEditClass();
         }
