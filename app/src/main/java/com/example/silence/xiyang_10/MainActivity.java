@@ -1,12 +1,16 @@
 package com.example.silence.xiyang_10;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.IdRes;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -15,7 +19,9 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Explode;
+import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -27,6 +33,9 @@ import com.bigkoo.convenientbanner.listener.OnItemClickListener;
 import com.example.silence.xiyang_10.runtimepermissions.PermissionsManager;
 import com.example.silence.xiyang_10.runtimepermissions.PermissionsResultAction;
 import com.stephentuso.welcome.WelcomeHelper;
+import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.UCropFragment;
+import com.yalantis.ucrop.UCropFragmentCallback;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -40,10 +49,24 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
  * 这是主活动
  */
 
-public class MainActivity extends BaseActivity implements BottomNavigation.OnMenuItemSelectionListener{
+public class MainActivity extends BaseActivity implements BottomNavigation.OnMenuItemSelectionListener,UCropFragmentCallback {
 
     public Uri sketchUri;
     FragmentManager mFragmentManager;
+
+    @Override
+    public void loadingProgress(boolean showLoader) {
+
+    }
+    @Override
+    public void onCropFinish(UCropFragment.UCropResult result) {
+
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -55,6 +56,8 @@ import com.kizitonwose.colorpreference.ColorPreference;
 import com.kizitonwose.colorpreference.ColorShape;
 import com.larswerkman.lobsterpicker.LobsterPicker;
 import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider;
+import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.UCropActivity;
 
 import java.io.File;
 import java.util.List;
@@ -149,7 +152,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         }
         editor = (RelativeLayout) view.findViewById(R.id.et_custom_editor);
         tvInsertContent = (TextView) view.findViewById(R.id.tv_custom_edit_insert_content);
-        tvInsertTitle = (TextView) view.findViewById(R.id.tv_custom_edit_insert_title);
+        //tvInsertTitle = (TextView) view.findViewById(R.id.tv_custom_edit_insert_title);
         tvchangecolor = (TextView) view.findViewById(R.id.tv_custom_edit_change_content);
 
         initInputDialog();//初始化输入对话框
@@ -247,12 +250,12 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
                 dialog.show(ContentType.CONTENT);//弹出输入内容的对话框
             }
         });
-        tvInsertTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.show(ContentType.TITLE);//弹出输入标题的对话框
-            }
-        });
+//        tvInsertTitle.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dialog.show(ContentType.TITLE);//弹出输入标题的对话框
+//            }
+//        });
         tvchangecolor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -276,9 +279,9 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
                     case CONTENT:
                         insertContent(contentSize, contentColor, ContentType.CONTENT);
                         break;
-                    case TITLE:
-                        insertContent(titleSize, titleColor, ContentType.TITLE);
-                        break;
+//                    case TITLE:
+//                        insertContent(titleSize, titleColor, ContentType.TITLE);
+//                        break;
                     case IMG:
                         break;
                 }
@@ -516,36 +519,28 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         editorList.add(new EditorBean(type, contentStr, tag));//添加到编辑器列表中
     }
 
-//    @Override
-//    public void onClick(View v){
-//        long secondTime = System.currentTimeMillis();
-//        // 判断每次点击的事件间隔是否符合连击的有效范围
-//        // 不符合时，有可能是连击的开始，否则就仅仅是单击
-//        if (secondTime - firstTime <= interval) {
-//            ++count;
-//        } else {
-//            count = 1;
-//        }
-//        // 延迟，用于判断用户的点击操作是否结束
-//        delay();
-//        firstTime = secondTime;
-//
-//    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (resultCode != Activity.RESULT_CANCELED) {
             switch (requestCode) {
                 // 如果是直接从相册获取
                 case 1:
-                    //startPhotoZoom(data.getData());
-                    insertImg(data.getData());
+
+                    File file = new File(getActivity().getCacheDir(), "pp.png");
+                  UCrop.of(data.getData(), Uri.fromFile(file)).start(getContext(),MyEditClass.this);
+                    //insertImg(((MainActivity)getActivity()).sketchUri);
+                    insertImg(Uri.fromFile(file));
+
                     break;
                 // 如果是调用相机拍照时
                 case 2:
+                    Toast.makeText(getActivity(),"takephoto",Toast.LENGTH_SHORT).show();
                     File temp = new File(Environment.getExternalStorageDirectory()
                             + "/xiaoma.jpg");
-                    //startPhotoZoom(Uri.fromFile(temp));
+                    UCrop.of(data.getData(), Uri.fromFile(new File(getActivity().getCacheDir(), "pp.png"))).start(getContext(),MyEditClass.this);
                     insertImg(data);
                     break;
                 // 取得裁剪后的图片
@@ -558,7 +553,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
                     break;
 
             }
-            super.onActivityResult(requestCode, resultCode, data);
+
         }
     }
 
@@ -570,15 +565,20 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
     public void startPhotoZoom(Uri uri) {
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
+        Bitmap bitmap = BitmapFactory.decodeFile(uri.getPath());
+        int height = bitmap.getHeight();
+        int width = bitmap.getWidth();
         //下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
         intent.putExtra("crop", "true");
         // aspectX aspectY 是宽高的比例
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
+        intent.putExtra("aspectX", 0.1);
+        intent.putExtra("aspectY", 0.1);
         // outputX outputY 是裁剪图片宽高
-        intent.putExtra("outputX", 150);
-        intent.putExtra("outputY", 150);
+        intent.putExtra("ouputX", 300);
+        intent.putExtra("outputY",300);
+
         intent.putExtra("return-data", true);
+        intent.putExtra("scale", true);
         startActivityForResult(intent, 3);
     }
 
@@ -592,8 +592,10 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         if (extras != null) {
             Bitmap photo = extras.getParcelable("data");
             //图片路径
-            urlpath = FileUtilcll.saveFile(getActivity(), "temphead.jpg", photo);
+           // urlpath = FileUtilcll.saveFile(getActivity(), "temphead.jpg", photo);
             System.out.println("----------路径----------" + urlpath);
+            Uri uri = Uri.parse(urlpath);
+            insertImg(uri);
         }
     }
     /**

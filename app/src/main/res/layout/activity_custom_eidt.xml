@@ -13,15 +13,15 @@
         android:orientation="horizontal"
         android:padding="2dp">
 
-        <TextView
-            android:id="@+id/tv_custom_edit_insert_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:drawableTop="@mipmap/titile"
-            android:gravity="center"
-            android:text="标题" />
+        <!--<TextView-->
+            <!--android:id="@+id/tv_custom_edit_insert_title"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:clickable="true"-->
+            <!--android:drawableTop="@mipmap/titile"-->
+            <!--android:gravity="center"-->
+            <!--android:text="标题" />-->
 
         <TextView
             android:id="@+id/tv_custom_edit_insert_content"
@@ -31,7 +31,7 @@
             android:clickable="true"
             android:drawableTop="@mipmap/content"
             android:gravity="center"
-            android:text="内容" />
+            android:text="文字" />
         <TextView
             android:id="@+id/tv_custom_edit_change_content"
             android:layout_width="wrap_content"
@@ -40,7 +40,7 @@
             android:clickable="true"
             android:drawableTop="@drawable/ic_color_lens"
             android:gravity="center"
-            android:text="颜色" />
+            android:text="涂鸦" />
 
         <TextView
             android:id="@+id/tv_custom_edit_insert_img"
@@ -74,6 +74,7 @@
         android:layout_above="@id/ll_editor_toolbar"
         android:layout_margin="2dp">
     </ViewStub>
+
 
 
 

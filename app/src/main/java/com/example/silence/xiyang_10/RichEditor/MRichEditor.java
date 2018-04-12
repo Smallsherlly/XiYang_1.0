@@ -96,7 +96,7 @@ public class MRichEditor extends RelativeLayout {
         View view = LayoutInflater.from(context).inflate(R.layout.activity_custom_eidt, this);
         editor = (RelativeLayout) view.findViewById(R.id.et_custom_editor);
         tvInsertContent = (TextView) view.findViewById(R.id.tv_custom_edit_insert_content);
-        tvInsertTitle = (TextView) view.findViewById(R.id.tv_custom_edit_insert_title);
+        //tvInsertTitle = (TextView) view.findViewById(R.id.tv_custom_edit_insert_title);
         tvInsertImg = (TextView) view.findViewById(R.id.tv_custom_edit_insert_img);
         tvPreview = (TextView) view.findViewById(R.id.tv_custom_edit_insert_preview);
     }
@@ -113,12 +113,12 @@ public class MRichEditor extends RelativeLayout {
                 dialog.show(ContentType.CONTENT);//弹出输入内容的对话框
             }
         });
-        tvInsertTitle.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.show(ContentType.TITLE);//弹出输入标题的对话框
-            }
-        });
+//        tvInsertTitle.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dialog.show(ContentType.TITLE);//弹出输入标题的对话框
+//            }
+//        });
 
     }
 
@@ -134,9 +134,9 @@ public class MRichEditor extends RelativeLayout {
                     case CONTENT:
                         insertContent(contentSize, contentColor, ContentType.CONTENT);
                         break;
-                    case TITLE:
-                        insertContent(titleSize, titleColor, ContentType.TITLE);
-                        break;
+//                    case TITLE:
+//                        insertContent(titleSize, titleColor, ContentType.TITLE);
+//                        break;
                     case IMG:
                         break;
                 }

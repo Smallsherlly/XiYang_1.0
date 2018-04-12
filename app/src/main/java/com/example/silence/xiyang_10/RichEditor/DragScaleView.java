@@ -212,7 +212,7 @@ public class DragScaleView extends AppCompatImageView {
         if (x < 40 && bottom - top - y < 40) {
             return LEFT_BOTTOM;
         }
-        if (right - left - x < 40 && bottom - top - y < 40) {
+        if (right - left - x < 60 && bottom - top - y < 60) {
             return RIGHT_BOTTOM;
         }
         if (x < 40) {
