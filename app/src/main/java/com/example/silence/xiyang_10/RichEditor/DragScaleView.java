@@ -85,7 +85,7 @@ public class DragScaleView extends AppCompatImageView {
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                getParent().requestDisallowInterceptTouchEvent(true);
+                //getParent().requestDisallowInterceptTouchEvent(true);
                 oriLeft = getLeft();
                 oriRight = getRight();
                 oriTop = getTop();
@@ -99,7 +99,7 @@ public class DragScaleView extends AppCompatImageView {
                 break;
             case MotionEvent.ACTION_MOVE:
 
-                getParent().requestDisallowInterceptTouchEvent(true);
+                //getParent().requestDisallowInterceptTouchEvent(true);
 
 
                 int tempRawX = (int)event.getRawX();

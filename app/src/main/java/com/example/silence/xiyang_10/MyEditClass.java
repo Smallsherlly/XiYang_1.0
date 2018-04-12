@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -68,7 +69,7 @@ import butterknife.BindView;
  * Created by Silence on 2018/3/27.
  */
 
-public class MyEditClass extends Fragment implements View.OnClickListener,ColorDialog.OnColorSelectedListener{
+public class MyEditClass extends Fragment implements ColorDialog.OnColorSelectedListener{
     CoordinatorLayout mCoordinatorLayout;
     ViewGroup mRoot;
     private int imgQuality = 20;//保存图片的质量,默认为20%（即压缩率为80%）
@@ -81,7 +82,8 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
     private int count = 0;
     private TimerTask task;
     private long interval = 500;
-    private Handler handler;
+    private Handler handler_text;
+    private Handler handler_img;
     private Timer delayTimer;
     private InputDialog dialog;//内容、标题输入框
     private static int contentSize = 16;//内容字体大小
@@ -98,17 +100,33 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
     private float preScale = 1;// 默认前一次缩放比例为1
     private int pos_left;
     private int pos_top;
+    private int img_pos_left;
+    private int img_pos_top;
     private Uri attachmentUri;
+    private View view;
 
     @Override
     public void onColorSelected(int newColor, String tag) {
 
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        init();// 在onCreate中初始化，可以防止fragment销毁后恢复时在onCreateView中重新初始化，导致视图丢失
+    }
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_handedit, container, false);// 将布局加载到碎片实例中
+        Uri uri=((MainActivity)getActivity()).sketchUri;
+        if(uri!=null){
+            insertImg(uri);
+            ((MainActivity)getActivity()).sketchUri = null;
+        }
+        return view;
+        // inflater.inflate(R.layout.fragment_handedit, container, false);// 将布局加载到碎片实例中
     }
     @Override
     public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
@@ -116,23 +134,23 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
 
     }// @Nullable  意味着可以传入null值
 
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mRoot = (ViewGroup) getView().findViewById(R.id.CoordinatorLayout01);
+
+    public void init() {
+        view = getActivity().getLayoutInflater().inflate(R.layout.fragment_handedit,null);
+        mRoot = (ViewGroup) view.findViewById(R.id.CoordinatorLayout01);
         dragScaleView = new DragScaleView(getActivity());
-        tvInsertImg = (TextView) getView().findViewById(R.id.tv_custom_edit_insert_img);
-        ViewStub myViewStub = (ViewStub)getView().findViewById(R.id.myViewStub);
+        tvInsertImg = (TextView) view.findViewById(R.id.tv_custom_edit_insert_img);
+        ViewStub myViewStub = (ViewStub)view.findViewById(R.id.myViewStub);
         myViewStub.setLayoutResource(R.layout.myricheditor);
         if (myViewStub != null) {
             myViewStub.inflate();
             //或者是下面的形式加载
             //myViewStub.setVisibility(View.VISIBLE);
         }
-        editor = (RelativeLayout) getView().findViewById(R.id.et_custom_editor);
-        tvInsertContent = (TextView) getView().findViewById(R.id.tv_custom_edit_insert_content);
-        tvInsertTitle = (TextView) getView().findViewById(R.id.tv_custom_edit_insert_title);
-        tvchangecolor = (TextView) getView().findViewById(R.id.tv_custom_edit_change_content);
+        editor = (RelativeLayout) view.findViewById(R.id.et_custom_editor);
+        tvInsertContent = (TextView) view.findViewById(R.id.tv_custom_edit_insert_content);
+        tvInsertTitle = (TextView) view.findViewById(R.id.tv_custom_edit_insert_title);
+        tvchangecolor = (TextView) view.findViewById(R.id.tv_custom_edit_change_content);
 
         initInputDialog();//初始化输入对话框
         initListener();//初始化监听器
@@ -187,12 +205,14 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
         File f = StorageHelper.createNewAttachmentFile(mainActivity, ".png");
         if (f == null) {
             //mainActivity.showMessage("error", ONStyle.ALERT);
+            Toast.makeText(getContext(),"wrong path",Toast.LENGTH_SHORT).show();
             return;
         }
-        attachmentUri = Uri.fromFile(f);
 
+        attachmentUri = Uri.fromFile(f);
+        Toast.makeText(getContext(),attachmentUri.toString(),Toast.LENGTH_SHORT).show();
         // Forces portrait orientation to this fragment only
-        mainActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        //mainActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // Fragments replacing
         FragmentTransaction transaction = mainActivity.getSupportFragmentManager().beginTransaction();
@@ -206,10 +226,12 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
 //        mSketchFragment.setArguments(b);
 //        transaction.replace(R.id.ViewPager01,mSketchFragment,"Sketch")
 //                .addToBackStack("Sketch").commit();
+        ((MainActivity) getActivity()).getViewPager().setCurrentItem(4);
         SketchFragment fragment = (SketchFragment) getActivity().getSupportFragmentManager().findFragmentByTag(
-                "Sketch");// 通过manager获取碎片实例
-        fragment.setArguments(b);
-        ((MainActivity) getActivity()).getViewPager().setCurrentItem(2);
+                "android:switcher:"+R.id.ViewPager01+":4");// 通过manager获取碎片实例
+//        if(fragment!=null)
+           fragment.setArguments(b);
+
     }
 
 
@@ -331,6 +353,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
     private void insertContent(int size, final int color, final ContentType type) {
         final long tag = System.currentTimeMillis();//使用当前的时间做标记----标记的作用就是要知道哪条是哪条,删除的时候好操作
         final MyText tvContent = new MyText(getContext());
+        tvContent.setTag(tag);
 
         /**
          *初始化修改对话框--------之所以写在这里 是因为要对象序列化--局部有效原则----如果弄成全局的,那么tvContent永远是最新一个--删除就会出错哦
@@ -422,13 +445,14 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
 
         tvContent.setTextSize(contentSize);
         tvContent.setTextColor(contentColor);
-        pos_left = tvContent.getLeft();
-        pos_top = tvContent.getTop();
+
 
         /**
          * 长按就删除
          */
         tvContent.setOnClickListener(new View.OnClickListener() {
+            int left = tvContent.getLeft();
+            int top = tvContent.getTop();
             @Override
             public void onClick(View v) {
                 long secondTime = System.currentTimeMillis();
@@ -440,32 +464,32 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
                     count = 1;
                 }
                 // 延迟，用于判断用户的点击操作是否结束
-                delay();
+                delay(0,tag,left,top);
+                left = tvContent.getLeft();
+                top = tvContent.getTop();
                 firstTime = secondTime;
 
             }
         });
         // 点击事件结束后的事件处理
-        handler = new Handler() {
+        handler_text = new Handler() {
             @Override
             public void handleMessage(Message msg) {
+                TextView content = editor.findViewWithTag(msg.obj);
                 if (count == 1) {
-                    if(Math.abs(tvContent.getLeft()-pos_left)<5&&Math.abs(tvContent.getTop()-pos_top)<5) {// 允许单击抖动
+                    if(Math.abs(content.getLeft()-msg.arg1)<5&&Math.abs(content.getTop()-msg.arg2)<5) {// 允许单击抖动
                         updateDialog.show(ContentType.CONTENT);
-                        updateDialog.setText(tvContent.getText().toString().replace("    ", ""));
-                    }else{
-                        pos_left = tvContent.getLeft();
-                        pos_top = tvContent.getTop();
+                        updateDialog.setText(content.getText().toString().replace("    ", ""));
                     }
                 } else if (count > 1) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("删除");
                     builder.setIcon(R.mipmap.delete);
-                    builder.setMessage("您确定要删除  " + tvContent.getText().toString() + "  吗?");
+                    builder.setMessage("您确定要删除  " + content.getText().toString() + "  吗?");
                     builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            editor.removeView(tvContent);
+                            editor.removeView(content);
                             removeEditorBeanByTag(tag);
                         }
                     });
@@ -492,21 +516,21 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
         editorList.add(new EditorBean(type, contentStr, tag));//添加到编辑器列表中
     }
 
-    @Override
-    public void onClick(View v){
-        long secondTime = System.currentTimeMillis();
-        // 判断每次点击的事件间隔是否符合连击的有效范围
-        // 不符合时，有可能是连击的开始，否则就仅仅是单击
-        if (secondTime - firstTime <= interval) {
-            ++count;
-        } else {
-            count = 1;
-        }
-        // 延迟，用于判断用户的点击操作是否结束
-        delay();
-        firstTime = secondTime;
-
-    }
+//    @Override
+//    public void onClick(View v){
+//        long secondTime = System.currentTimeMillis();
+//        // 判断每次点击的事件间隔是否符合连击的有效范围
+//        // 不符合时，有可能是连击的开始，否则就仅仅是单击
+//        if (secondTime - firstTime <= interval) {
+//            ++count;
+//        } else {
+//            count = 1;
+//        }
+//        // 延迟，用于判断用户的点击操作是否结束
+//        delay();
+//        firstTime = secondTime;
+//
+//    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -603,10 +627,16 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
     public void insertImg(Uri bitmapUri) {
         final long tag = System.currentTimeMillis();//使用当前时间的毫秒值来标记当前内容，便于删除列表中的记录
         final DragScaleView imageView = new DragScaleView(getActivity());
+        imageView.setTag(tag);
         //处理点击事件（删除）
         imageView.setOnClickListener(new View.OnClickListener(){
+            int left= imageView.getLeft();
+            int top = imageView.getTop();
+
             @Override
             public void onClick(View v){
+
+                //imageView.requestFocus();
                 long secondTime = System.currentTimeMillis();
                 // 判断每次点击的事件间隔是否符合连击的有效范围
                 // 不符合时，有可能是连击的开始，否则就仅仅是单击
@@ -616,17 +646,30 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
                     count = 1;
                 }
                 // 延迟，用于判断用户的点击操作是否结束
-                delay();
+                delay(1,tag,left,top);
+                left= imageView.getLeft();
+                top = imageView.getTop();
                 firstTime = secondTime;
 
             }
         });
+
         // 点击事件结束后的事件处理
-        handler = new Handler() {
+        handler_img = new Handler() {
             @Override
             public void handleMessage(Message msg) {
+                ImageView imageV = editor.findViewWithTag(msg.obj);
                 if (count == 1) {
-
+                    if(Math.abs(imageV.getLeft()-msg.arg1)<5&&Math.abs(imageV.getTop()-msg.arg2)<5) {// 允许单击抖动
+                        if(imageV.getBackground()!=null){
+                            imageV.setBackgroundResource(0);
+                        }else{
+                            //Bitmap map = BitmapFactory.decodeResource(getContext().getResources(),R.drawable.shape_gray_square_bg);
+                            Drawable draw = getContext().getResources().getDrawable(R.drawable.shape_gray_square_bg);
+                            imageV.setBackground(draw);
+                            imageV.setPadding(1,1,1,1);
+                        }
+                    }
                 } else if (count > 1) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle("删除");
@@ -635,7 +678,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
                     builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            editor.removeView(imageView);//移除图片
+                            editor.removeView(imageV);//移除图片
                             removeEditorBeanByTag(tag);
                         }
                     });
@@ -653,8 +696,9 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
             }
         };
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);//为了便于预览格式，这里讲图片的高度固定为400dp了，不然图片太大整个页面都是图片，不便于浏览文字
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);//为了便于预览格式，这里讲图片的高度固定为400dp了，不然图片太大整个页面都是图片，不便于浏览文字
         imageView.setLayoutParams(params);
+        imageView.setFocusable(true);
         imageView.setClickable(true);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         /**
@@ -662,7 +706,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
          */
         String filePath = TakePhotoUtils.getRealFilePathByUri(getActivity(), bitmapUri);//图片的真实路径
         try {
-            filePath = TakePhotoUtils.saveFile(getActivity(), BitmapFactory.decodeFile(filePath), filePath, imgQuality);//压缩图片得到真实路径，imgQuality为图片的质量，按100制，默认图片质量20%（即压缩80%），现在主流手机使用20%最佳---平均下来150k左右
+            filePath = TakePhotoUtils.saveFile(getActivity(), BitmapFactory.decodeFile(filePath), filePath, 100);//压缩图片得到真实路径，imgQuality为图片的质量，按100制，默认图片质量20%（即压缩80%），现在主流手机使用20%最佳---平均下来150k左右
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -675,7 +719,7 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
         editorList.add(new EditorBean(ContentType.IMG, Uri.fromFile(new File(filePath)).toString(), tag));//添加到列表中
     }
     // 延迟时间是连击的时间间隔有效范围
-    private void delay() {
+    private void delay(int type,long index,int left,int top) {
         if (task != null)
             task.cancel();
 
@@ -684,8 +728,18 @@ public class MyEditClass extends Fragment implements View.OnClickListener,ColorD
             public void run() {
 
                 Message message = new Message();
+                message.arg1 = left;
+                message.arg2 = top;
+                message.obj = index;
                 // message.what = 0;
-                handler.sendMessage(message);
+                if(type == 1){
+                    handler_img.sendMessage(message);
+                }else if(type == 0){
+                    handler_text.sendMessage(message);
+                }
+
+
+
 
             }
         };

@@ -38,8 +38,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.larswerkman.holocolorpicker.ColorPicker;
@@ -228,14 +230,17 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 
             try {
                 Uri uri = getArguments().getParcelable(MediaStore.EXTRA_OUTPUT);
+                Toast.makeText(getContext(),uri.toString(),Toast.LENGTH_SHORT).show();
                 File bitmapFile = new File(uri.getPath());
                 FileOutputStream out = new FileOutputStream(bitmapFile);
                 bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
                 out.close();
+
                 if (bitmapFile.exists()) {
                     getMainActivity().sketchUri = uri;
                 } else {
                     //getActivity().showMessage(R.string.error, ONStyle.ALERT);
+                    Toast.makeText(getMainActivity(),"uri is null",Toast.LENGTH_SHORT).show();
                 }
 
             } catch (Exception e) {

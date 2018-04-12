@@ -16,6 +16,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Explode;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.ToxicBakery.viewpager.transforms.ABaseTransformer;
 import com.bigkoo.convenientbanner.ConvenientBanner;
@@ -77,23 +80,30 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
 
         Fragment f;
         // SketchFragment
-        f = checkFragmentInstance("Sketch", SketchFragment.class);
+        f = checkFragmentInstance(R.id.ViewPager01, SketchFragment.class);
         if (f != null) {
             ((SketchFragment) f).save();
 
 
             // Removes forced portrait orientation for this fragment
-            setRequestedOrientation(
-                    ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+//            setRequestedOrientation(
+//                    ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
             mFragmentManager.popBackStack();
+            getViewPager().setCurrentItem(1);
+
             return;
         }
+        //super.onBackPressed();
     }
-    private Fragment checkFragmentInstance(String tag, Object instanceClass) {
+    private Fragment checkFragmentInstance(int id, Object instanceClass) {
         Fragment result = null;
+        Fragment fragment = null;
         if (mFragmentManager != null) {
-            Fragment fragment = mFragmentManager.findFragmentByTag(tag);
+          //  fragment =  getSupportFragmentManager().findFragmentById(id);// 通过manager获取碎片实例
+            fragment =  getSupportFragmentManager().findFragmentByTag(
+                    "android:switcher:"+R.id.ViewPager01+":"+getViewPager().getCurrentItem());// 通过manager获取碎片实例
+
             if (instanceClass.equals(fragment.getClass())) {
                 result = fragment;
             }
@@ -110,7 +120,7 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
                 @Override
                 public void onMenuChanged(final BottomNavigation parent) {
                     viewPager.setScanScroll(false);// 禁止左右滑动切换页面
-                    viewPager.setAdapter(new ViewPagerAdapter(MainActivity.this, getBottomNavigation().getMenuItemCount()));
+                    viewPager.setAdapter(new ViewPagerAdapter(MainActivity.this, getBottomNavigation().getMenuItemCount()+1));
                     viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                         @Override
                         public void onPageScrolled(
@@ -176,21 +186,16 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
 
         @Override
         public Fragment getItem(final int position) {
-
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-                    .beginTransaction();
             if (position == 0)
                 return new MainPageFragment();
             else if(position == 3)
                 return new MineFragment();
             else if(position == 2){
-                SketchFragment sketchFragment = new SketchFragment();
-                fragmentTransaction.add(sketchFragment, "Sketch").commit();
-                return new SketchFragment();
-            }
-
+                return new SearchViewFragment();
+            }else if(position == 1)
+                return  new MyEditClass();
             else
-                return new MyEditClass();
+                return new SketchFragment();
         }
 
         @Override

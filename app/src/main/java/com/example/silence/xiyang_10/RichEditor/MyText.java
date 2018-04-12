@@ -64,6 +64,7 @@ public class MyText extends AppCompatTextView {
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                //getParent().requestDisallowInterceptTouchEvent(true);
                 oriLeft = getLeft();
                 oriRight = getRight();
                 oriTop = getTop();
@@ -76,7 +77,7 @@ public class MyText extends AppCompatTextView {
             case MotionEvent.ACTION_UP:
                 break;
             case MotionEvent.ACTION_MOVE:
-                getParent().requestDisallowInterceptTouchEvent(true);
+                //getParent().requestDisallowInterceptTouchEvent(true);
                 int tempRawX = (int) event.getRawX();
                 int tempRawY = (int) event.getRawY();
 
