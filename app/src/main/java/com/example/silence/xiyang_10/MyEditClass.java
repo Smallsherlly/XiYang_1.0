@@ -213,7 +213,6 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         }
 
         attachmentUri = Uri.fromFile(f);
-        Toast.makeText(getContext(),attachmentUri.toString(),Toast.LENGTH_SHORT).show();
         // Forces portrait orientation to this fragment only
         //mainActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -528,12 +527,9 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
             switch (requestCode) {
                 // 如果是直接从相册获取
                 case 1:
+                    File file = StorageHelper.createNewAttachmentFile((MainActivity)getActivity(), ".png");
 
-                    File file = new File(getActivity().getCacheDir(), "pp.png");
-                  UCrop.of(data.getData(), Uri.fromFile(file)).start(getContext(),MyEditClass.this);
-                    //insertImg(((MainActivity)getActivity()).sketchUri);
-                    insertImg(Uri.fromFile(file));
-
+                    UCrop.of(data.getData(), Uri.fromFile(file)).start(getContext(),MyEditClass.this);
                     break;
                 // 如果是调用相机拍照时
                 case 2:
@@ -548,6 +544,10 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
                     if (data != null) {
                         setPicToView(data);
                     }
+                    break;
+                case 69:
+                    Uri resultUri = UCrop.getOutput(data);
+                    insertImg(resultUri);
                     break;
                 default:
                     break;

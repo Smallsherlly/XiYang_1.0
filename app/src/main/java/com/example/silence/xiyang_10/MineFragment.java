@@ -24,7 +24,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.silence.xiyang_10.models.StorageHelper;
 import com.sackcentury.shinebuttonlib.ShineButton;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 
@@ -40,47 +42,30 @@ public class MineFragment extends Fragment {
     public MineFragment(){
         count = 0;
     }
+    private View myview;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        initUI();
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
-        return inflater.inflate(R.layout.fragment_mine, container, false);// 将布局加载到碎片实例中
+        return myview;// 将布局加载到碎片实例中
     }
     @Override
     public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState){
-        Button button_change = (Button) getView().findViewById(R.id.change_touxiang);
-        final RoundImageButton roundImageView = (RoundImageButton) getView().findViewById(R.id.round_touxiang);
-        roundImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(view.getContext(),"你点击了头像",Toast.LENGTH_SHORT).show();
-            }
-        });
-        button_change.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(count == 0){
-                    roundImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_changetouxiang));
-                    count++;
-                }else if(count == 1){
-                    roundImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_touxiang));
-                    count++;
-                }else if(count == 2){
-                    roundImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_touxiang2));
-                    count = 0;
-                }
-
-            }
-        });
 
     }
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        final BaseActivity activity = (BaseActivity) getActivity();
-        ShineButton shineButton = (ShineButton) getView().findViewById(R.id.shine_button);
-        shineButton.init(activity);
-        shineButton.setChecked(true);
-        test_button = (RoundImageButton) getView().findViewById(R.id.round_touxiang);
+
+    public void initUI(){
+
+        myview = getActivity().getLayoutInflater().inflate(R.layout.fragment_mine,null);
+//        ShineButton shineButton = (ShineButton) getView().findViewById(R.id.shine_button);
+//        shineButton.init(activity);
+//        shineButton.setChecked(true);
+        test_button = (RoundImageButton) myview.findViewById(R.id.round_touxiang);
         test_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,6 +108,13 @@ public class MineFragment extends Fragment {
 
 
     }
+
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -130,19 +122,26 @@ public class MineFragment extends Fragment {
             switch (requestCode) {
                 // 如果是直接从相册获取
                 case 1:
-                    startPhotoZoom(data.getData());
+                    File file = StorageHelper.createNewAttachmentFile((MainActivity)getActivity(), ".png");
+
+                    UCrop.of(data.getData(), Uri.fromFile(file)).start(getContext(),MineFragment.this);
                     break;
                 // 如果是调用相机拍照时
                 case 2:
                     File temp = new File(Environment.getExternalStorageDirectory()
                             + "/xiaoma.jpg");
-                    startPhotoZoom(Uri.fromFile(temp));
+                    UCrop.of(data.getData(), Uri.fromFile(new File(getActivity().getCacheDir(), "pp.png"))).start(getContext(),MineFragment.this);
+
                     break;
                 // 取得裁剪后的图片
                 case 3:
                     if (data != null) {
                         setPicToView(data);
                     }
+                    break;
+                case 69:
+                    Uri resultUri = UCrop.getOutput(data);
+                    test_button.setImageURI(resultUri);
                     break;
                 default:
                     break;

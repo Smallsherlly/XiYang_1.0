@@ -1,13 +1,13 @@
 <resources>
-    <string name="app_name">惜扬手账1.4</string>
-    <string name="login_success">login success</string>
-    <string name="login">LOGIN</string>
-    <string name="Username">Username</string>
-    <string name="Password">Password</string>
-    <string name="forgot_your_password">Forgot your password ?</string>
-    <string name="go">GO</string>
-    <string name="repeat_password">Repeat Password</string>
-    <string name="next">NEXT</string>
-    <string name="register">REGISTER</string>
-    <string name="storage_not_available">Storage not available</string>
+    <string name="app_name">惜扬手账1.9</string>
+    <string name="login_success">登录成功</string>
+    <string name="login">用户登录</string>
+    <string name="Username">用户名</string>
+    <string name="Password">密码</string>
+    <string name="forgot_your_password">忘记密码 ?</string>
+    <string name="go">登录</string>
+    <string name="repeat_password">确认输入密码</string>
+    <string name="next">下一步</string>
+    <string name="register">注册</string>
+    <string name="storage_not_available">内存不可用</string>
 </resources>

@@ -230,7 +230,6 @@ public class SketchFragment extends Fragment implements OnDrawChangedListener {
 
             try {
                 Uri uri = getArguments().getParcelable(MediaStore.EXTRA_OUTPUT);
-                Toast.makeText(getContext(),uri.toString(),Toast.LENGTH_SHORT).show();
                 File bitmapFile = new File(uri.getPath());
                 FileOutputStream out = new FileOutputStream(bitmapFile);
                 bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
