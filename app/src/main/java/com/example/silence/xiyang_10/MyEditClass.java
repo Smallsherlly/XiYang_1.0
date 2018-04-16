@@ -29,10 +29,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
@@ -40,6 +42,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avocarrot.json2view.DynamicView;
+import com.avocarrot.json2view.DynamicViewId;
 import com.cuiweiyou.numberpickerdialog.NumberPickerDialog;
 import com.example.silence.xiyang_10.RichEditor.ContentType;
 import com.example.silence.xiyang_10.RichEditor.DragScaleView;
@@ -59,7 +63,16 @@ import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -67,6 +80,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.Inflater;
 
 import butterknife.BindView;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Silence on 2018/3/27.
@@ -77,7 +92,8 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
     ViewGroup mRoot;
     private int imgQuality = 20;//保存图片的质量,默认为20%（即压缩率为80%）
     private List<EditorBean> editorList = new CopyOnWriteArrayList<>();//内容列表[并发容器 防止异常(用arraylist可能会异常)]
-    private RelativeLayout editor;//编辑器
+    private RelativeLayout parent;//编辑器
+    private RelativeLayout editor;
     private String urlpath;//图片路径
     private DragScaleView dragScaleView;
     private TextView tvInsertImg;//插入图片按钮
@@ -108,6 +124,38 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
     private Uri attachmentUri;
     private View view;
 
+    private View sampleview;
+
+    private String readFile(File file, Context context) {
+        StringBuilder returnString = new StringBuilder();
+        InputStream fIn = null;
+        InputStreamReader isr = null;
+        BufferedReader input = null;
+        try {
+            fIn = new FileInputStream(file);
+            isr = new InputStreamReader(fIn);
+            input = new BufferedReader(isr);
+            String line;
+            while ((line = input.readLine()) != null) {
+                returnString.append(line);
+            }
+        } catch (Exception e) {
+            e.getMessage();
+        } finally {
+            try {
+                if (isr != null) isr.close();
+                if (fIn != null) fIn.close();
+                if (input != null) input.close();
+            } catch (Exception e2) {
+                e2.getMessage();
+            }
+        }
+        return returnString.toString();
+    }
+
+
+
+
     @Override
     public void onColorSelected(int newColor, String tag) {
 
@@ -136,21 +184,86 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         super.onViewCreated(view, savedInstanceState);
 
     }// @Nullable  意味着可以传入null值
+    private String readFile(String fileName, Context context) {
+        StringBuilder returnString = new StringBuilder();
+        InputStream fIn = null;
+        InputStreamReader isr = null;
+        BufferedReader input = null;
+        try {
+            fIn = context.getResources().getAssets().open(fileName);
+            isr = new InputStreamReader(fIn);
+            input = new BufferedReader(isr);
+            String line;
+            while ((line = input.readLine()) != null) {
+                returnString.append(line);
+            }
+        } catch (Exception e) {
+            e.getMessage();
+        } finally {
+            try {
+                if (isr != null) isr.close();
+                if (fIn != null) fIn.close();
+                if (input != null) input.close();
+            } catch (Exception e2) {
+                e2.getMessage();
+            }
+        }
+        return returnString.toString();
+    }
+    static public class SampleViewHolder {
+        @DynamicViewId(id = "testClick")
+        public View clickableView;
 
-
+        public SampleViewHolder() {
+        }
+    }
     public void init() {
         view = getActivity().getLayoutInflater().inflate(R.layout.fragment_handedit,null);
         mRoot = (ViewGroup) view.findViewById(R.id.CoordinatorLayout01);
         dragScaleView = new DragScaleView(getActivity());
         tvInsertImg = (TextView) view.findViewById(R.id.tv_custom_edit_insert_img);
-        ViewStub myViewStub = (ViewStub)view.findViewById(R.id.myViewStub);
-        myViewStub.setLayoutResource(R.layout.myricheditor);
-        if (myViewStub != null) {
-            myViewStub.inflate();
-            //或者是下面的形式加载
-            //myViewStub.setVisibility(View.VISIBLE);
+
+
+        JSONObject jsonObject;
+
+        try {
+            File f = new File(((MainActivity)getActivity()).getExternalFilesDir(null),"20180416_162939_021.json");
+            Toast.makeText(getActivity(),f.getPath(),Toast.LENGTH_SHORT).show();
+            jsonObject = new JSONObject(readFile(f,getActivity()));
+            Toast.makeText(getActivity(),readFile(f,getActivity()),Toast.LENGTH_SHORT).show();
+
+        } catch (JSONException je) {
+            je.printStackTrace();
+            jsonObject = null;
         }
-        editor = (RelativeLayout) view.findViewById(R.id.et_custom_editor);
+
+        if (jsonObject != null) {
+
+            /* create dynamic view and return the view with the holder class attached as tag */
+            sampleview = DynamicView.createView(getActivity(), jsonObject, SampleViewHolder.class);
+            /* get the view with id "testClick" and attach the onClickListener */
+            //((SampleViewHolder) sampleView.getTag()).clickableView.setOnClickListener(this);
+
+            /* add Layout Parameters in just created view and set as the contentView of the activity */
+            sampleview.setLayoutParams(new WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT));
+            //setContentView(sampleView);
+
+        } else {
+            Log.e("Json2View", "Could not load valid json file");
+            Toast.makeText(getActivity(),"it's null",Toast.LENGTH_SHORT).show();
+        }
+//        ViewStub myViewStub = (ViewStub)view.findViewById(R.id.myViewStub);
+//        myViewStub.setLayoutResource(R.layout.myricheditor);
+//        if (myViewStub != null) {
+//            myViewStub.inflate();
+//            //或者是下面的形式加载
+//            //myViewStub.setVisibility(View.VISIBLE);
+//        }
+
+        parent = (RelativeLayout)view.findViewById(R.id.parent);
+
+        parent.addView(sampleview);
+//        editor = (RelativeLayout) view.findViewById(R.id.et_custom_editor);
         tvInsertContent = (TextView) view.findViewById(R.id.tv_custom_edit_insert_content);
         //tvInsertTitle = (TextView) view.findViewById(R.id.tv_custom_edit_insert_title);
         tvchangecolor = (TextView) view.findViewById(R.id.tv_custom_edit_change_content);
@@ -548,6 +661,14 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
                 case 69:
                     Uri resultUri = UCrop.getOutput(data);
                     insertImg(resultUri);
+                    File file2 = StorageHelper.createNewAttachmentFile((MainActivity)getActivity(), ".json");
+                    try {
+                        FileOutputStream outputStream = new FileOutputStream(file2);
+                        outputStream.write(JsonCreater.createJsonStr(editor,editorList).getBytes());
+                        outputStream.close();
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
                     break;
                 default:
                     break;
@@ -716,8 +837,10 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
          * imageview对大图显示效果不好，这里对原图进行压缩
          */
         Bitmap images = BitmapFactory.decodeFile(filePath, TakePhotoUtils.getOptions(filePath, 4));//压缩图片的大小，按4倍来压缩
+        imageView.setDrawingCacheEnabled(true);
         imageView.setImageBitmap(images);
         editor.addView(imageView);//添加到编辑器中
+        Toast.makeText(view.getContext(),Long.toString(tag),Toast.LENGTH_SHORT).show();
         editorList.add(new EditorBean(ContentType.IMG, Uri.fromFile(new File(filePath)).toString(), tag));//添加到列表中
     }
     // 延迟时间是连击的时间间隔有效范围

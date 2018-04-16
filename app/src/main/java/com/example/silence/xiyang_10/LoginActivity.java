@@ -72,6 +72,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 getWindow().setExitTransition(explode);
                 getWindow().setEnterTransition(explode);
                 final String state=NetUilts.loginOfGet(username, password);
+                //if(state == null)
+
 
                 runOnUiThread(new Runnable() {//执行任务在主线程中
                     @Override

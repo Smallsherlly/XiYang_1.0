@@ -1,0 +1,133 @@
+{
+	"widget": "android.widget.RelativeLayout",
+	"properties": [{
+		"name": "background",
+		"type": "color",
+		"value": "#919191"
+	},
+	{
+		"name": "layout_width",
+		"type": "dimen",
+		"value": "match_parent"
+	},
+	{
+		"name": "layout_height",
+		"type": "dimen",
+		"value": "match_parent"
+	}],
+	"views": [{
+		"widget": "android.widget.RelativeLayout",
+		"properties": [{
+			"name": "background",
+			"type": "color",
+			"value": "#ffffff"
+		},
+		{
+			"name": "layout_width",
+			"type": "dimen",
+			"value": "match_parent"
+		},
+		{
+			"name": "layout_height",
+			"type": "dimen",
+			"value": "match_parent"
+		},
+		{
+			"name": "layout_centerInParent",
+			"type": "boolean",
+			"value": "true"
+		},
+		{
+			"name": "orientation",
+			"type": "string",
+			"value": "vertical"
+		}],
+		"views": [{
+			"widget": "com.example.silence.xiyang_10.RichEditor.MyText",
+			"properties": [{
+				"name": "id",
+				"type": "",
+				"value": "#ffffff"
+			},
+			{
+				"name": "layout_width",
+				"type": "dimen",
+				"value": "match_parent"
+			},
+			{
+				"name": "layout_height",
+				"type": "dimen",
+				"value": "match_parent"
+			},
+			{
+				"name": "background",
+				"type": "color",
+				"value": "#ffffff"
+			},
+			{
+				"name": "clickable",
+				"type": "boolean",
+				"value": "true"
+			},
+
+			{
+				"name": "text",
+				"type": "string",
+				"value": "Try to click"
+			},
+			{
+				"name": "Layout_MarginLeft",
+				"type": "dimen",
+				"value": "50dp"
+			},
+			{
+				"name": "Layout_MarginTop",
+				"type": "dimen",
+				"value": "100dp"
+			},
+			{
+				"name": "textColor",
+				"type": "color",
+				"value": "#919191"
+			}]
+		},
+		{
+			"widget": "android.widget.LinearLayout",
+			"properties": [{
+				"name": "id",
+				"type": "",
+				"value": "#adImage"
+			},
+			{
+				"name": "layout_width",
+				"type": "dimen",
+				"value": "wrap_content"
+			},
+			{
+				"name": "layout_height",
+				"type": "dimen",
+				"value": "wrap_content"
+			},
+			{
+				"name": "scaleType",
+				"type": "dimen",
+				"value": "fit_Center"
+			},
+			{
+				"name": "adjustViewBounds",
+				"type": "boolean",
+				"value": "true"
+			},
+			{
+				"name": "src",
+				"type": "ref",
+				"value": "sample"
+			},
+			{
+				"name": "background",
+				"type": "color",
+				"value": "#228877"
+			}]
+		}]
+	}]
+}

@@ -1,0 +1,61 @@
+{
+	"widget": "android.widget.RelativeLayout",
+	"properties": [{
+		"name": "background",
+		"type": "color",
+		"value": "#919191"
+	},
+	{
+		"name": "layout_width",
+		"type": "dimen",
+		"value": "match_parent"
+	},
+	{
+		"name": "layout_height",
+		"type": "dimen",
+		"value": "match_parent"
+	},
+	{
+		"name": "padding",
+		"type": "dimen",
+		"value": "10dp"
+	}],
+	"views": [{
+		"widget": "android.widget.ImageView",
+		"properties": [{
+			"name": "id",
+			"type": "",
+			"value": "adImage"
+		},
+		{
+			"name": "layout_width",
+			"type": "dimen",
+			"value": "wrap_content"
+		},
+		{
+			"name": "layout_height",
+			"type": "dimen",
+			"value": "wrap_content"
+		},
+		{
+			"name": "scaleType",
+			"type": "dimen",
+			"value": "fit_Center"
+		},
+		{
+			"name": "adjustViewBounds",
+			"type": "boolean",
+			"value": "true"
+		},
+		{
+			"name": "src",
+			"type": "url",
+			"value": "/sdcard/takephoto/20180416_153134_456.png"
+		},
+		{
+			"name": "background",
+			"type": "color",
+			"value": "#228877"
+		}]
+	}]
+}

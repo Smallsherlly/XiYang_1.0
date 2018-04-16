@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFF">
@@ -66,14 +67,14 @@
 
 
 
-    <ViewStub
-        android:id="@+id/myViewStub"
-        android:inflatedId="@+id/et_custom_editor"
-        android:layout_width="match_parent"
-        android:layout_height="2000dp"
-        android:layout_above="@id/ll_editor_toolbar"
-        android:layout_margin="2dp">
-    </ViewStub>
+    <!--<ViewStub-->
+        <!--android:id="@+id/myViewStub"-->
+        <!--android:inflatedId="@+id/et_custom_editor"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="2000dp"-->
+        <!--android:layout_above="@id/ll_editor_toolbar"-->
+        <!--android:layout_margin="2dp">-->
+    <!--</ViewStub>-->
 
 
 

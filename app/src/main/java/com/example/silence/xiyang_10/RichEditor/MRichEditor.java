@@ -94,7 +94,7 @@ public class MRichEditor extends RelativeLayout {
      */
     private void initView() {
         View view = LayoutInflater.from(context).inflate(R.layout.activity_custom_eidt, this);
-        editor = (RelativeLayout) view.findViewById(R.id.et_custom_editor);
+        //editor = (RelativeLayout) view.findViewById(R.id.et_custom_editor);
         tvInsertContent = (TextView) view.findViewById(R.id.tv_custom_edit_insert_content);
         //tvInsertTitle = (TextView) view.findViewById(R.id.tv_custom_edit_insert_title);
         tvInsertImg = (TextView) view.findViewById(R.id.tv_custom_edit_insert_img);
