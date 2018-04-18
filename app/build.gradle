@@ -25,6 +25,8 @@ android {
 
 dependencies {
     //新增库
+    compile project(':json2view')
+
     api('com.github.yalantis:ucrop:2.2.2-native'){
         exclude group:'com.android.support'
     }

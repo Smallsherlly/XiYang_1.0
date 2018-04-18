@@ -14,15 +14,6 @@
         android:orientation="horizontal"
         android:padding="2dp">
 
-        <!--<TextView-->
-            <!--android:id="@+id/tv_custom_edit_insert_title"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:clickable="true"-->
-            <!--android:drawableTop="@mipmap/titile"-->
-            <!--android:gravity="center"-->
-            <!--android:text="标题" />-->
 
         <TextView
             android:id="@+id/tv_custom_edit_insert_content"
@@ -66,17 +57,12 @@
     </LinearLayout>
 
 
-
-    <!--<ViewStub-->
-        <!--android:id="@+id/myViewStub"-->
-        <!--android:inflatedId="@+id/et_custom_editor"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="2000dp"-->
-        <!--android:layout_above="@id/ll_editor_toolbar"-->
-        <!--android:layout_margin="2dp">-->
-    <!--</ViewStub>-->
-
-
+    预留加载模块
+    <RelativeLayout
+        android:id="@+id/et_custom_editor"
+        android:layout_width="360dp"
+        android:layout_height="468dp">
+    </RelativeLayout>
 
 
 

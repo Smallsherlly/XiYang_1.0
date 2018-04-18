@@ -277,6 +277,9 @@ public class DynamicProperty {
         if (type == TYPE.COLOR) return Integer.class.cast(value);
         return -1;
     }
+    public EditorBean getValueBean(){
+        return EditorBean.class.cast(value);
+    }
     public String getValueString() {
         return String.class.cast(value);
     }

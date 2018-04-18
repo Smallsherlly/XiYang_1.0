@@ -1,4 +1,4 @@
-package com.example.silence.xiyang_10.RichEditor;
+package com.avocarrot.json2view;
 
 
 /**
@@ -43,18 +43,10 @@ public class EditorBean {
         this.tag = tag;
     }
 
-//    @Override
-//    public String toString() {
-//        return "EditorBean{" +
-//                "type=" + type +
-//                "; content='" + content + '\'' +
-//                "; tag=" + tag +
-//                '}';
-//    }
     @Override
     public String toString() {
         return "EditorBean{" +
-                type +
+                 type +
                 ";" + content +
                 ";" + tag +
                 '}';

@@ -11,6 +11,7 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.example.silence.xiyang_10.R;
 import com.nineoldandroids.view.ViewHelper;
@@ -58,7 +59,8 @@ public class DragScaleView extends AppCompatImageView {
 
     }
     protected void initScreenW_H() {
-
+//        EditorBean editorList = (EditorBean)(((RelativeLayout)getParent()).getTag());
+//        Toast.makeText(getContext(),editorList.toString(),Toast.LENGTH_SHORT).show();
         //screenHeight = getResources().getDisplayMetrics().heightPixels - 40;
 
         //screenWidth = getResources().getDisplayMetrics().widthPixels;

@@ -1,14 +1,23 @@
 package com.example.silence.xiyang_10.RichEditor;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Paint;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.silence.xiyang_10.R;
 
 /**
  * Created by Silence on 2018/3/20.
@@ -34,14 +43,31 @@ public class MyText extends AppCompatTextView {
     private static final int RIGHT_BOTTOM = 0x14;
     private static final int CENTER = 0x19;
     private int offset = 20;
+    private int distance = 20;
     protected Paint paint = new Paint();
+    private RelativeLayout parent;
 
     /**
      * 初始化获取屏幕宽高
      */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        //获取SingleTouchView所在父布局的中心点
+        ViewGroup mViewGroup = (ViewGroup) getParent();
+        if(null != mViewGroup){
+            screenWidth = mViewGroup.getWidth();
+            screenHeight = mViewGroup.getHeight();
+        }
+
+    }
     protected void initScreenW_H() {
-        screenHeight = getResources().getDisplayMetrics().heightPixels - 40;
-        screenWidth = getResources().getDisplayMetrics().widthPixels;
+//        parent.measure(0,0);
+//        screenHeight = parent.getMeasuredHeight();
+//        screenWidth = parent.getMeasuredWidth();
+//        Toast.makeText(getContext(),"height="+screenHeight+"width="+screenWidth,Toast.LENGTH_SHORT).show();;//        screenHeight = getResources().getDisplayMetrics().heightPixels - 350;
+//        screenWidth = getResources().getDisplayMetrics().widthPixels-10;
     }
 
     public MyText(Context context, AttributeSet attrs, int defStyle) {
@@ -57,7 +83,10 @@ public class MyText extends AppCompatTextView {
     public MyText(Context context) {
         super(context);
         initScreenW_H();
+
     }
+
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
