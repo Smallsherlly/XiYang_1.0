@@ -10,7 +10,7 @@ import android.widget.Toast;
  * Created by Silence on 2018/4/17.
  */
 
-public class ModelImage extends AppCompatImageView {
+public class ModelImage extends DragScaleView {
     public ModelImage(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();

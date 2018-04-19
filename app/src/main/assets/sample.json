@@ -1,45 +1,58 @@
 {
 	"widget": "android.widget.RelativeLayout",
 	"properties": [{
-		"name": "layout_width",
-		"type": "dimen",
-		"value": "match_parent"
+		"name": "tag",
+		"type": "",
+		"value": "[EditorBean{CONTENT;想过后果;1524128012183}]"
 	},
 		{
-			"name": "tag",
-			"type": "",
-			"value": "[EditorBean{IMG;file:///storage/emulated/0/takephoto/20180417_144931_943.png;1523947781521}]"
-		},	{
+			"name": "layout_width",
+			"type": "dimen",
+			"value": "match_parent"
+		},
+		{
 			"name": "layout_height",
 			"type": "dimen",
 			"value": "match_parent"
 		}],
-	"views": [{
-		"widget": "com.example.silence.xiyang_10.RichEditor.ModelImage",
-		"properties": [{
-			"name": "src",
-			"type": "url",
-			"value": "/sdcard/takephoto/20180417_144931_943.png"
-		},
-			{
-				"name": "layout_width",
-				"type": "dimen",
-				"value": "780"
+	"views": [
+		{
+			"widget": "com.example.silence.xiyang_10.RichEditor.MyText",
+			"properties": [{
+				"name": "text",
+				"type": "string",
+				"value": "想过后果"
 			},
-			{
-				"name": "layout_height",
-				"type": "dimen",
-				"value": "520"
-			},
-			{
-				"name": "layout_marinLeft",
-				"type": "dimen",
-				"value": "0"
-			},
-			{
-				"name": "layout_marginTop",
-				"type": "dimen",
-				"value": "0"
-			}]
-	}]
+				{
+					"name": "clickable",
+					"type": "boolean",
+					"value": "true"
+				},
+				{
+					"name": "tag",
+					"type": "",
+					"value": "1524128012183"
+				},
+				{
+					"name": "textColor",
+					"type": "color",
+					"value": "#ffe57373"
+				},
+				{
+					"name": "textSize",
+					"type": "dimen",
+					"value": "21"
+				},
+				{
+					"name": "layout_marginLeft",
+					"type": "dimen",
+					"value": "183"
+				},
+				{
+					"name": "layout_marginTop",
+					"type": "dimen",
+					"value": "206"
+				}]
+		}
+	]
 }

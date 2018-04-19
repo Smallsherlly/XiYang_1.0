@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
@@ -50,6 +51,7 @@ import com.example.silence.xiyang_10.RichEditor.DragScaleView;
 import com.example.silence.xiyang_10.RichEditor.EditorBean;
 import com.example.silence.xiyang_10.RichEditor.InputDialog;
 import com.example.silence.xiyang_10.RichEditor.MRichEditor;
+import com.example.silence.xiyang_10.RichEditor.ModelImage;
 import com.example.silence.xiyang_10.RichEditor.MyText;
 import com.example.silence.xiyang_10.RichEditor.TakePhotoUtils;
 import com.example.silence.xiyang_10.models.Attachment;
@@ -73,6 +75,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -92,7 +95,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
     CoordinatorLayout mCoordinatorLayout;
     ViewGroup mRoot;
     private int imgQuality = 20;//保存图片的质量,默认为20%（即压缩率为80%）
-    private List<EditorBean> editorList = new CopyOnWriteArrayList<>();//内容列表[并发容器 防止异常(用arraylist可能会异常)]
+    private List<EditorBean> editorList = new ArrayList<>();//内容列表[并发容器 防止异常(用arraylist可能会异常)]
     private RelativeLayout parent;//编辑器
     private RelativeLayout editor;
     private String urlpath;//图片路径
@@ -125,7 +128,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
     private Uri attachmentUri;
     private View view;
 
-    private View sampleview;
+    private RelativeLayout sampleview;
 
     private String readFile(File file, Context context) {
         StringBuilder returnString = new StringBuilder();
@@ -228,7 +231,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         if (jsonObject != null) {
 
             /* create dynamic view and return the view with the holder class attached as tag */
-            sampleview = DynamicView.createView(getActivity(), jsonObject);
+            sampleview = (RelativeLayout)DynamicView.createView(getActivity(), jsonObject,parent);
             /* get the view with id "testClick" and attach the onClickListener */
             //((SampleViewHolder) sampleView.getTag()).clickableView.setOnClickListener(this);
 
@@ -246,7 +249,16 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         view = getActivity().getLayoutInflater().inflate(R.layout.fragment_handedit,null);
         mRoot = (ViewGroup) view.findViewById(R.id.CoordinatorLayout01);
         tvInsertImg = (TextView) view.findViewById(R.id.tv_custom_edit_insert_img);
-
+        parent = (RelativeLayout)view.findViewById(R.id.et_custom_editor);
+        ImageView save = (ImageView) view.findViewById(R.id.save);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),"you click save ",Toast.LENGTH_SHORT).show();
+                //insertContent(contentColor,contentSize,ContentType.CONTENT);
+                insertNull();
+            }
+        });
         jsonCompile();
 
 //        ViewStub myViewStub = (ViewStub)view.findViewById(R.id.myViewStub);
@@ -257,19 +269,26 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
 //            //myViewStub.setVisibility(View.VISIBLE);
 //        }
 
-        parent = (RelativeLayout)view.findViewById(R.id.et_custom_editor);
+
         parent.addView(sampleview);
-        RelativeLayout re = sampleview.findViewWithTag("[EditorBean{IMG;file:///storage/emulated/0/takephoto/20180417_144931_943.png;1523947781521}]");
-        List<EditorBean> bean = (List<EditorBean>) (JsonCreater.StringToEditorbean(re.getTag().toString(),view));
-        for (EditorBean editorBean : bean) {
-            switch (editorBean.getType()) {
-                case IMG:
-                    Toast.makeText(getActivity(), "Horay!", Toast.LENGTH_SHORT).show();
+
+        List<EditorBean> bean = (List<EditorBean>) (JsonCreater.StringToEditorbean(sampleview.getTag().toString(),view));
+        if(bean!=null){
+            for (EditorBean editorBean : bean) {
+                switch (editorBean.getType()) {
+                    case IMG:
+                        ModelImage vi = parent.findViewWithTag(Long.toString(editorBean.getTag()));
+                        break;
+                    case CONTENT:
+                        MyText ve = parent.findViewWithTag(Long.toString(editorBean.getTag()));
+                        break;
+                }
+                editorList.add(editorBean);
             }
         }
+
 //        editor = (RelativeLayout) view.findViewById(R.id.et_custom_editor);
         tvInsertContent = (TextView) view.findViewById(R.id.tv_custom_edit_insert_content);
-        //tvInsertTitle = (TextView) view.findViewById(R.id.tv_custom_edit_insert_title);
         tvchangecolor = (TextView) view.findViewById(R.id.tv_custom_edit_change_content);
 
         initInputDialog();//初始化输入对话框
@@ -462,6 +481,20 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
             }
         });
     }
+
+    public void insertNull(){
+        final long tag = System.currentTimeMillis();//使用当前的时间做标记----标记的作用就是要知道哪条是哪条,删除的时候好操作
+        final MyText tvContent = new MyText(getContext());
+        tvContent.setTag(Long.toString(tag));
+
+        //内容就空两格
+        String contentStr = null;
+        tvContent.setText(contentStr);
+        sampleview.addView(tvContent);//添加到编辑器视图中
+        editorList.add(new EditorBean(ContentType.CONTENT, contentStr, tag));//添加到编辑器列表中
+        removeEditorBeanByTag(tag);
+        saveJson();
+    }
     /**
      * 插入内容,标题
      *
@@ -469,10 +502,12 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
      * @param color
      * @param type
      */
+
+
     private void insertContent(int size, final int color, final ContentType type) {
         final long tag = System.currentTimeMillis();//使用当前的时间做标记----标记的作用就是要知道哪条是哪条,删除的时候好操作
         final MyText tvContent = new MyText(getContext());
-        tvContent.setTag(tag);
+        tvContent.setTag(Long.toString(tag));
 
         /**
          *初始化修改对话框--------之所以写在这里 是因为要对象序列化--局部有效原则----如果弄成全局的,那么tvContent永远是最新一个--删除就会出错哦
@@ -631,9 +666,8 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         //内容就空两格
         String contentStr = dialog.getContent();
         tvContent.setText(contentStr);
-        parent.addView(tvContent);//添加到编辑器视图中
+        sampleview.addView(tvContent);//添加到编辑器视图中
         editorList.add(new EditorBean(type, contentStr, tag));//添加到编辑器列表中
-        saveJson();
     }
 
 
@@ -665,7 +699,6 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
                 case 69:
                     Uri resultUri = UCrop.getOutput(data);
                     insertImg(resultUri);
-
                     break;
                 default:
                     break;
@@ -679,7 +712,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         File file2 = StorageHelper.createNewAttachmentFile((MainActivity)getActivity(), ".json");
         try {
             FileOutputStream outputStream = new FileOutputStream(file2);
-            outputStream.write(JsonCreater.createJsonStr(parent,editorList).getBytes());
+            outputStream.write(JsonCreater.createJsonStr(sampleview,editorList).getBytes());
             outputStream.close();
         }catch (IOException e){
             e.printStackTrace();
@@ -757,7 +790,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
     public void insertImg(Uri bitmapUri) {
         final long tag = System.currentTimeMillis();//使用当前时间的毫秒值来标记当前内容，便于删除列表中的记录
         final DragScaleView imageView = new DragScaleView(getActivity());
-        imageView.setTag(tag);
+        imageView.setTag(Long.toString(tag));
         //处理点击事件（删除）
         imageView.setOnClickListener(new View.OnClickListener(){
             int left= imageView.getLeft();
@@ -836,7 +869,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
          */
         String filePath = TakePhotoUtils.getRealFilePathByUri(getActivity(), bitmapUri);//图片的真实路径
         try {
-            filePath = TakePhotoUtils.saveFile(getActivity(), BitmapFactory.decodeFile(filePath), filePath, 20);//压缩图片得到真实路径，imgQuality为图片的质量，按100制，默认图片质量20%（即压缩80%），现在主流手机使用20%最佳---平均下来150k左右
+            filePath = TakePhotoUtils.saveFile(getActivity(), BitmapFactory.decodeFile(filePath), filePath, imgQuality);//压缩图片得到真实路径，imgQuality为图片的质量，按100制，默认图片质量20%（即压缩80%），现在主流手机使用20%最佳---平均下来150k左右
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -844,13 +877,11 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
          * imageview对大图显示效果不好，这里对原图进行压缩
          */
         Bitmap images = BitmapFactory.decodeFile(filePath, TakePhotoUtils.getOptions(filePath, 4));//压缩图片的大小，按4倍来压缩
-        imageView.setDrawingCacheEnabled(true);
         imageView.setImageBitmap(images);
-        parent.addView(imageView);//添加到编辑器中
-        Toast.makeText(view.getContext(),Long.toString(tag),Toast.LENGTH_SHORT).show();
+        sampleview.addView(imageView);//添加到编辑器中
         editorList.add(new EditorBean(ContentType.IMG, Uri.fromFile(new File(filePath)).toString(), tag));//添加到列表中
-        saveJson();
     }
+
     // 延迟时间是连击的时间间隔有效范围
     private void delay(int type,long index,int left,int top) {
         if (task != null)
@@ -863,7 +894,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
                 Message message = new Message();
                 message.arg1 = left;
                 message.arg2 = top;
-                message.obj = index;
+                message.obj = Long.toString(index);
                 // message.what = 0;
                 if(type == 1){
                     handler_img.sendMessage(message);

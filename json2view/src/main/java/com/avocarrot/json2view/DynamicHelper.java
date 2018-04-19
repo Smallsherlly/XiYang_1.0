@@ -639,7 +639,8 @@ public class DynamicHelper {
         if (view instanceof TextView) {
             switch (property.type) {
                 case DIMEN: {
-                    ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, property.getValueFloat());
+                    //((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_PX, property.getValueInt());
+                    ((TextView) view).setTextSize(property.getValueInt());
                 }
                 break;
             }

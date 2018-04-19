@@ -281,8 +281,14 @@ public class DynamicProperty {
         return EditorBean.class.cast(value);
     }
     public String getValueString() {
-        return String.class.cast(value);
+        if(value == null)
+            return null;
+        else
+            return String.class.cast(value);
     }
+//    public Long getValueLong() {
+//        return Long.class.cast(value);
+//    }
     public int getValueInt() {
         if (value instanceof Integer)
             return Integer.class.cast(value);

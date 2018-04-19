@@ -28,9 +28,11 @@ public class JsonCreater {
         List<EditorBean> result = new CopyOnWriteArrayList<> ();;
         String[] beanlist = str.split(",");
         String[] beanstr;
+        if(str.length() == 0)
+            return null;
         for(int i=0; i<beanlist.length; i++){
             beanstr = beanlist[i].substring(beanlist[i].indexOf("{")+1,beanlist[i].indexOf("}")).split(";",3);
-            Toast.makeText(v.getContext(),beanstr[0]+beanstr[1]+beanstr[2],Toast.LENGTH_SHORT).show();
+            //Toast.makeText(v.getContext(),beanstr[0]+beanstr[1]+beanstr[2],Toast.LENGTH_SHORT).show();
             if(beanstr[0].equals("IMG")){
                 EditorBean bean = new EditorBean(ContentType.IMG,beanstr[1],Long.valueOf(beanstr[2]));
                 result.add(bean);
@@ -43,56 +45,76 @@ public class JsonCreater {
         return  result;
     }
 
-    public static String addImageJson(RelativeLayout view, Long tag,String url,int count){
-        DragScaleView imageView = (DragScaleView)view.findViewWithTag(tag);
-        Toast.makeText(view.getContext(),Long.toString((Long)imageView.getTag()),Toast.LENGTH_SHORT).show();
+    public static String addImageJson(RelativeLayout view, Long tag,String url){
+        DragScaleView imageView = (DragScaleView)view.findViewWithTag(Long.toString(tag));
         StringBuilder imageString = new StringBuilder("");
         if(imageView == null){
             Toast.makeText(view.getContext(),"imageview is null",Toast.LENGTH_SHORT).show();
         }
-        int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
-        int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
-        imageView.measure(w, h);
-        Toast.makeText(view.getContext(),Integer.toString(imageView.getTop()),Toast.LENGTH_SHORT).show();
+
         imageString.append(
+            "\t\t{\n" +
             "\t\t\"widget\": \"com.example.silence.xiyang_10.RichEditor.ModelImage\",\n"+
             "\t\t\"properties\": [{\n"+
             "\t\t\t\"name\": \"src\",\n"+
             "\t\t\t\"type\": \"url\",\n"+
             "\t\t\t\"value\": \""+"/sdcard/takephoto/"+url+"\"\n"+
             "\t\t},\n"+
+
+            "\t\t{\n"+
+            "\t\t\t\"name\": \"clickable\",\n"+
+            "\t\t\t\"type\": \"boolean\",\n"+
+            "\t\t\t\"value\": \"true\"\n"+
+            "\t\t},\n"+
+
+            "\t\t{\n"+
+            "\t\t\t\"name\": \"tag\",\n"+
+            "\t\t\t\"type\": \"\",\n"+
+            "\t\t\t\"value\": \""+imageView.getTag()+"\"\n"+
+            "\t\t},\n"+
+
+            "\t\t{\n"+
+            "\t\t\t\"name\": \"scaletype\",\n"+
+            "\t\t\t\"type\": \"string\",\n"+
+            "\t\t\t\"value\": \"fit_XY\"\n"+
+            "\t\t},\n"+
+
             "\t\t{\n"+
             "\t\t\t\"name\": \"layout_width\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
-            "\t\t\t\"value\": \""+imageView.getMeasuredWidth()+"\"\n"+
+            "\t\t\t\"value\": \""+imageView.getWidth()+"\"\n"+
             "\t\t},\n"+
+
             "\t\t{\n"+
             "\t\t\t\"name\": \"layout_height\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
-            "\t\t\t\"value\": \""+imageView.getMeasuredHeight()+"\"\n"+
+            "\t\t\t\"value\": \""+imageView.getHeight()+"\"\n"+
             "\t\t},\n"+
+
             "\t\t{\n"+
-            "\t\t\t\"name\": \"layout_marinLeft\",\n"+
+            "\t\t\t\"name\": \"layout_marginLeft\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
             "\t\t\t\"value\": \""+imageView.getLeft()+"\"\n"+
             "\t\t},\n"+
+
             "\t\t{\n"+
             "\t\t\t\"name\": \"layout_marginTop\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
-            "\t\t\t\"value\": \""+imageView.getTop()+"\"\n");
-        count--;
-        if(count!=0){
-            imageString.append("\t}],\n"+"\t\"views\": [{\n");
-        }else{
-            imageString.append("\t}]\n"+"\t\"views\": [{\n");
-        }
+            "\t\t\t\"value\": \""+imageView.getTop()+"\"\n"+
+            "\t\t}]\n"+
+            "\t\t}\n");
 
         return imageString.toString();
     }
 
-    public static String addContentJson(RelativeLayout view, Long tag,int count){
-        MyText textView = (MyText) view.findViewWithTag(tag);
-        Toast.makeText(view.getContext(),Long.toString((Long)textView.getTag()),Toast.LENGTH_SHORT).show();
+    public static String addContentJson(RelativeLayout view, Long tag,String content){
+        MyText textView = (MyText) view.findViewWithTag(Long.toString(tag));
+        int color = textView.getCurrentTextColor();
+        int rgb = color & 0xffffff;
+//        int red = (color & 0xff0000) >> 16;
+//        int green = (color & 0x00ff00) >> 8;
+//        int blue = (color & 0x0000ff);
+//        String rgbColor = red + "," + green + "," + blue;
         StringBuilder imageString = new StringBuilder("");
         if(textView == null){
             Toast.makeText(view.getContext(),"Text view is null",Toast.LENGTH_SHORT).show();
@@ -102,102 +124,117 @@ public class JsonCreater {
         textView.measure(w, h);
         Toast.makeText(view.getContext(),Integer.toString(textView.getTop()),Toast.LENGTH_SHORT).show();
         imageString.append(
-                "\t\t\"widget\": \"com.example.silence.xiyang_10.RichEditor.ModelImage\",\n"+
-                        "\t\t\"properties\": [{\n"+
-                        "\t\t\t\"name\": \"text\",\n"+
-                        "\t\t\t\"type\": \"string\",\n"+
-                        "\t\t\t\"value\": \""+textView.getText()+"\"\n"+
-                        "\t\t},\n"+
-                        "\t\t{\n"+
-                        "\t\t\t\"name\": \"contentcolor\",\n"+
-                        "\t\t\t\"type\": \"dimen\",\n"+
-                        "\t\t\t\"value\": \""+textView.getCurrentTextColor()+"\"\n"+
-                        "\t\t},\n"+
-                        "\t\t{\n"+
-                        "\t\t\t\"name\": \"cotentsize\",\n"+
-                        "\t\t\t\"type\": \"dimen\",\n"+
-                        "\t\t\t\"value\": \""+textView.getTextSize()+"\"\n"+
-                        "\t\t},\n"+
-                        "\t\t{\n"+
-                        "\t\t\t\"name\": \"layout_width\",\n"+
-                        "\t\t\t\"type\": \"dimen\",\n"+
-                        "\t\t\t\"value\": \""+textView.getMeasuredWidth()+"\"\n"+
-                        "\t\t},\n"+
-                        "\t\t{\n"+
-                        "\t\t\t\"name\": \"layout_height\",\n"+
-                        "\t\t\t\"type\": \"dimen\",\n"+
-                        "\t\t\t\"value\": \""+textView.getMeasuredHeight()+"\"\n"+
-                        "\t\t},\n"+
-                        "\t\t{\n"+
-                        "\t\t\t\"name\": \"layout_marinLeft\",\n"+
-                        "\t\t\t\"type\": \"dimen\",\n"+
-                        "\t\t\t\"value\": \""+textView.getLeft()+"\"\n"+
-                        "\t\t},\n"+
-                        "\t\t{\n"+
-                        "\t\t\t\"name\": \"layout_marginTop\",\n"+
-                        "\t\t\t\"type\": \"dimen\",\n"+
-                        "\t\t\t\"value\": \""+textView.getTop()+"\"\n");
-        count--;
-        if(count!=0){
-            imageString.append("\t}],\n");
-        }else{
-            imageString.append("\t}]\n");
-        }
+            "\t\t{\n" +
+            "\t\t\"widget\": \"com.example.silence.xiyang_10.RichEditor.MyText\",\n"+
+            "\t\t\"properties\": [{\n"+
+            "\t\t\t\"name\": \"text\",\n"+
+            "\t\t\t\"type\": \"string\",\n"+
+            "\t\t\t\"value\": \""+textView.getText()+"\"\n"+
+            "\t\t},\n"+
+
+            "\t\t{\n"+
+            "\t\t\t\"name\": \"clickable\",\n"+
+            "\t\t\t\"type\": \"boolean\",\n"+
+            "\t\t\t\"value\": \"true\"\n"+
+            "\t\t},\n"+
+
+            "\t\t{\n"+
+            "\t\t\t\"name\": \"tag\",\n"+
+            "\t\t\t\"type\": \"\",\n"+
+            "\t\t\t\"value\": \""+textView.getTag()+"\"\n"+
+            "\t\t},\n"+
+
+            "\t\t{\n"+
+            "\t\t\t\"name\": \"textColor\",\n"+
+            "\t\t\t\"type\": \"color\",\n"+
+            "\t\t\t\"value\": \"#"+String.format("%06x",color)+"\"\n"+// 把int值转化为6位16进制字符串
+            "\t\t},\n"+
+
+            "\t\t{\n"+
+            "\t\t\t\"name\": \"textSize\",\n"+
+            "\t\t\t\"type\": \"dimen\",\n"+
+            "\t\t\t\"value\": \""+(int)(textView.getTextSize()/2)+"\"\n"+
+            "\t\t},\n"+
+
+//            "\t\t{\n"+
+//            "\t\t\t\"name\": \"layout_width\",\n"+
+//            "\t\t\t\"type\": \"dimen\",\n"+
+//            "\t\t\t\"value\": \"warp_content\"\n"+
+//            "\t\t},\n"+
+//
+//            "\t\t{\n"+
+//            "\t\t\t\"name\": \"layout_height\",\n"+
+//            "\t\t\t\"type\": \"dimen\",\n"+
+//            "\t\t\t\"value\": \"warp_content\"\n"+
+//            "\t\t},\n"+
+
+            "\t\t{\n"+
+            "\t\t\t\"name\": \"layout_marginLeft\",\n"+
+            "\t\t\t\"type\": \"dimen\",\n"+
+            "\t\t\t\"value\": \""+textView.getLeft()+"\"\n"+
+            "\t\t},\n"+
+
+            "\t\t{\n"+
+            "\t\t\t\"name\": \"layout_marginTop\",\n"+
+            "\t\t\t\"type\": \"dimen\",\n"+
+            "\t\t\t\"value\": \""+textView.getTop()+"\"\n"+
+            "\t\t}]\n"+
+            "\t\t}\n");
+
 
         return imageString.toString();
     }
 
     public static String createJsonStr(RelativeLayout view, List<EditorBean> editorList) {
         StringBuilder json;
-        int count = editorList.size();
-
         json = new StringBuilder("");//String拼接不出长字符，用可变长度的String
         //构造json文件
         json.append(
-                "{\n"+
-                        "\t\"widget\": \"android.widget.RelativeLayout\",\n"+
-                        "\t\"properties\": [{\n"+
+            "{\n"+
+            "\t\"widget\": \"android.widget.RelativeLayout\",\n"+
+            "\t\"properties\": ["+
 
-                        "\t\t\"name\": \"layout_width\",\n"+
-                        "\t\t\"type\": \"dimen\",\n"+
-                        "\t\t\"value\": \"match_parent\"\n"+
-                        "\t},\n"+
+            "{\n"+  //不能轻易改动
+            "\t\t\"name\": \"tag\",\n"+
+            "\t\t\"type\": \"\",\n"+
+            "\t\t\"value\": \""+ editorList+"\"\n"+
+            "\t},\n"+
 
-                        "\t{\n"+
-                        "\t\t\"name\": \"tag\",\n"+
-                        "\t\t\"type\": \"dimen\",\n"+
-                        "\t\t\"value\": \""+ editorList+"\"\n"+
-                        "\t},"+
+            "\t{\n"+
+            "\t\t\"name\": \"layout_width\",\n"+
+            "\t\t\"type\": \"dimen\",\n"+
+            "\t\t\"value\": \"match_parent\"\n"+
+            "\t},\n"+
 
-                        "\t{\n"+
-                        "\t\t\"name\": \"layout_height\",\n"+
-                        "\t\t\"type\": \"dimen\",\n"+
-                        "\t\t\"value\": \"match_parent\"\n"+
-                        "\t}],\n"+
-                        "\t\"views\": [{\n");
+            "\t{\n"+
+            "\t\t\"name\": \"layout_height\",\n"+
+            "\t\t\"type\": \"dimen\",\n"+
+            "\t\t\"value\": \"match_parent\"\n"+
+            "\t}],\n"+
+            "\t\"views\": [\n");
 
 
+        int count = editorList.size();
 
         //根据编辑器列表中的内容拼接相应的标签
         for (EditorBean editorBean : editorList) {
 
+            if(count<editorList.size()&&count!=0){
+                json.append("\t\t,\n");
+            }
+            Toast.makeText(view.getContext(),Integer.toString(count),Toast.LENGTH_SHORT).show();
+            count--;
             switch (editorBean.getType()) {
                 case CONTENT:
-                    //xml.append("<p>&nbsp;&nbsp;&nbsp;&nbsp;" + editorBean.getContent() + "</p>\n");//拼接内容，自动空两格
-                    break;
-                case TITLE:
-                    //xml.append("<" + titleTypeStr + ">" + editorBean.getContent() + "</" + titleTypeStr + ">\n");//拼接标题---->默认h3
+                    json.append(JsonCreater.addContentJson(view,editorBean.getTag(),editorBean.getContent()));
                     break;
                 case IMG:
-                    //xml.append("<center><img  src='" + baseImgUrl + "/" + TakePhotoUtils.getImageName(TakePhotoUtils.getImageAbsolutePath(mActivity, Uri.parse(editorBean.getContent()))) + "' /></center><br/>\n");//插入图片，图片的路径（服务器url）由调用这指定，图片名自动生成
-                    Toast.makeText(view.getContext(),Integer.toString(view.getId()),Toast.LENGTH_SHORT).show();
                     String url = TakePhotoUtils.getImageName(TakePhotoUtils.getImageAbsolutePath((Activity)view.getContext(), Uri.parse(editorBean.getContent())));
-                    json.append(JsonCreater.addImageJson(view,editorBean.getTag(),url,count));
-
+                    json.append(JsonCreater.addImageJson(view,editorBean.getTag(),url));
                     break;
             }
         }
-        json.append("\t}]\n"+
+        json.append("\t]\n"+
                 "}");
 
         return json.toString();
