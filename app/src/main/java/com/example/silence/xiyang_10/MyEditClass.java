@@ -278,12 +278,14 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
                 switch (editorBean.getType()) {
                     case IMG:
                         ModelImage vi = parent.findViewWithTag(Long.toString(editorBean.getTag()));
+                        insertImg(editorBean);
                         break;
                     case CONTENT:
                         MyText ve = parent.findViewWithTag(Long.toString(editorBean.getTag()));
+                        insertContent(editorBean,ContentType.CONTENT);
                         break;
                 }
-                editorList.add(editorBean);
+
             }
         }
 
@@ -412,7 +414,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
             public void onClick(View v) {
                 switch (dialog.getType()) {
                     case CONTENT:
-                        insertContent(contentSize, contentColor, ContentType.CONTENT);
+                        insertContent(ContentType.CONTENT);
                         break;
 //                    case TITLE:
 //                        insertContent(titleSize, titleColor, ContentType.TITLE);
@@ -498,13 +500,173 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
     /**
      * 插入内容,标题
      *
-     * @param size
-     * @param color
+     *
+     * @param bean
      * @param type
      */
 
+    private void insertContent(EditorBean bean, final ContentType type) {
+        String tag = Long.toString(bean.getTag());
+        final MyText tvContent = sampleview.findViewWithTag(tag);
+        contentColor = tvContent.getCurrentTextColor();
+        contentSize = (int)tvContent.getTextSize()/2;
 
-    private void insertContent(int size, final int color, final ContentType type) {
+        /**
+         *初始化修改对话框--------之所以写在这里 是因为要对象序列化--局部有效原则----如果弄成全局的,那么tvContent永远是最新一个--删除就会出错哦
+         */
+        final InputDialog updateDialog = new InputDialog(getContext());
+        updateDialog.getEdit().setTextColor(contentColor);
+        updateDialog.getEdit().setTextSize(contentSize);
+        updateDialog.setNegativeButton("取消", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateDialog.dismiss();
+                updateDialog.clearText();
+            }
+        });
+
+        updateDialog.setColorButton("颜色", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                View colorView = inflater.inflate(R.layout.dialog_color, null);
+                final LobsterPicker lobsterPicker = (LobsterPicker) colorView.findViewById(R.id.lobsterPicker);
+                LobsterShadeSlider shadeSlider = (LobsterShadeSlider) colorView.findViewById(R.id.shadeSlider);
+
+                lobsterPicker.addDecorator(shadeSlider);
+                lobsterPicker.setColorHistoryEnabled(true);
+                lobsterPicker.setHistory(contentColor);
+                lobsterPicker.setColor(contentColor);
+
+                new AlertDialog.Builder(getContext())
+                        .setView(colorView)
+                        .setTitle("Choose Color")
+                        .setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                contentColor = lobsterPicker.getColor();
+                                updateDialog.getEdit().setTextColor(contentColor);
+                                tvContent.setTextColor(contentColor);
+                            }
+                        })
+                        .setNegativeButton("CLOSE", null)
+                        .show();
+            }
+        });
+
+        updateDialog.setSizeButton("字号", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new NumberPickerDialog(
+                        getContext(),
+                        new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                contentSize = newVal;
+                                updateDialog.getEdit().setTextSize(contentSize);
+                                tvContent.setTextSize(contentSize);
+                            }
+                        },
+                        60, // 最大值
+                        10, // 最小值
+                        20) // 默认值
+                        .setCurrentValue(contentSize) // 更新默认值
+                        .show();
+            }
+        });
+
+        updateDialog.setPositiveButton("确定", new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String content = updateDialog.getContent();
+                updateDialog.clearText();
+                updateDialog.dismiss();
+                if (TextUtils.isEmpty(content)) {
+                    editor.removeView(tvContent);
+                    removeEditorBeanByTag(Long.valueOf(tag));
+                    return;
+                }
+                //String befor = (type == ContentType.CONTENT) ? "    " : "";
+                tvContent.setText(content);//修改的是内容,就空两格
+                for (EditorBean editorBean : editorList) {
+                    if (editorBean.getTag() == Long.valueOf(tag)) {
+                        editorBean.setContent(content);
+                        break;
+                    }
+                }
+            }
+        });
+
+
+
+        /**
+         * 长按就删除
+         */
+        tvContent.setOnClickListener(new View.OnClickListener() {
+            int left = tvContent.getLeft();
+            int top = tvContent.getTop();
+            @Override
+            public void onClick(View v) {
+                long secondTime = System.currentTimeMillis();
+                // 判断每次点击的事件间隔是否符合连击的有效范围
+                // 不符合时，有可能是连击的开始，否则就仅仅是单击
+                if (secondTime - firstTime <= interval) {
+                    ++count;
+                } else {
+                    count = 1;
+                }
+                // 延迟，用于判断用户的点击操作是否结束
+                delay(0,Long.valueOf(tag),left,top);
+                left = tvContent.getLeft();
+                top = tvContent.getTop();
+                firstTime = secondTime;
+
+            }
+        });
+        // 点击事件结束后的事件处理
+        handler_text = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                MyText content = parent.findViewWithTag(msg.obj);
+                if (count == 1) {
+                    if(Math.abs(content.getLeft()-msg.arg1)<5&&Math.abs(content.getTop()-msg.arg2)<5) {// 允许单击抖动
+                        updateDialog.show(ContentType.CONTENT);
+                        updateDialog.setText(content.getText().toString().replace("    ", ""));
+                    }
+                } else if (count > 1) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("删除");
+                    builder.setIcon(R.mipmap.delete);
+                    builder.setMessage("您确定要删除  " + content.getText().toString() + "  吗?");
+                    builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            sampleview.removeView(content);
+                            removeEditorBeanByTag(Long.valueOf(tag));
+                        }
+                    });
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder.create().show();
+                }
+                delayTimer.cancel();
+                count = 0;
+                super.handleMessage(msg);
+            }
+
+        };
+
+
+
+        editorList.add(bean);//添加到编辑器列表中
+    }
+    private void insertContent(final ContentType type) {
         final long tag = System.currentTimeMillis();//使用当前的时间做标记----标记的作用就是要知道哪条是哪条,删除的时候好操作
         final MyText tvContent = new MyText(getContext());
         tvContent.setTag(Long.toString(tag));
@@ -690,12 +852,6 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
                             + "/xiaoma.jpg");
                     UCrop.of(data.getData(), Uri.fromFile(new File(getActivity().getCacheDir(), "pp.png"))).start(getContext(),MyEditClass.this);
                     break;
-                // 取得裁剪后的图片
-                case 3:
-                    if (data != null) {
-                        setPicToView(data);
-                    }
-                    break;
                 case 69:
                     Uri resultUri = UCrop.getOutput(data);
                     insertImg(resultUri);
@@ -709,7 +865,9 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
     }
     // 保存当前的json文件
     public void saveJson(){
-        File file2 = StorageHelper.createNewAttachmentFile((MainActivity)getActivity(), ".json");
+        Intent tent = getActivity().getIntent();
+        String username = tent.getStringExtra("username");
+        File file2 = StorageHelper.createNewAttachmentFile((MainActivity)getActivity(), username,".json");
         try {
             FileOutputStream outputStream = new FileOutputStream(file2);
             outputStream.write(JsonCreater.createJsonStr(sampleview,editorList).getBytes());
@@ -718,47 +876,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
             e.printStackTrace();
         }
     }
-    /**
-     * 裁剪图片方法实现
-     *
-     * @param uri
-     */
-    public void startPhotoZoom(Uri uri) {
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
-        Bitmap bitmap = BitmapFactory.decodeFile(uri.getPath());
-        int height = bitmap.getHeight();
-        int width = bitmap.getWidth();
-        //下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
-        intent.putExtra("crop", "true");
-        // aspectX aspectY 是宽高的比例
-        intent.putExtra("aspectX", 0.1);
-        intent.putExtra("aspectY", 0.1);
-        // outputX outputY 是裁剪图片宽高
-        intent.putExtra("ouputX", 300);
-        intent.putExtra("outputY",300);
 
-        intent.putExtra("return-data", true);
-        intent.putExtra("scale", true);
-        startActivityForResult(intent, 3);
-    }
-
-    /**
-     * 保存裁剪之后的图片数据
-     *
-     * @param picdata
-     */
-    private void setPicToView(Intent picdata) {
-        Bundle extras = picdata.getExtras();
-        if (extras != null) {
-            Bitmap photo = extras.getParcelable("data");
-            //图片路径
-           // urlpath = FileUtilcll.saveFile(getActivity(), "temphead.jpg", photo);
-            System.out.println("----------路径----------" + urlpath);
-            Uri uri = Uri.parse(urlpath);
-            insertImg(uri);
-        }
-    }
     /**
      * 插入图片
      */
@@ -780,7 +898,84 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         }
         insertImg(uri);
     }
+    public void insertImg(EditorBean bean) {
+        final long tag = bean.getTag();//使用当前时间的毫秒值来标记当前内容，便于删除列表中的记录
+        final DragScaleView imageView = sampleview.findViewWithTag(Long.toString(bean.getTag()));
 
+        //处理点击事件（删除）
+        imageView.setOnClickListener(new View.OnClickListener(){
+            int left= imageView.getLeft();
+            int top = imageView.getTop();
+
+            @Override
+            public void onClick(View v){
+
+                //imageView.requestFocus();
+                long secondTime = System.currentTimeMillis();
+                // 判断每次点击的事件间隔是否符合连击的有效范围
+                // 不符合时，有可能是连击的开始，否则就仅仅是单击
+                if (secondTime - firstTime <= interval) {
+                    ++count;
+                } else {
+                    count = 1;
+                }
+                // 延迟，用于判断用户的点击操作是否结束
+                delay(1,tag,left,top);
+                left= imageView.getLeft();
+                top = imageView.getTop();
+                firstTime = secondTime;
+
+            }
+        });
+
+        // 点击事件结束后的事件处理
+        handler_img = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                ImageView imageV = parent.findViewWithTag(msg.obj);
+                if (count == 1) {
+                    if(Math.abs(imageV.getLeft()-msg.arg1)<5&&Math.abs(imageV.getTop()-msg.arg2)<5) {// 允许单击抖动
+                        if(imageV.getBackground()!=null){
+                            imageV.setBackgroundResource(0);
+                        }else{
+                            //Bitmap map = BitmapFactory.decodeResource(getContext().getResources(),R.drawable.shape_gray_square_bg);
+                            Drawable draw = getContext().getResources().getDrawable(R.drawable.shape_gray_square_bg);
+                            imageV.setBackground(draw);
+                            imageV.setPadding(1,1,1,1);
+                        }
+                    }
+                } else if (count > 1) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("删除");
+                    builder.setIcon(R.mipmap.delete);
+                    builder.setMessage("您确定要删除这张图片吗?");
+                    builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            sampleview.removeView(imageV);//移除图片
+                            removeEditorBeanByTag(tag);
+                        }
+                    });
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder.create().show();
+                }
+                delayTimer.cancel();
+                count = 0;
+                super.handleMessage(msg);
+            }
+        };
+
+//        imageView.setFocusable(true);
+        imageView.setClickable(true);
+        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
+        editorList.add(bean);//添加到列表中
+    }
     /**
      * 通过uri插入图片---带(长按即可)删除功能（不能修改--删除再添加即可）
      *

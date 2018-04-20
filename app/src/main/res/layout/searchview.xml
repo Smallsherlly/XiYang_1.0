@@ -1,14 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/searchview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#ffffffff">
 
-    <TextView
+    <ImageView
+        android:id="@+id/search"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/ic_search_white_24dp"
+        android:background="#08e6d7"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_toRightOf="@id/search"
+        android:layout_toLeftOf="@id/cancel"
+        android:hint="请输入要查找的手账标题"
+        android:textSize="15sp"
+        android:id="@+id/editText" />
+
+    <ImageButton
+        android:id="@+id/cancel"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:scaleType="center"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_del_circle_white_24dp" />
+
+    <android.support.v7.widget.RecyclerView android:id="@+id/RecyclerView01"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/search"
+        android:paddingBottom="0dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="0dp" />
+
+    <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textSize="30dp"
-        android:text="加紧施工中，敬请期待！"/>
-
-</FrameLayout>
+        android:layout_marginBottom="80dp"
+        android:layout_marginRight="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        app:fabSize="normal"
+        android:src="@drawable/plus"/>
+</RelativeLayout>

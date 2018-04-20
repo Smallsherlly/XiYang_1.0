@@ -116,8 +116,10 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
             getViewPager().setCurrentItem(1);
 
             return;
+        }else{
+            super.onBackPressed();
         }
-        //super.onBackPressed();
+
     }
     private Fragment checkFragmentInstance(int id, Object instanceClass) {
         Fragment result = null;

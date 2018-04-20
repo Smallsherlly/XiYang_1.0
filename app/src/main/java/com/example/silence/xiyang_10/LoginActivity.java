@@ -82,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Toast.makeText(LoginActivity.this, state, Toast.LENGTH_SHORT).show();
                             ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);
                             Intent i2 = new Intent(LoginActivity.this,MainActivity.class);
+                            i2.putExtra("username",username);
                             startActivity(i2, oc2.toBundle());
                         }else{
                             Toast.makeText(LoginActivity.this, "账号或密码错误!", Toast.LENGTH_SHORT).show();

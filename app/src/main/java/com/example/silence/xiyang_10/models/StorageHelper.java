@@ -257,10 +257,13 @@ public class StorageHelper {
     }
 
 
-    public static File createNewAttachmentFile(Context mContext, String extension) {
-        File f = null;
+    public static File createNewAttachmentFile(Context mContext,String username, String extension) {
+        File f = new File(mContext.getExternalFilesDir(null)+"/userdata/"+username);
+        if(!f.exists()){
+            f.mkdirs();
+        }
         if (checkStorage()) {
-            f = new File(mContext.getExternalFilesDir(null), createNewAttachmentName(extension));
+            f = new File(f.getPath(), createNewAttachmentName(extension));
         }
         return f;
     }
@@ -275,8 +278,8 @@ public class StorageHelper {
     }
 
 
-    public static File createNewAttachmentFile(Context mContext) {
-        return createNewAttachmentFile(mContext, null);
+    public static File createNewAttachmentFile(Context mContext,String username) {
+        return createNewAttachmentFile(mContext, username,null);
     }
 
 

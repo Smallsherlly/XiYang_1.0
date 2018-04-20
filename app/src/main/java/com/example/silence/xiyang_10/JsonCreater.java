@@ -62,21 +62,9 @@ public class JsonCreater {
             "\t\t},\n"+
 
             "\t\t{\n"+
-            "\t\t\t\"name\": \"clickable\",\n"+
-            "\t\t\t\"type\": \"boolean\",\n"+
-            "\t\t\t\"value\": \"true\"\n"+
-            "\t\t},\n"+
-
-            "\t\t{\n"+
             "\t\t\t\"name\": \"tag\",\n"+
             "\t\t\t\"type\": \"\",\n"+
             "\t\t\t\"value\": \""+imageView.getTag()+"\"\n"+
-            "\t\t},\n"+
-
-            "\t\t{\n"+
-            "\t\t\t\"name\": \"scaletype\",\n"+
-            "\t\t\t\"type\": \"string\",\n"+
-            "\t\t\t\"value\": \"fit_XY\"\n"+
             "\t\t},\n"+
 
             "\t\t{\n"+
@@ -155,18 +143,6 @@ public class JsonCreater {
             "\t\t\t\"type\": \"dimen\",\n"+
             "\t\t\t\"value\": \""+(int)(textView.getTextSize()/2)+"\"\n"+
             "\t\t},\n"+
-
-//            "\t\t{\n"+
-//            "\t\t\t\"name\": \"layout_width\",\n"+
-//            "\t\t\t\"type\": \"dimen\",\n"+
-//            "\t\t\t\"value\": \"warp_content\"\n"+
-//            "\t\t},\n"+
-//
-//            "\t\t{\n"+
-//            "\t\t\t\"name\": \"layout_height\",\n"+
-//            "\t\t\t\"type\": \"dimen\",\n"+
-//            "\t\t\t\"value\": \"warp_content\"\n"+
-//            "\t\t},\n"+
 
             "\t\t{\n"+
             "\t\t\t\"name\": \"layout_marginLeft\",\n"+

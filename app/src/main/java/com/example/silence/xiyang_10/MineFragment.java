@@ -43,6 +43,7 @@ public class MineFragment extends Fragment {
         count = 0;
     }
     private View myview;
+    private String username;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -60,7 +61,7 @@ public class MineFragment extends Fragment {
     }
 
     public void initUI(){
-
+        username = getActivity().getIntent().getStringExtra("username");
         myview = getActivity().getLayoutInflater().inflate(R.layout.fragment_mine,null);
 //        ShineButton shineButton = (ShineButton) getView().findViewById(R.id.shine_button);
 //        shineButton.init(activity);
@@ -122,7 +123,7 @@ public class MineFragment extends Fragment {
             switch (requestCode) {
                 // 如果是直接从相册获取
                 case 1:
-                    File file = StorageHelper.createNewAttachmentFile((MainActivity)getActivity(), ".png");
+                    File file = StorageHelper.createNewAttachmentFile((MainActivity)getActivity(),username, ".png");
 
                     UCrop.of(data.getData(), Uri.fromFile(file)).start(getContext(),MineFragment.this);
                     break;
