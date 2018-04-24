@@ -72,12 +72,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 getWindow().setExitTransition(explode);
                 getWindow().setEnterTransition(explode);
                 final String state=NetUilts.loginOfGet(username, password);
-                //if(state == null)
+
 
 
                 runOnUiThread(new Runnable() {//执行任务在主线程中
                     @Override
                     public void run() {//就是在主线程中操作
+                        if(state == null){
+                            Toast.makeText(LoginActivity.this, "网络未连接，请检查网络设置后重试！", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         if(state.equals("登录成功")){
                             Toast.makeText(LoginActivity.this, state, Toast.LENGTH_SHORT).show();
                             ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);

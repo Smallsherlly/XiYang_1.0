@@ -14,12 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.example.silence.xiyang_10.models;
+package com.example.silence.xiyang_10.db;
 
-public interface Constants extends ConstantsBase {
+import android.content.res.AssetManager;
 
-  String TAG = "Omni HandEdits FOSS";
-  String EXTERNAL_STORAGE_FOLDER = "Omni HandEdits Foss";
-  String PACKAGE = "it.feio.android.omniHandEdits.foss";
-  String PREFS_NAME = PACKAGE + "_preferences";
+import java.io.IOException;
+import java.util.Arrays;
+
+
+public class AssetUtils {
+
+	public static boolean exists(String fileName, String path,
+                                 AssetManager assetManager) throws IOException {
+		for (String currentFileName : assetManager.list(path)) {
+			if (currentFileName.equals(fileName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static String[] list(String path, AssetManager assetManager)
+			throws IOException {
+		String[] files = assetManager.list(path);
+		Arrays.sort(files);
+		return files;
+	}
+
 }

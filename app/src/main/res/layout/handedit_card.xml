@@ -38,19 +38,7 @@
             android:paddingBottom="8dp"
             android:paddingTop="8dp"
             tools:ignore="RtlHardcoded">
-            <com.sackcentury.shinebuttonlib.ShineButton
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="right"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
-                android:src="@android:color/darker_gray"
-                android:id="@+id/shine_button"
-                app:btn_color="@android:color/darker_gray"
-                app:btn_fill_color="#ff000d"
-                app:allow_random_color="true"
-                app:enable_flashing="false"
-                app:siShape="@raw/heart"/>
+
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="match_parent"

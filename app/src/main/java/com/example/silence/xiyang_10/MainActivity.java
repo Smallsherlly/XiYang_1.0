@@ -1,9 +1,11 @@
 package com.example.silence.xiyang_10;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +32,7 @@ import com.ToxicBakery.viewpager.transforms.ABaseTransformer;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
+import com.example.silence.xiyang_10.db.DbHelper;
 import com.example.silence.xiyang_10.runtimepermissions.PermissionsManager;
 import com.example.silence.xiyang_10.runtimepermissions.PermissionsResultAction;
 import com.stephentuso.welcome.WelcomeHelper;
@@ -50,7 +53,7 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
  */
 
 public class MainActivity extends BaseActivity implements BottomNavigation.OnMenuItemSelectionListener,UCropFragmentCallback {
-
+    public static Context mcontext;
     public Uri sketchUri;
     FragmentManager mFragmentManager;
 
@@ -67,11 +70,20 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
         super.onActivityResult(requestCode, resultCode, data);
 
     }
+
+    public static Context getAppContext() {
+        return MainActivity.mcontext;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);// 设置布局文件
+        SQLiteDatabase db = DbHelper.getInstance(this).getDatabase(true);
+        DbHelper.getInstance(this).onCreate(db);
 
+        //DbHelper.getInstance(this).onCreate(db);
+        Toast.makeText(this,DbHelper.getInstance(this).getDatabaseName(),Toast.LENGTH_SHORT).show();
+        setContentView(R.layout.activity_main);// 设置布局文件
+        mcontext = getApplicationContext();
         // 隐藏标题栏
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();

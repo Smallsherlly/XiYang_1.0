@@ -2,11 +2,13 @@ package com.example.silence.xiyang_10;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +17,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.silence.xiyang_10.db.DbHelper;
+import com.example.silence.xiyang_10.models.HandEdit;
 import com.squareup.picasso.Picasso;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Silence on 2018/3/28.
@@ -28,6 +37,12 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     RecyclerView mRecyclerView;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         return inflater.inflate(R.layout.searchview,container,false);
     }
@@ -35,7 +50,10 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     @Override
     public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView01);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView02);
+        final BaseActivity activity = (BaseActivity) getActivity();
+        createAdater(activity.getBottomNavigation().getNavigationHeight());
+
         ImageButton delete = (ImageButton) view.findViewById(R.id.cancel);
         EditText title = (EditText) view.findViewById(R.id.editText);
         delete.setOnClickListener(new View.OnClickListener() {
@@ -49,11 +67,11 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final BaseActivity activity = (BaseActivity) getActivity();
 
-        createAdater(activity.getBottomNavigation().getNavigationHeight());
+
+
     }
-    private void createAdater(int height) {
+    private void createAdater(int height) {Intent tent = getActivity().getIntent();
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(new SearchViewFragment.Adapter(getContext(), height, false, createData()));
@@ -86,16 +104,16 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     private class Adapter extends RecyclerView.Adapter<SearchViewFragment.TwoLinesViewHolder> {
         private final Picasso picasso;
         private final int navigationHeight;
-        private final SearchViewFragment.Book[] data;
+        private final List<SearchViewFragment.Book> data;
 
-        public Adapter(final Context context, final int navigationHeight, final boolean hasAppBarLayout, final SearchViewFragment.Book[] data) {
+        public Adapter(final Context context, final int navigationHeight, final boolean hasAppBarLayout, final List<SearchViewFragment.Book> data) {
             this.navigationHeight = navigationHeight;
             this.data = data;
             this.picasso = Picasso.with(context);
         }
         @Override
         public SearchViewFragment.TwoLinesViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-            final View view = LayoutInflater.from(getContext()).inflate(R.layout.simple_card_item, parent, false);
+            final View view = LayoutInflater.from(getContext()).inflate(R.layout.handedit_card, parent, false);
             final SearchViewFragment.TwoLinesViewHolder holder = new SearchViewFragment.TwoLinesViewHolder(view);
 
             holder.button1.setOnClickListener(new View.OnClickListener() {
@@ -136,13 +154,13 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
                 ((ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams()).bottomMargin = holder.marginBottom;
             }
 
-            final SearchViewFragment.Book item = data[position];
+            final SearchViewFragment.Book item = data.get(position);
             holder.title.setText(item.title);
-            holder.description.setText("By zhuye" );
+            holder.description.setText(item.author);
             holder.imageView.setImageBitmap(null);
 
             picasso.cancelRequest(holder.imageView);
-
+            Log.i("imageUrl",item.imageUrl+"result");
             picasso
                     .load(item.imageUrl)
                     .noPlaceholder()
@@ -152,24 +170,22 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
         }
         @Override
         public int getItemCount() {
-            return data.length;
+            return data.size();
         }
     }
-    private SearchViewFragment.Book[] createData() {
-        return new SearchViewFragment.Book[]{
-                new SearchViewFragment.Book("The Flight", "Scott Masterson", "http://i.imgur.com/dyyP2iO.jpg"),
-                new SearchViewFragment.Book("Room of Plates", "Ali Conners", "http://i.imgur.com/da6QIlR.jpg"),
-                new SearchViewFragment.Book("The Sleek Boot", "Sandra Adams", "http://i.imgur.com/YHoOJh4.jpg"),
-                new SearchViewFragment.Book("Night Hunting", "Janet Perkins", "http://i.imgur.com/3jxqrKP.jpg"),
-                new SearchViewFragment.Book("Rain and Coffee", "Peter Carlsson", "http://i.imgur.com/AZRynvM.jpg"),
-                new SearchViewFragment.Book("Ocean View", "Trevor Hansen", "http://i.imgur.com/IvhOJcw.jpg"),
-                new SearchViewFragment.Book("Lovers Of The Roof", "Britta Holt", "http://i.imgur.com/pxgI1b4.png"),
-                new SearchViewFragment.Book("Lessons from Delhi", "Mary Johnson", "http://i.imgur.com/oT1WYX9.jpg"),
-                new SearchViewFragment.Book("Mountaineers", "Abbey Christensen", "http://i.imgur.com/CLLDz.jpg"),
-                new SearchViewFragment.Book("Plains In The Night", "David Park", "http://i.imgur.com/7MrSvXE.jpg?1"),
-                new SearchViewFragment.Book("Dear Olivia", "Sylvia Sorensen", "http://i.imgur.com/3mkUuux.jpg"),
-                new SearchViewFragment.Book("Driving Lessons", "Halime Carver", "http://i.imgur.com/LzYAfFL.jpg"),
-        };
+    private List<SearchViewFragment.Book> createData() {
+        Intent tent = getActivity().getIntent();
+        String username = tent.getStringExtra("username");
+        List<HandEdit> handEdits = DbHelper.getInstance().getAllHandEdits(username,false);
+        List<SearchViewFragment.Book> book = new ArrayList<>();
+        for(HandEdit hand:handEdits){
+            book.add(new Book(hand.getTitle(),hand.getAuthor(),hand.getCover_path()));
+            Toast.makeText(getContext(),hand.getTitle()+hand.getAuthor()+hand.getCover_path(),Toast.LENGTH_SHORT).show();
+            Log.d("result",hand.getTitle()+hand.getAuthor()+hand.getCover_path());
+        }
+
+
+        return book;
     }
     static class Book {
         final String title;

@@ -32,7 +32,6 @@ public class JsonCreater {
             return null;
         for(int i=0; i<beanlist.length; i++){
             beanstr = beanlist[i].substring(beanlist[i].indexOf("{")+1,beanlist[i].indexOf("}")).split(";",3);
-            //Toast.makeText(v.getContext(),beanstr[0]+beanstr[1]+beanstr[2],Toast.LENGTH_SHORT).show();
             if(beanstr[0].equals("IMG")){
                 EditorBean bean = new EditorBean(ContentType.IMG,beanstr[1],Long.valueOf(beanstr[2]));
                 result.add(bean);
@@ -110,7 +109,7 @@ public class JsonCreater {
         int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
         int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
         textView.measure(w, h);
-        Toast.makeText(view.getContext(),Integer.toString(textView.getTop()),Toast.LENGTH_SHORT).show();
+
         imageString.append(
             "\t\t{\n" +
             "\t\t\"widget\": \"com.example.silence.xiyang_10.RichEditor.MyText\",\n"+
@@ -198,7 +197,6 @@ public class JsonCreater {
             if(count<editorList.size()&&count!=0){
                 json.append("\t\t,\n");
             }
-            Toast.makeText(view.getContext(),Integer.toString(count),Toast.LENGTH_SHORT).show();
             count--;
             switch (editorBean.getType()) {
                 case CONTENT:
