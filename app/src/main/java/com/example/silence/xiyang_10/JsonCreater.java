@@ -24,7 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class JsonCreater {
 
-    public static List<EditorBean> StringToEditorbean(String str,View v){
+    public static List<EditorBean> StringToEditorbean(String str){
         List<EditorBean> result = new CopyOnWriteArrayList<> ();;
         String[] beanlist = str.split(",");
         String[] beanstr;

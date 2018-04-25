@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +38,7 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     ViewGroup mRoot;
     CardView hand_card;
     RecyclerView mRecyclerView;
+    FloatingActionButton open_hand;
     private searchCallBack callBack;
 
     @Override
@@ -54,6 +56,14 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView02);
+        open_hand = (FloatingActionButton) view.findViewById(R.id.open_handedit);
+        open_hand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(),HandEditActivity.class);
+                startActivity(intent);
+            }
+        });
 
         final BaseActivity activity = (BaseActivity) getActivity();
         createAdater(activity.getBottomNavigation().getNavigationHeight());
@@ -134,9 +144,10 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
 //                                    null
 //                            );
 //                    snackbar.show();
-                    if(callBack!=null){
-                        callBack.sendHandEdit(Long.valueOf(holder.creation.getText().toString()));
-                    }
+                    Intent intent = new Intent(getContext(),HandEditActivity.class);
+                    intent.putExtra("Creation",holder.creation.getText().toString());
+                    startActivity(intent);
+
 
                 }
             });

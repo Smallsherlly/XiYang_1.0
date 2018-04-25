@@ -18,11 +18,6 @@
         android:icon="@drawable/ic_add_circle_white_24dp"
         android:title="手账" />
     <item
-        android:id="@+id/search"
-        android:color="#00b2ff"
-        android:icon="@drawable/ic_search_white_24dp"
-        android:title="搜索"/>
-    <item
         android:id="@+id/bbn_item4"
         android:color="#FF5252"
         android:icon="@drawable/ic_format_list_numbered_white_24dp"

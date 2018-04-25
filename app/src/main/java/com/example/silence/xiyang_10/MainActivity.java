@@ -229,27 +229,14 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
         @Override
         public Fragment getItem(final int position) {
             Fragment f0= new MainPageFragment();
-            Fragment f1= new MyEditClass();
-            Fragment f2= new SearchViewFragment();
-            Fragment f3= new MineFragment();
+            Fragment f1= new SearchViewFragment();
+            Fragment f2= new MineFragment();
             if (position == 0){
                 return f0;
-            } else if(position == 3){
-                return f3;
-            } else if(position == 2){
-                ((SearchViewFragment)f2).setOnSearchCallBackListener(new SearchViewFragment.searchCallBack() {
-                    @Override
-                    public void sendHandEdit(Long creation) {
-                        getViewPager().setCurrentItem(1);
-                        MyEditClass fragment = (MyEditClass) getSupportFragmentManager().findFragmentByTag(
-                                "android:switcher:"+R.id.ViewPager01+":1");
-                        fragment.show(creation);
-                        fragment.insertNullImage();
-                    }
-                });
-                return f2;
-            }else if(position == 1)
-                return  f1;
+            }else if(position == 1){
+                return f1;
+            }else if(position == 2)
+                return  f2;
             else
                 return new SketchFragment();
         }

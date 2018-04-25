@@ -61,7 +61,7 @@
     <RelativeLayout
         android:id="@+id/et_custom_editor"
         android:layout_width="360dp"
-        android:layout_height="468dp">
+        android:layout_height="528dp">
     </RelativeLayout>
 
 

@@ -22,6 +22,8 @@
         <activity android:name=".RegisterActivity"
             android:theme="@style/Translucent" />
         <activity android:name=".MainActivity"></activity>
+        <activity android:name=".HandEditActivity"></activity>
+        <activity android:name=".SketchActivity"></activity>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"

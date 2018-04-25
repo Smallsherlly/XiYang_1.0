@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1000"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#3b9beb"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center"
+
+            android:src="@mipmap/back" />
+        <!--android:onClick="onGetImgPath"-->
+        <EditText
+            android:id="@+id/et_main_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:background="@null"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:hint="在这里输入文章标题"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:singleLine="true"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center"
+            android:id="@+id/save"
+            android:src="@mipmap/right" />
+        <!--android:onClick="onFinished"-->
+    </LinearLayout>
+
+
+    <com.example.silence.xiyang_10.RichEditor.MRichEditor
+        android:id="@+id/mre_editor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#FFF" />
+
+</LinearLayout>
