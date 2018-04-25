@@ -130,11 +130,7 @@ public class HandEditActivity extends AppCompatActivity {
             jsonCompile(null);
             parent.addView(sampleview);
         }
-
-
-
-
-        reloadBean();
+        
     }
 
     public void preView(){
