@@ -52,10 +52,12 @@ import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
  * 这是主活动
  */
 
-public class MainActivity extends BaseActivity implements BottomNavigation.OnMenuItemSelectionListener,UCropFragmentCallback {
+public class MainActivity extends BaseActivity implements BottomNavigation.OnMenuItemSelectionListener,UCropFragmentCallback{
     public static Context mcontext;
     public Uri sketchUri;
     FragmentManager mFragmentManager;
+
+
 
     @Override
     public void loadingProgress(boolean showLoader) {
@@ -221,16 +223,33 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
             this.mCount = count;
         }
 
+
+
+
         @Override
         public Fragment getItem(final int position) {
-            if (position == 0)
-                return new MainPageFragment();
-            else if(position == 3)
-                return new MineFragment();
-            else if(position == 2){
-                return new SearchViewFragment();
+            Fragment f0= new MainPageFragment();
+            Fragment f1= new MyEditClass();
+            Fragment f2= new SearchViewFragment();
+            Fragment f3= new MineFragment();
+            if (position == 0){
+                return f0;
+            } else if(position == 3){
+                return f3;
+            } else if(position == 2){
+                ((SearchViewFragment)f2).setOnSearchCallBackListener(new SearchViewFragment.searchCallBack() {
+                    @Override
+                    public void sendHandEdit(Long creation) {
+                        getViewPager().setCurrentItem(1);
+                        MyEditClass fragment = (MyEditClass) getSupportFragmentManager().findFragmentByTag(
+                                "android:switcher:"+R.id.ViewPager01+":1");
+                        fragment.show(creation);
+                        fragment.insertNullImage();
+                    }
+                });
+                return f2;
             }else if(position == 1)
-                return  new MyEditClass();
+                return  f1;
             else
                 return new SketchFragment();
         }

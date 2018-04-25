@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -34,7 +35,9 @@ import java.util.List;
 public class SearchViewFragment extends android.support.v4.app.Fragment {
 
     ViewGroup mRoot;
+    CardView hand_card;
     RecyclerView mRecyclerView;
+    private searchCallBack callBack;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,6 +54,7 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView02);
+
         final BaseActivity activity = (BaseActivity) getActivity();
         createAdater(activity.getBottomNavigation().getNavigationHeight());
 
@@ -90,12 +94,14 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
         final Button button1;
         final Button button2;
         final int marginBottom;
+        final TextView creation;
 
         public TwoLinesViewHolder(final View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(android.R.id.title);
             description = (TextView) itemView.findViewById(android.R.id.text1);
             imageView = (ImageView) itemView.findViewById(android.R.id.icon);
+            creation = (TextView) itemView.findViewById(R.id.creation);
             marginBottom = ((ViewGroup.MarginLayoutParams) itemView.getLayoutParams()).bottomMargin;
             button1 = (Button) itemView.findViewById(android.R.id.button1);
             button2 = (Button) itemView.findViewById(android.R.id.button2);
@@ -116,19 +122,24 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
             final View view = LayoutInflater.from(getContext()).inflate(R.layout.handedit_card, parent, false);
             final SearchViewFragment.TwoLinesViewHolder holder = new SearchViewFragment.TwoLinesViewHolder(view);
 
+
             holder.button1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    Snackbar snackbar =
-                            Snackbar.make(mRoot, "Button 1 of item " + holder.getAdapterPosition(), Snackbar.LENGTH_LONG)
-                                    .setAction(
-                                            "Action",
-                                            null
-                                    );
-                    snackbar.show();
+//                    Snackbar snackbar = Snackbar.make(mRoot, "Button 2 of item " + holder.getAdapterPosition(),
+//                            Snackbar.LENGTH_LONG
+//                    )
+//                            .setAction(
+//                                    "Action",
+//                                    null
+//                            );
+//                    snackbar.show();
+                    if(callBack!=null){
+                        callBack.sendHandEdit(Long.valueOf(holder.creation.getText().toString()));
+                    }
+
                 }
             });
-
             holder.button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
@@ -158,6 +169,7 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
             holder.title.setText(item.title);
             holder.description.setText(item.author);
             holder.imageView.setImageBitmap(null);
+            holder.creation.setText(String.valueOf(item.creation));
 
             picasso.cancelRequest(holder.imageView);
             Log.i("imageUrl",item.imageUrl+"result");
@@ -179,9 +191,8 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
         List<HandEdit> handEdits = DbHelper.getInstance().getAllHandEdits(username,false);
         List<SearchViewFragment.Book> book = new ArrayList<>();
         for(HandEdit hand:handEdits){
-            book.add(new Book(hand.getTitle(),hand.getAuthor(),hand.getCover_path()));
-            Toast.makeText(getContext(),hand.getTitle()+hand.getAuthor()+hand.getCover_path(),Toast.LENGTH_SHORT).show();
-            Log.d("result",hand.getTitle()+hand.getAuthor()+hand.getCover_path());
+            book.add(new Book(hand.getTitle(),hand.getAuthor(),hand.getCover_path(),hand.getCreation()));
+            Log.d("result",hand.getTitle()+":"+hand.getJson_path());
         }
 
 
@@ -191,11 +202,20 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
         final String title;
         final String author;
         final String imageUrl;
+        final Long creation;
 
-        Book(final String title, final String author, final String imageUrl) {
+        Book(final String title, final String author, final String imageUrl,final Long creation) {
             this.title = title;
             this.author = author;
             this.imageUrl = imageUrl;
+            this.creation = creation;
         }
+    }
+
+    public interface searchCallBack{
+        void sendHandEdit(Long creation);
+    }
+    public void setOnSearchCallBackListener(searchCallBack listener){
+        this.callBack = listener;
     }
 }

@@ -186,6 +186,7 @@ public class DbHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_TITLE, handedit.getTitle());
         values.put(KEY_CONTENT, content);
+        values.put(KEY_JSONPATH,handedit.getJson_path());
         values.put(KEY_AUTHOR,handedit.getAuthor());
         values.put(KEY_COVER,handedit.getCover_path());
         values.put(KEY_CREATION, handedit.getCreation() != null ? handedit.getCreation() : Calendar.getInstance().getTimeInMillis());
@@ -237,7 +238,9 @@ public class DbHelper extends SQLiteOpenHelper {
         HandEdit handedit;
         if (handedits.size() > 0) {
             handedit = handedits.get(0);
+            Log.d("size","handedit is full");
         } else {
+            Log.d("size","handedit is null");
             handedit = null;
         }
         return handedit;

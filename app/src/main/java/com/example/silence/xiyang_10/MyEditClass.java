@@ -36,6 +36,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
@@ -54,7 +55,9 @@ import com.example.silence.xiyang_10.RichEditor.MRichEditor;
 import com.example.silence.xiyang_10.RichEditor.ModelImage;
 import com.example.silence.xiyang_10.RichEditor.MyText;
 import com.example.silence.xiyang_10.RichEditor.TakePhotoUtils;
+import com.example.silence.xiyang_10.db.DbHelper;
 import com.example.silence.xiyang_10.models.Attachment;
+import com.example.silence.xiyang_10.models.HandEdit;
 import com.example.silence.xiyang_10.models.ONStyle;
 import com.example.silence.xiyang_10.models.StorageHelper;
 import com.kizitonwose.colorpreference.ColorDialog;
@@ -117,6 +120,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
     private TextView tvInsertTitle;//插入标题按钮
     private TextView tvchangecolor;//插入标题按钮
     private SharedPreferences prefs;
+    private EditText title;
     @BindView(R.id.reminder_layout)
     LinearLayout reminder_layout;
     private float scale;
@@ -127,8 +131,10 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
     private int img_pos_top;
     private Uri attachmentUri;
     private View view;
+    private HandEdit cur_handedit;
 
     private RelativeLayout sampleview;
+    private RelativeLayout re;
 
     private String readFile(File file, Context context) {
         StringBuilder returnString = new StringBuilder();
@@ -215,12 +221,26 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         return returnString.toString();
     }
 
-    public void jsonCompile(){
+    public void jsonCompile(@Nullable File f){
         JSONObject jsonObject;
 
         try {
             //jsonObject = new JSONObject(readFile(f,getActivity()));
-            jsonObject = new JSONObject(readFile("sample.json",((MainActivity)getActivity())));
+            if(f == null){
+                jsonObject = new JSONObject(readFile("sample.json",((MainActivity)getActivity())));
+            }else{
+                jsonObject = new JSONObject(readFile(f,((MainActivity)getActivity())));
+                parent.removeView(sampleview);
+
+                sampleview = (RelativeLayout)DynamicView.createView(getActivity(), jsonObject);
+                sampleview.setLayoutParams(new WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT));
+
+                Log.d("welcome","I'm here");
+                parent.addView(sampleview);
+                reloadBean();
+                return;
+            }
+
 
 
         } catch (JSONException je) {
@@ -245,49 +265,66 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         }
     }
 
+    public void show(Long creation){
+        cur_handedit.setCreation(creation);
+        HandEdit hand = DbHelper.getInstance().getHandEdit(creation);
+        Log.i("creation",Long.toString(creation)+hand.getJson_path());
+        File json_file = new File(hand.getJson_path());
+        //File test_F = new File("/storage/emulated/0/Android/data/com.example.silence.xiyang_10/files/userdata/asdf/20180424_120140_468.json");
+        title.setText(hand.getTitle());
+        jsonCompile(json_file);
+    }
+
     public void init() {
         view = getActivity().getLayoutInflater().inflate(R.layout.fragment_handedit,null);
+        title = (EditText) view.findViewById(R.id.et_main_title);
         mRoot = (ViewGroup) view.findViewById(R.id.CoordinatorLayout01);
         tvInsertImg = (TextView) view.findViewById(R.id.tv_custom_edit_insert_img);
         parent = (RelativeLayout)view.findViewById(R.id.et_custom_editor);
+        cur_handedit = new HandEdit();
+        String nul = null;
+        cur_handedit.setCreation(nul);
         ImageView save = (ImageView) view.findViewById(R.id.save);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(),"you click save ",Toast.LENGTH_SHORT).show();
                 //insertContent(contentColor,contentSize,ContentType.CONTENT);
-                insertNull();
-            }
-        });
-        jsonCompile();
+                File cur_file = insertNull();
+                Intent tent = getActivity().getIntent();
+                String username = tent.getStringExtra("username");
+                final long tag = System.currentTimeMillis();
+                HandEdit handedit = new HandEdit();
+                handedit.setTitle(title.getText().toString());
+                handedit.setAuthor(username);
+                handedit.setJson_path(cur_file.getPath());
 
-//        ViewStub myViewStub = (ViewStub)view.findViewById(R.id.myViewStub);
-//        myViewStub.setLayoutResource(R.layout.myricheditor);
-//        if (myViewStub != null) {
-//            myViewStub.inflate();
-//            //或者是下面的形式加载
-//            //myViewStub.setVisibility(View.VISIBLE);
-//        }
+                if(cur_handedit.getCreation()!=null){
+                    handedit.setCreation(cur_handedit.getCreation());
+                }
 
-
-        parent.addView(sampleview);
-
-        List<EditorBean> bean = (List<EditorBean>) (JsonCreater.StringToEditorbean(sampleview.getTag().toString(),view));
-        if(bean!=null){
-            for (EditorBean editorBean : bean) {
-                switch (editorBean.getType()) {
-                    case IMG:
-                        ModelImage vi = parent.findViewWithTag(Long.toString(editorBean.getTag()));
-                        insertImg(editorBean);
-                        break;
-                    case CONTENT:
-                        MyText ve = parent.findViewWithTag(Long.toString(editorBean.getTag()));
-                        insertContent(editorBean,ContentType.CONTENT);
+                for(EditorBean bean:editorList){
+                    int flag = 0;
+                    switch (bean.getType()){
+                        case IMG:
+                            flag = 1;
+                            String cover_path = bean.getContent();
+                            handedit.setCover_path(cover_path);
+                            Log.i("cover_path",cover_path);
+                            break;
+                    }
+                    if(flag == 1)
                         break;
                 }
 
+                DbHelper.getInstance(getContext()).updateHandEdit(handedit,true);
             }
-        }
+        });
+       jsonCompile(null);
+
+        parent.addView(sampleview);
+        //reloadBean();
+
 
 //        editor = (RelativeLayout) view.findViewById(R.id.et_custom_editor);
         tvInsertContent = (TextView) view.findViewById(R.id.tv_custom_edit_insert_content);
@@ -339,6 +376,25 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
 
         });
 
+    }
+
+    public  void reloadBean(){
+        editorList.clear();
+        List<EditorBean> bean = (List<EditorBean>) (JsonCreater.StringToEditorbean(sampleview.getTag().toString(),view));
+        EditorBean mybean = bean.get(0);
+        if(bean!=null){
+            for (EditorBean editorBean : bean) {
+                switch (editorBean.getType()) {
+                    case IMG:
+                        insertImg(editorBean);
+                        break;
+                    case CONTENT:
+                        insertContent(editorBean,ContentType.CONTENT);
+                        break;
+                }
+
+            }
+        }
     }
 
     private void takeSketch() {
@@ -484,18 +540,33 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         });
     }
 
-    public void insertNull(){
+    public void insertNullImage(){
+        final long tag = System.currentTimeMillis();//使用当前的时间做标记----标记的作用就是要知道哪条是哪条,删除的时候好操作
+        final DragScaleView image = new DragScaleView(getContext());
+        image.setTag(Long.toString(tag));
+
+        image.setImageResource(R.drawable.circle);
+        String contentStr = "";
+        sampleview.addView(image);//添加到编辑器视图中
+        sampleview.removeView(image);
+        editorList.add(new EditorBean(ContentType.CONTENT, contentStr, tag));//添加到编辑器列表中
+        removeEditorBeanByTag(tag);
+
+    }
+    public File insertNull(){
         final long tag = System.currentTimeMillis();//使用当前的时间做标记----标记的作用就是要知道哪条是哪条,删除的时候好操作
         final MyText tvContent = new MyText(getContext());
         tvContent.setTag(Long.toString(tag));
 
-        //内容就空两格
+
         String contentStr = null;
         tvContent.setText(contentStr);
         sampleview.addView(tvContent);//添加到编辑器视图中
+        sampleview.removeView(tvContent);
         editorList.add(new EditorBean(ContentType.CONTENT, contentStr, tag));//添加到编辑器列表中
         removeEditorBeanByTag(tag);
-        saveJson();
+        File f = saveJson();
+        return f;
     }
     /**
      * 插入内容,标题
@@ -661,8 +732,6 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
             }
 
         };
-
-
 
         editorList.add(bean);//添加到编辑器列表中
     }
@@ -864,7 +933,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         }
     }
     // 保存当前的json文件
-    public void saveJson(){
+    public File saveJson(){
         Intent tent = getActivity().getIntent();
         String username = tent.getStringExtra("username");
         File file2 = StorageHelper.createNewAttachmentFile((MainActivity)getActivity(), username,".json");
@@ -875,6 +944,7 @@ public class MyEditClass extends Fragment implements ColorDialog.OnColorSelected
         }catch (IOException e){
             e.printStackTrace();
         }
+        return file2;
     }
 
     /**

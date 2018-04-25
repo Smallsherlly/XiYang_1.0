@@ -28,6 +28,7 @@ public class HandEdit implements Parcelable{
     public HandEdit(){
         this.title = "";
         this.content = "";
+        this.creation = 0L;
         this.archived = Boolean.valueOf(false);
         this.trashed = Boolean.valueOf(false);
     }
@@ -103,7 +104,8 @@ public class HandEdit implements Parcelable{
     }
 
     public void setCreation(String mcreation){
-        creation = Long.valueOf(mcreation);
+        if(mcreation != null)
+            creation = Long.valueOf(mcreation);
     }
     public void setLastModification(String mlastModification){
         lastmodification = Long.valueOf(mlastModification);

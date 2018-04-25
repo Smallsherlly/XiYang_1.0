@@ -3,7 +3,7 @@
 	"properties": [{
 		"name": "tag",
 		"type": "",
-		"value": "[EditorBean{CONTENT;想过后果;1524128012183}, EditorBean{IMG;file:///storage/emulated/0/takephoto/20180420_135908_581;1524203951505}, EditorBean{IMG;file:///storage/emulated/0/takephoto/20180420_135920_237;1524203966912}]"
+		"value": ""
 	},
 		{
 			"name": "layout_width",
@@ -16,111 +16,6 @@
 			"value": "match_parent"
 		}],
 	"views": [
-		{
-			"widget": "com.example.silence.xiyang_10.RichEditor.MyText",
-			"properties": [{
-				"name": "text",
-				"type": "string",
-				"value": "想过后果"
-			},
-				{
-					"name": "clickable",
-					"type": "boolean",
-					"value": "true"
-				},
-				{
-					"name": "tag",
-					"type": "",
-					"value": "1524128012183"
-				},
-				{
-					"name": "textColor",
-					"type": "color",
-					"value": "#ffe57373"
-				},
-				{
-					"name": "textSize",
-					"type": "dimen",
-					"value": "21"
-				},
-				{
-					"name": "layout_marginLeft",
-					"type": "dimen",
-					"value": "246"
-				},
-				{
-					"name": "layout_marginTop",
-					"type": "dimen",
-					"value": "506"
-				}]
-		}
-	,
-		{
-			"widget": "com.example.silence.xiyang_10.RichEditor.ModelImage",
-			"properties": [{
-				"name": "src",
-				"type": "url",
-				"value": "/sdcard/takephoto/20180420_135908_581"
-			},
-				{
-					"name": "tag",
-					"type": "",
-					"value": "1524203951505"
-				},
-				{
-					"name": "layout_width",
-					"type": "dimen",
-					"value": "180"
-				},
-				{
-					"name": "layout_height",
-					"type": "dimen",
-					"value": "288"
-				},
-				{
-					"name": "layout_marginLeft",
-					"type": "dimen",
-					"value": "264"
-				},
-				{
-					"name": "layout_marginTop",
-					"type": "dimen",
-					"value": "56"
-				}]
-		}
-	,
-		{
-			"widget": "com.example.silence.xiyang_10.RichEditor.ModelImage",
-			"properties": [{
-				"name": "src",
-				"type": "url",
-				"value": "/sdcard/takephoto/20180420_135920_237"
-			},
-				{
-					"name": "tag",
-					"type": "",
-					"value": "1524203966912"
-				},
-				{
-					"name": "layout_width",
-					"type": "dimen",
-					"value": "504"
-				},
-				{
-					"name": "layout_height",
-					"type": "dimen",
-					"value": "346"
-				},
-				{
-					"name": "layout_marginLeft",
-					"type": "dimen",
-					"value": "55"
-				},
-				{
-					"name": "layout_marginTop",
-					"type": "dimen",
-					"value": "590"
-				}]
-		}
+
 	]
 }

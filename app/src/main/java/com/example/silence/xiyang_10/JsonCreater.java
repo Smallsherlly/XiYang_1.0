@@ -53,7 +53,7 @@ public class JsonCreater {
 
         imageString.append(
             "\t\t{\n" +
-            "\t\t\"widget\": \"com.example.silence.xiyang_10.RichEditor.ModelImage\",\n"+
+            "\t\t\"widget\": \"com.example.silence.xiyang_10.RichEditor.DragScaleView\",\n"+
             "\t\t\"properties\": [{\n"+
             "\t\t\t\"name\": \"src\",\n"+
             "\t\t\t\"type\": \"url\",\n"+
