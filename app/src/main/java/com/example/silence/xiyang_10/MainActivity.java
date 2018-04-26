@@ -2,6 +2,7 @@ package com.example.silence.xiyang_10;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Explode;
 import android.view.Menu;
@@ -114,25 +116,22 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
     }
 
     public void onBackPressed() {
+        AlertDialog.Builder adialog = new AlertDialog.Builder(MainActivity.this);
+        adialog.setTitle("确定返回到登录界面？");
+        adialog.setCancelable(true);
+        adialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                MainActivity.super.onBackPressed();
+            }
+        });
+        adialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
 
-        Fragment f;
-        // SketchFragment
-        f = checkFragmentInstance(R.id.ViewPager01, SketchFragment.class);
-        if (f != null) {
-            ((SketchFragment) f).save();
-
-
-            // Removes forced portrait orientation for this fragment
-//            setRequestedOrientation(
-//                    ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-
-            mFragmentManager.popBackStack();
-            getViewPager().setCurrentItem(1);
-
-            return;
-        }else{
-            super.onBackPressed();
-        }
+            }
+        });
+        adialog.show();
 
     }
     private Fragment checkFragmentInstance(int id, Object instanceClass) {

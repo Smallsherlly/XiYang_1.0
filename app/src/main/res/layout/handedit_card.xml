@@ -74,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/spacer"
-                android:text="FREE SAMPLE"
+                android:text="打开手账"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/colorButton" />
 
@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@android:id/button1"
                 android:layout_toRightOf="@android:id/button1"
-                android:text="REVIEW"
+                android:text="删除手账"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/colorButton" />
             <TextView

@@ -1,6 +1,7 @@
 package com.example.silence.xiyang_10;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -58,6 +59,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -75,6 +77,7 @@ public class HandEditActivity extends AppCompatActivity {
     private TextView preView;
     private ViewGroup parent;
     private ImageView save;
+    private ImageView comeback;
     private InputDialog dialog;//内容、标题输入框
     private RelativeLayout sampleview;
     private RelativeLayout sampleview2;
@@ -91,6 +94,7 @@ public class HandEditActivity extends AppCompatActivity {
     private Handler handler_text;
     private Handler handler_img;
     private Timer delayTimer;
+    private HandEdit cur_handedit;
 
     @Override
     public void onCreate(Bundle saveInstanceState){
@@ -113,6 +117,15 @@ public class HandEditActivity extends AppCompatActivity {
         insertContent = (TextView) findViewById(R.id.tv_custom_edit_insert_content);
         insertSketch = (TextView) findViewById(R.id.tv_custom_edit_change_content);
         preView = (TextView) findViewById(R.id.tv_custom_edit_insert_preview);
+        comeback = (ImageView) findViewById(R.id.comeback);
+        cur_handedit = new HandEdit();
+
+        comeback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         preView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,15 +135,67 @@ public class HandEditActivity extends AppCompatActivity {
         });
         Intent intent = getIntent();
         if(intent.getStringExtra("Creation")!=null){
+            cur_handedit.setCreation(intent.getStringExtra("Creation"));
             HandEdit hand = DbHelper.getInstance().getHandEdit(Long.valueOf(intent.getStringExtra("Creation")));
             Log.i("creation",intent.getStringExtra("Creation")+hand.getJson_path());
             File json_file = new File(hand.getJson_path());
+            title.setText(hand.getTitle());
             jsonCompile(json_file);
         }else{
+            cur_handedit.setCreation(0L);
             jsonCompile(null);
             parent.addView(sampleview);
         }
-        
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(HandEditActivity.this,"you click save ",Toast.LENGTH_SHORT).show();
+                //insertContent(contentColor,contentSize,ContentType.CONTENT);
+                File cur_file = insertNull();
+                Intent tent = getIntent();
+                String username = tent.getStringExtra("username");
+                final long tag = System.currentTimeMillis();
+                HandEdit handedit = new HandEdit();
+                handedit.setTitle(title.getText().toString());
+                handedit.setAuthor(username);
+                handedit.setJson_path(cur_file.getPath());
+
+
+                Log.i("creation",String.valueOf(cur_handedit.getCreation()));
+                for(EditorBean bean:editorList){
+                    int flag = 0;
+                    switch (bean.getType()){
+                        case IMG:
+                            flag = 1;
+                            String cover_path = bean.getContent();
+                            handedit.setCover_path(cover_path);
+                            Log.i("cover_path",cover_path);
+                            break;
+                    }
+                    if(flag == 1)
+                        break;
+                }
+                if(handedit.getCover_path() == null){
+                    String path = ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
+                    + getResources().getResourcePackageName(R.drawable.ic_default_adimage) + "/"
+                    + getResources().getResourceTypeName(R.drawable.ic_default_adimage) + "/"
+                    + getResources().getResourceEntryName(R.drawable.ic_default_adimage);
+                    handedit.setCover_path(path);
+                }
+                Log.d("Cover_path",handedit.getCover_path());
+                if(cur_handedit.getCreation()!=0L){
+                    handedit.setCreation(cur_handedit.getCreation());
+                }else{
+                    handedit.setCreation(Calendar.getInstance().getTimeInMillis());
+                    Intent intent1 = new Intent();
+                    Bundle b  = new Bundle();
+                    b.putParcelable("HandEdit",handedit);
+                    intent1.putExtras(b);
+                    setResult(RESULT_OK,intent1);
+                }
+                DbHelper.getInstance(HandEditActivity.this).updateHandEdit(handedit,true);
+            }
+        });
     }
 
     public void preView(){
@@ -791,11 +856,10 @@ public class HandEditActivity extends AppCompatActivity {
         Log.i("position",String.valueOf(left)+"+"+String.valueOf(top));
         //处理点击事件（删除）
         imageView.setOnClickListener(new View.OnClickListener(){
-
+            int left= imageView.getLeft();
+            int top = imageView.getTop();
             @Override
             public void onClick(View v){
-                final int left= imageView.getLeft();
-                final int top = imageView.getTop();
                 Log.i("position",String.valueOf(left)+"+"+String.valueOf(top));
                 //imageView.requestFocus();
                 long secondTime = System.currentTimeMillis();
@@ -808,7 +872,8 @@ public class HandEditActivity extends AppCompatActivity {
                 }
                 // 延迟，用于判断用户的点击操作是否结束
                 delay(1,tag,left,top);
-
+                left= imageView.getLeft();
+                top = imageView.getTop();
                 firstTime = secondTime;
 
             }

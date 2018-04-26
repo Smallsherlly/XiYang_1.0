@@ -23,12 +23,12 @@ public class HandEdit implements Parcelable{
     Boolean archived;
     Boolean trashed;
 
-    Long category_id;
 
     public HandEdit(){
         this.title = "";
         this.content = "";
         this.creation = 0L;
+        this.zan_number = 0L;
         this.archived = Boolean.valueOf(false);
         this.trashed = Boolean.valueOf(false);
     }
@@ -50,7 +50,6 @@ public class HandEdit implements Parcelable{
         setArchived(in.readInt());
         setTrashed(in.readInt());
         setAddress(in.readString());
-        setCategory_id(in.readLong());
         //super.setCategory(in.readParcelable(Category.class.getClassLoader()));
 
     }
@@ -95,9 +94,7 @@ public class HandEdit implements Parcelable{
         return trashed;
     }
 
-    public Long getCategory_id(){
-        return category_id;
-    }
+
 
     public void setCreation(Long mcreation){
         creation = mcreation;
@@ -162,9 +159,7 @@ public class HandEdit implements Parcelable{
             this.trashed = Boolean.valueOf(false);
     }
 
-    public void setCategory_id(Long category_id) {
-        this.category_id = category_id;
-    }
+
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
@@ -179,7 +174,6 @@ public class HandEdit implements Parcelable{
         parcel.writeInt(isArchived() ? 1 : 0);
         parcel.writeInt(isTrashed() ? 1 : 0);
         parcel.writeString(getAddress());
-        parcel.writeLong(getCategory_id());
     }
 
     public static final Parcelable.Creator<HandEdit> CREATOR = new Parcelable.Creator<HandEdit>() {

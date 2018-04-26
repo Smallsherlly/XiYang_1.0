@@ -53,7 +53,7 @@
             android:clickable="true"
             android:drawableTop="@mipmap/preview"
             android:gravity="center"
-            android:text="预览" />
+            android:text="清空" />
     </LinearLayout>
 
 

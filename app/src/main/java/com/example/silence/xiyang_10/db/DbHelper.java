@@ -189,7 +189,7 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(KEY_JSONPATH,handedit.getJson_path());
         values.put(KEY_AUTHOR,handedit.getAuthor());
         values.put(KEY_COVER,handedit.getCover_path());
-        values.put(KEY_CREATION, handedit.getCreation() != null ? handedit.getCreation() : Calendar.getInstance().getTimeInMillis());
+        values.put(KEY_CREATION, handedit.getCreation() != 0L ? handedit.getCreation() : Calendar.getInstance().getTimeInMillis());
         values.put(KEY_LAST_MODIFICATION, updateLastModification ? Calendar
                 .getInstance().getTimeInMillis() : (handedit.getLastModification() != null ? handedit.getLastModification() :
                 Calendar.getInstance().getTimeInMillis()));
@@ -356,7 +356,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public List<HandEdit> getHandEdits(String whereCondition, boolean order) {
         List<HandEdit> HandEditList = new ArrayList<>();
 
-        String sort_column = KEY_CREATION, sort_order = " ASC";
+        String sort_column = KEY_CREATION, sort_order = " DESC";
 
 
         // Generic query to be specialized with conditions passed as parameter
@@ -402,7 +402,8 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
                     // Adding HandEdit to list
-                    HandEditList.add(HandEdit);
+                    if(!HandEdit.isTrashed())
+                        HandEditList.add(HandEdit);
 
                 } while (cursor.moveToNext());
             }
@@ -476,22 +477,14 @@ public class DbHelper extends SQLiteOpenHelper {
      * @return HandEdits list
      */
     // 搜索算法？
-//    public List<HandEdit> getHandEditsByPattern(String pattern) {
-//        int navigation = Navigation.getNavigation();
-//        String whereCondition = " WHERE "
-//                + KEY_TRASHED + (navigation == Navigation.TRASH ? " IS 1" : " IS NOT 1")
-//                + (navigation == Navigation.ARCHIVE ? " AND " + KEY_ARCHIVED + " IS 1" : "")
-//                + (navigation == Navigation.CATEGORY ? " AND " + KEY_CATEGORY + " = " + Navigation.getCategory() : "")
-//                + (navigation == Navigation.UNCATEGORIZED ? " AND (" + KEY_CATEGORY + " IS NULL OR " + KEY_CATEGORY_ID
-//                + " == 0) " : "")
-//                + (Navigation.checkNavigation(Navigation.REMINDERS) ? " AND " + KEY_REMINDER + " IS NOT NULL" : "")
-//                + " AND ("
-//                + " ( " + KEY_LOCKED + " IS NOT 1 AND (" + KEY_TITLE + " LIKE '%" + pattern + "%' " + " OR " +
-//                KEY_CONTENT + " LIKE '%" + pattern + "%' ))"
-//                + " OR ( " + KEY_LOCKED + " = 1 AND " + KEY_TITLE + " LIKE '%" + pattern + "%' )"
-//                + ")";
-//        return getHandEdits(whereCondition, true);
-//    }
+    public List<HandEdit> getHandEditsByPattern(String username,String pattern) {
+        int navigation = Navigation.getNavigation();
+        String whereCondition = " WHERE "
+                + KEY_TRASHED + " IS NOT 1 AND "
+                + KEY_AUTHOR + " = \'" + username+"\'"
+                + " AND (" + KEY_TITLE + " LIKE '%" + pattern + "%' )";
+        return getHandEdits(whereCondition, true);
+    }
 
 
 

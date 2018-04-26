@@ -1,5 +1,6 @@
 package com.example.silence.xiyang_10;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,9 +39,15 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
 
     ViewGroup mRoot;
     CardView hand_card;
+    ImageView search;
     RecyclerView mRecyclerView;
     FloatingActionButton open_hand;
+    Adapter adapter;
+    Adapter search_adapter;
+    EditText editText;
     private searchCallBack callBack;
+    List<SearchViewFragment.Book> mylist;
+    List<SearchViewFragment.Book> searchlist;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,15 +61,44 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case 1:
+                    HandEdit hand = data.getExtras().getParcelable("HandEdit");
+                    adapter.addItem(adapter.getItemCount(),new Book(hand.getTitle(),hand.getAuthor(),hand.getCover_path(),hand.getCreation()));
+                    adapter.notifyDataSetChanged();
+                    Log.d("result","comback");
+            }
+        }
+    }
+
+    @Override
     public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView02);
+        editText = (EditText) view.findViewById(R.id.editText);
+        search = (ImageView) view.findViewById(R.id.search);
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final BaseActivity activity = (BaseActivity) getActivity();
+                searchlist = findData(editText.getText().toString());
+                search_adapter = new SearchViewFragment.Adapter(getContext(), activity.getBottomNavigation().getNavigationHeight(), false,searchlist);
+                mRecyclerView.setAdapter(search_adapter);
+            }
+        });
         open_hand = (FloatingActionButton) view.findViewById(R.id.open_handedit);
         open_hand.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent tent = getActivity().getIntent();
+                String username = tent.getStringExtra("username");
                 Intent intent = new Intent(getContext(),HandEditActivity.class);
-                startActivity(intent);
+                intent.putExtra("username",username);
+                startActivityForResult(intent,1);
             }
         });
 
@@ -85,10 +122,12 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
 
 
     }
-    private void createAdater(int height) {Intent tent = getActivity().getIntent();
+    private void createAdater(int height) {
+        mylist = createData();
+        adapter = new SearchViewFragment.Adapter(getContext(), height, false,mylist);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.setAdapter(new SearchViewFragment.Adapter(getContext(), height, false, createData()));
+        mRecyclerView.setAdapter(adapter);
     }
 
     public void scrollToTop() {
@@ -120,12 +159,21 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     private class Adapter extends RecyclerView.Adapter<SearchViewFragment.TwoLinesViewHolder> {
         private final Picasso picasso;
         private final int navigationHeight;
-        private final List<SearchViewFragment.Book> data;
+        private List<SearchViewFragment.Book> data;
 
         public Adapter(final Context context, final int navigationHeight, final boolean hasAppBarLayout, final List<SearchViewFragment.Book> data) {
             this.navigationHeight = navigationHeight;
             this.data = data;
             this.picasso = Picasso.with(context);
+        }
+        public void addItem(int positon,SearchViewFragment.Book hand){
+            data.add(positon,hand);
+            notifyItemInserted(positon);
+        }
+
+        public void removeItem(int position){
+            data.remove(position);
+            notifyItemRemoved(position);
         }
         @Override
         public SearchViewFragment.TwoLinesViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
@@ -136,16 +184,11 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
             holder.button1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-//                    Snackbar snackbar = Snackbar.make(mRoot, "Button 2 of item " + holder.getAdapterPosition(),
-//                            Snackbar.LENGTH_LONG
-//                    )
-//                            .setAction(
-//                                    "Action",
-//                                    null
-//                            );
-//                    snackbar.show();
+                    Intent tent = getActivity().getIntent();
+                    String username = tent.getStringExtra("username");
                     Intent intent = new Intent(getContext(),HandEditActivity.class);
-                    intent.putExtra("Creation",holder.creation.getText().toString());
+                    intent.putExtra("username",username);
+                    intent.putExtra("Creation",holder.creation.getTag().toString());
                     startActivity(intent);
 
 
@@ -154,14 +197,10 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
             holder.button2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    Snackbar snackbar = Snackbar.make(mRoot, "Button 2 of item " + holder.getAdapterPosition(),
-                            Snackbar.LENGTH_LONG
-                    )
-                            .setAction(
-                                    "Action",
-                                    null
-                            );
-                    snackbar.show();
+                    HandEdit hand = DbHelper.getInstance().getHandEdit(Long.valueOf(holder.creation.getTag().toString()));
+                    hand.setTrashed(1);
+                    DbHelper.getInstance().updateHandEdit(hand,true);
+                    removeItem(holder.getAdapterPosition());
                 }
             });
 
@@ -175,12 +214,15 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
             }else {
                 ((ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams()).bottomMargin = holder.marginBottom;
             }
-
+            //data = createData();
             final SearchViewFragment.Book item = data.get(position);
             holder.title.setText(item.title);
             holder.description.setText(item.author);
             holder.imageView.setImageBitmap(null);
-            holder.creation.setText(String.valueOf(item.creation));
+            Date date = new Date(item.creation);
+            java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            holder.creation.setText(format.format(date));
+            holder.creation.setTag(item.creation);
 
             picasso.cancelRequest(holder.imageView);
             Log.i("imageUrl",item.imageUrl+"result");
@@ -200,6 +242,20 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
         Intent tent = getActivity().getIntent();
         String username = tent.getStringExtra("username");
         List<HandEdit> handEdits = DbHelper.getInstance().getAllHandEdits(username,false);
+        List<SearchViewFragment.Book> book = new ArrayList<>();
+        for(HandEdit hand:handEdits){
+            book.add(new Book(hand.getTitle(),hand.getAuthor(),hand.getCover_path(),hand.getCreation()));
+            Log.d("result",hand.getTitle()+":"+hand.getJson_path());
+        }
+
+
+        return book;
+    }
+
+    private List<SearchViewFragment.Book> findData(String pattern) {
+        Intent tent = getActivity().getIntent();
+        String username = tent.getStringExtra("username");
+        List<HandEdit> handEdits = DbHelper.getInstance().getHandEditsByPattern(username,pattern);
         List<SearchViewFragment.Book> book = new ArrayList<>();
         for(HandEdit hand:handEdits){
             book.add(new Book(hand.getTitle(),hand.getAuthor(),hand.getCover_path(),hand.getCreation()));
