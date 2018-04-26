@@ -39,27 +39,30 @@
         app:enable_flashing="false"
         app:siShape="@raw/heart"/>
     <Button
-        android:id="@+id/Edit"
+        android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:text="昵称:夏露泛银"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="性别:男"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="QQ:779854387"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="手机:17764590520"/>
+        android:text=""/>
 
+    <Button
+        android:id="@+id/qqnum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text=""/>
+    <Button
+        android:id="@+id/phonenum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text=""/>
+    <Button
+        android:id="@+id/synchronize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="同步云端数据"/>
 
     
 </LinearLayout>

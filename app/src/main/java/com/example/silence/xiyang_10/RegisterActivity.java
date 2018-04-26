@@ -22,6 +22,8 @@ import android.widget.Toast;
 public class RegisterActivity extends AppCompatActivity {
     private EditText edt_username;
     private EditText edt_password;
+    private EditText edt_qqnum;
+    private EditText edt_phonenum;
     private EditText edt_repassword;
     private FloatingActionButton fab;
     private Button go;
@@ -44,11 +46,13 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String username=edt_username.getText().toString();
                 String password=edt_password.getText().toString();
+                String qqnum = edt_qqnum.getText().toString();
+                String phonenum = edt_phonenum.getText().toString();
                 new Thread(new Runnable() {
 
                     @Override
                     public void run() {
-                        final String state=NetUilts.registerOfGet(username, password);
+                        final String state=NetUilts.registerOfGet(username, password,qqnum,phonenum);
 
                         runOnUiThread(new Runnable() {//执行任务在主线程中
                             @Override
@@ -70,6 +74,8 @@ public class RegisterActivity extends AppCompatActivity {
         edt_username = findViewById(R.id.et_username);
         edt_password = findViewById(R.id.et_password);
         edt_repassword = findViewById(R.id.et_repeatpassword);
+        edt_qqnum = findViewById(R.id.et_qqnumber);
+        edt_phonenum = findViewById(R.id.et_phonenumber);
         cvAdd = findViewById(R.id.cv_add);
         fab = findViewById(R.id.fab);
         go = findViewById(R.id.bt_go);

@@ -44,6 +44,9 @@ public class MineFragment extends Fragment {
     }
     private View myview;
     private String username;
+    private Button et_username;
+    private Button et_qqnum;
+    private Button et_phonenum;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -61,11 +64,18 @@ public class MineFragment extends Fragment {
     }
 
     public void initUI(){
-        username = getActivity().getIntent().getStringExtra("username");
+        Intent message = getActivity().getIntent();
+        username = message.getStringExtra("username");
         myview = getActivity().getLayoutInflater().inflate(R.layout.fragment_mine,null);
 //        ShineButton shineButton = (ShineButton) getView().findViewById(R.id.shine_button);
 //        shineButton.init(activity);
 //        shineButton.setChecked(true);
+        et_username = (Button) myview.findViewById(R.id.username);
+        et_qqnum = (Button) myview.findViewById(R.id.qqnum);
+        et_phonenum = (Button) myview.findViewById(R.id.phonenum);
+        et_username.setText("昵称："+message.getStringExtra("username"));
+        et_qqnum.setText("QQ："+message.getStringExtra("qqnum"));
+        et_phonenum.setText("手机："+message.getStringExtra("phonenum"));
         test_button = (RoundImageButton) myview.findViewById(R.id.round_touxiang);
         test_button.setOnClickListener(new View.OnClickListener() {
             @Override

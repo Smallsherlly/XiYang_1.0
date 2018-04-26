@@ -82,14 +82,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Toast.makeText(LoginActivity.this, "网络未连接，请检查网络设置后重试！", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        if(state.equals("登录成功")){
-                            Toast.makeText(LoginActivity.this, state, Toast.LENGTH_SHORT).show();
+                        if(state.equals("登录失败")){
+                            Toast.makeText(LoginActivity.this, "账号或密码错误!", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                             ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);
                             Intent i2 = new Intent(LoginActivity.this,MainActivity.class);
-                            i2.putExtra("username",username);
+                            String [] str = state.split(",");
+                            i2.putExtra("username",str[0]);
+                            i2.putExtra("qqnum",str[2]);
+                            i2.putExtra("phonenum",str[3]);
                             startActivity(i2, oc2.toBundle());
-                        }else{
-                            Toast.makeText(LoginActivity.this, "账号或密码错误!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

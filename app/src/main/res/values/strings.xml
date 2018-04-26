@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">惜扬手账1.9</string>
+    <string name="app_name">惜扬手账</string>
     <string name="login_success">登录成功</string>
     <string name="login">用户登录</string>
     <string name="Username">用户名</string>
@@ -10,4 +10,6 @@
     <string name="next">下一步</string>
     <string name="register">注册</string>
     <string name="storage_not_available">内存不可用</string>
+    <string name="qqnumber">QQ账号</string>
+    <string name="phonenumber">手机号码</string>
 </resources>

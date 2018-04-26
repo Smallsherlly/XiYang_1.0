@@ -12,7 +12,6 @@ CREATE
 		content TEXT,
 		archived INTEGER,
 		trashed INTEGER,
-		category_id INTEGER DEFAULT null
 	);
 	
 --DROP table handedits;

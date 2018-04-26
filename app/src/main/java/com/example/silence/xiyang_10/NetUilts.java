@@ -92,10 +92,10 @@ public class NetUilts {
 
     }
 
-    public static String registerOfGet(String username,String password){
+    public static String registerOfGet(String username,String password,String qqnum,String phonenum){
         HttpURLConnection conn=null;
         try {
-            String data="username="+username+"&"+"password="+password;
+            String data="username="+username+"&"+"password="+password+"&"+"qqnum="+qqnum+"&"+"phonenum="+phonenum;
             URL url=new URL("http://119.23.206.213:80/Login/Register?"+data);
             conn=(HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");//设置请求方式
