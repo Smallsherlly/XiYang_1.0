@@ -1,6 +1,7 @@
 package com.example.silence.xiyang_10;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -44,6 +45,10 @@ import com.example.silence.xiyang_10.RichEditor.TakePhotoUtils;
 import com.example.silence.xiyang_10.db.DbHelper;
 import com.example.silence.xiyang_10.models.HandEdit;
 import com.example.silence.xiyang_10.models.StorageHelper;
+import com.example.silence.xiyang_10.myhttputils.FailedMsgUtils;
+import com.example.silence.xiyang_10.myhttputils.MyHttpUtils;
+import com.example.silence.xiyang_10.myhttputils.bean.CommCallback;
+import com.example.silence.xiyang_10.myhttputils.bean.HttpBody;
 import com.larswerkman.lobsterpicker.LobsterPicker;
 import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider;
 import com.yalantis.ucrop.UCrop;
@@ -83,7 +88,7 @@ public class HandEditActivity extends AppCompatActivity {
     private RelativeLayout sampleview2;
     private int imgQuality = 10;//保存图片的质量,默认为20%（即压缩率为80%）
     private List<EditorBean> editorList = new ArrayList<>();//内容列表[并发容器 防止异常(用arraylist可能会异常)]
-
+    private String username;
     private Uri attachmentUri;
     private static int contentSize = 16;//内容字体大小
     private static int contentColor = Color.GRAY;//内容字体颜色
@@ -95,7 +100,7 @@ public class HandEditActivity extends AppCompatActivity {
     private Handler handler_img;
     private Timer delayTimer;
     private HandEdit cur_handedit;
-
+    private ProgressDialog mProgressDialog;
     @Override
     public void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
@@ -110,6 +115,8 @@ public class HandEditActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+        mProgressDialog = new ProgressDialog(HandEditActivity.this);
+        mProgressDialog.setMessage("正从云端下载文件，请稍候");
         title = (EditText) findViewById(R.id.et_main_title);
         parent = (ViewGroup) findViewById(R.id.et_custom_editor);
         save = (ImageView) findViewById(R.id.save);
@@ -134,18 +141,25 @@ public class HandEditActivity extends AppCompatActivity {
             }
         });
         Intent intent = getIntent();
+        username = intent.getStringExtra("username");
         if(intent.getStringExtra("Creation")!=null){
             cur_handedit.setCreation(intent.getStringExtra("Creation"));
             HandEdit hand = DbHelper.getInstance().getHandEdit(Long.valueOf(intent.getStringExtra("Creation")));
             Log.i("creation",intent.getStringExtra("Creation")+hand.getJson_path());
             File json_file = new File(hand.getJson_path());
             title.setText(hand.getTitle());
+            if(!json_file.exists()){
+                int index = hand.getJson_path().indexOf("2018");
+                String filename = hand.getJson_path().substring(index);
+                onDownload(filename,null,null);
+            }
             jsonCompile(json_file);
         }else{
             cur_handedit.setCreation(0L);
             jsonCompile(null);
             parent.addView(sampleview);
         }
+        // 保存手账
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -193,6 +207,21 @@ public class HandEditActivity extends AppCompatActivity {
                     intent1.putExtras(b);
                     setResult(RESULT_OK,intent1);
                 }
+                handedit.setLastModification(Calendar.getInstance().getTimeInMillis());
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        final String state=NetUilts.sendHandEditOfGet(handedit);
+
+                        runOnUiThread(new Runnable() {//执行任务在主线程中
+                            @Override
+                            public void run() {//就是在主线程中操作
+                                Toast.makeText(HandEditActivity.this, state, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).start();
                 DbHelper.getInstance(HandEditActivity.this).updateHandEdit(handedit,true);
             }
         });
@@ -212,20 +241,22 @@ public class HandEditActivity extends AppCompatActivity {
             switch (requestCode) {
                 // 如果是直接从相册获取
                 case 1:
-                    File file = StorageHelper.createNewAttachmentFile(this, ".png");
+                    File file = StorageHelper.createNewAttachmentFile(this, username,".png");
 
                     UCrop.of(data.getData(), Uri.fromFile(file)).start(this);
                     break;
                 // 如果是调用相机拍照时
                 case 2:
-                    Toast.makeText(this,"takephoto",Toast.LENGTH_SHORT).show();
-                    File temp = new File(Environment.getExternalStorageDirectory()
-                            + "/xiaoma.jpg");
-                    UCrop.of(data.getData(), Uri.fromFile(new File(getCacheDir(), "pp.png"))).start(this);
+//                    Toast.makeText(this,"takephoto",Toast.LENGTH_SHORT).show();
+//                    File temp = new File(Environment.getExternalStorageDirectory()
+//                            + "/xiaoma.jpg");
+                    File file2 = StorageHelper.createNewAttachmentFile(this, username,".png");
+                    UCrop.of(data.getData(), Uri.fromFile(file2)).start(this);
                     break;
                 case 3:
                     Log.i("Sketch_comback","come here");
-                    insertImg((Uri)data.getParcelableExtra("URI"));
+                    File file3 = StorageHelper.createNewAttachmentFile(this, username,".png");
+                    UCrop.of((Uri)data.getParcelableExtra("URI"),Uri.fromFile(file3)).start(this);
                     break;
                 case 69:
                     Uri resultUri = UCrop.getOutput(data);
@@ -849,10 +880,17 @@ public class HandEditActivity extends AppCompatActivity {
         editorList.add(bean);//添加到编辑器列表中
     }
     public void insertImg(EditorBean bean) {
+
         final long tag = bean.getTag();//使用当前时间的毫秒值来标记当前内容，便于删除列表中的记录
         final DragScaleView imageView = sampleview.findViewWithTag(Long.toString(bean.getTag()));
         final int left= imageView.getLeft();
         final int top = imageView.getTop();
+        File imgsrc = new File(bean.getContent());
+        if(!imgsrc.exists()){
+            int index = bean.getContent().indexOf("2018");
+            String filename = bean.getContent().substring(index);
+            onDownload(filename,imageView,bean);
+        }
         Log.i("position",String.valueOf(left)+"+"+String.valueOf(top));
         //处理点击事件（删除）
         imageView.setOnClickListener(new View.OnClickListener(){
@@ -1021,7 +1059,7 @@ public class HandEditActivity extends AppCompatActivity {
         Bitmap images = BitmapFactory.decodeFile(filePath, TakePhotoUtils.getOptions(filePath, 4));//压缩图片的大小，按4倍来压缩
         imageView.setImageBitmap(images);
         sampleview.addView(imageView);//添加到编辑器中
-        editorList.add(new EditorBean(ContentType.IMG, Uri.fromFile(new File(filePath)).toString(), tag));//添加到列表中
+        editorList.add(new EditorBean(ContentType.IMG, Uri.fromFile(new File(bitmapUri.getPath())).toString(), tag));//添加到列表中
     }
     private void takeSketch() {
         File f = StorageHelper.createNewAttachmentFile(this, ".png");
@@ -1071,7 +1109,37 @@ public class HandEditActivity extends AppCompatActivity {
     delayTimer = new Timer();
     delayTimer.schedule(task, interval);
 }
+    public void onDownload(String filename,@Nullable DragScaleView view,@Nullable EditorBean bean) {
+      //  mProgressDialog.show();
+        HttpBody body = new HttpBody();
+        body.setUrl("http://119.23.206.213:80/Login/upload/userdata/"+username+"/"+filename)
+                .setConnTimeOut(6000)
+                .setFileSaveDir(HandEditActivity.this.getExternalFilesDir(null)+"/userdata/"+username)
+                .setReadTimeOut(5 * 60 * 1000);
 
+        MyHttpUtils.build()
+                .setHttpBody(body)
+                .onExecuteDwonload(new CommCallback() {
+
+                    @Override
+                    public void onSucceed(Object o) {
+               //         mProgressDialog.dismiss();
+                        view.setImageURI(Uri.parse(bean.getContent()));
+                       // ToastUtils.showToast(HandEditActivity.this, "下载完成");
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        ToastUtils.showToast(HandEditActivity.this, FailedMsgUtils.getErrMsgStr(throwable));
+                    }
+
+                    @Override
+                    public void onDownloading(long total, long current) {
+                        System.out.println(total + "-------" + current);
+                        //tvProgress.setText(new DecimalFormat("######0.00").format(((double) current / total) * 100) + "%");//保留两位小数
+                    }
+                });
+    }
     private void removeEditorBeanByTag(long tag) {
     for (EditorBean editorBean : editorList) {
         if (editorBean.getTag() == tag) {

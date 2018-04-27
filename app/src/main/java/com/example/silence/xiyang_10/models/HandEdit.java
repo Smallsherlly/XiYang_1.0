@@ -86,6 +86,13 @@ public class HandEdit implements Parcelable{
         return archived;
     }
 
+    public int getArchived(){
+        if(archived)
+            return 1;
+        else
+            return 0;
+    }
+
     public String getAddress(){
         return address;
     }
@@ -93,7 +100,12 @@ public class HandEdit implements Parcelable{
     public Boolean isTrashed(){
         return trashed;
     }
-
+    public int getTrashed(){
+        if(trashed)
+            return 1;
+        else
+            return 0;
+    }
 
 
     public void setCreation(Long mcreation){

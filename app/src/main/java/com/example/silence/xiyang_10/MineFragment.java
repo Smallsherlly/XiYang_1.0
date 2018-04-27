@@ -1,6 +1,7 @@
 package com.example.silence.xiyang_10;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +27,30 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.silence.xiyang_10.models.StorageHelper;
+
+import com.example.silence.xiyang_10.myhttputils.FailedMsgUtils;
+import com.example.silence.xiyang_10.myhttputils.MyHttpUtils;
+import com.example.silence.xiyang_10.myhttputils.bean.CommCallback;
+import com.example.silence.xiyang_10.myhttputils.bean.HttpBody;
+import com.example.silence.xiyang_10.myhttputils.bean.StringCallBack;
 import com.sackcentury.shinebuttonlib.ShineButton;
 import com.yalantis.ucrop.UCrop;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.DecimalFormat;
 
 /**
  * Created by Silence on 2018/3/16.
@@ -47,6 +69,8 @@ public class MineFragment extends Fragment {
     private Button et_username;
     private Button et_qqnum;
     private Button et_phonenum;
+    private Button synchronize;
+    private ProgressDialog mProgressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -67,9 +91,16 @@ public class MineFragment extends Fragment {
         Intent message = getActivity().getIntent();
         username = message.getStringExtra("username");
         myview = getActivity().getLayoutInflater().inflate(R.layout.fragment_mine,null);
-//        ShineButton shineButton = (ShineButton) getView().findViewById(R.id.shine_button);
-//        shineButton.init(activity);
-//        shineButton.setChecked(true);
+        synchronize = (Button) myview.findViewById(R.id.synchronize);
+        synchronize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onUploadMult();
+            }
+        });
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("上传中，请稍后");
+
         et_username = (Button) myview.findViewById(R.id.username);
         et_qqnum = (Button) myview.findViewById(R.id.qqnum);
         et_phonenum = (Button) myview.findViewById(R.id.phonenum);
@@ -229,4 +260,276 @@ public class MineFragment extends Fragment {
         return output;
 
     }
+
+    public void outputFiles(String path,MyHttpUtils utils){
+        File root = new File(path);
+        recyclemethod(root,utils);
+    }
+
+    public void recyclemethod(File path,MyHttpUtils utils){
+        if(path.exists()) {
+            File[] files = path.listFiles();
+            for (File f : files) {
+                if (f.isFile()) {
+                    utils.addFile(f);
+                } else if (f.isDirectory()) {
+                    recyclemethod(f, utils);
+                }
+            }
+        }
+    }
+    /**
+     * 云端服务器数据同步
+     *上传并且下载
+     *
+     */
+    public void onUploadMult() {
+        Intent intent = getActivity().getIntent();
+        String username = intent.getStringExtra("username");
+        mProgressDialog.show();
+        MyHttpUtils utils = MyHttpUtils.build();
+        utils.uploadUrl("http://119.23.206.213:80/Login/upload");
+        utils.addParam("username",username);
+        Log.d("usernameMine",username);
+        String path = getActivity().getExternalFilesDir(null)+"/userdata/"+username;
+        File root = new File(path);
+        if(root.exists()){
+            recyclemethod(root,utils);
+            utils.onExecuteUpLoad(new CommCallback() {
+                @Override
+                public void onComplete() {
+                    mProgressDialog.dismiss();
+                    ToastUtils.showToast(getActivity(), "上传完成");
+                }
+
+                @Override
+                public void onSucceed(Object o) {
+
+                }
+
+                @Override
+                public void onFailed(Throwable throwable) {
+                    ToastUtils.showToast(getActivity(), FailedMsgUtils.getErrMsgStr(throwable));
+                }
+            });
+        }
+
+    }
+
+    /**
+     * 开始下载按钮单击事件
+     *
+     *
+     */
+    public void onDownload() {
+
+        HttpBody body = new HttpBody();
+        body.setUrl("http://119.23.206.213:80/Login/data/userdata/"+username)
+                .setConnTimeOut(6000)
+                .setFileSaveDir(getActivity().getExternalFilesDir(null)+"/userdata/"+username)
+                .setReadTimeOut(5 * 60 * 1000);
+
+        MyHttpUtils.build()
+                .setHttpBody(body)
+                .onExecuteDwonload(new CommCallback() {
+
+                    @Override
+                    public void onSucceed(Object o) {
+                        ToastUtils.showToast(getActivity(), "下载完成");
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        ToastUtils.showToast(getActivity(), FailedMsgUtils.getErrMsgStr(throwable));
+                    }
+
+                    @Override
+                    public void onDownloading(long total, long current) {
+                        System.out.println(total + "-------" + current);
+                        //tvProgress.setText(new DecimalFormat("######0.00").format(((double) current / total) * 100) + "%");//保留两位小数
+                    }
+                });
+    }
+//String remoteFileName, String localFileName
+    public void downLoad() {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        OutputStream out = null;
+        InputStream in = null;
+
+        try {
+            HttpGet httpGet = new HttpGet("http://119.23.206.213:80/Login/download");
+
+            httpGet.addHeader("fileName", "20180427_150643_652.png");
+
+            HttpResponse httpResponse = httpClient.execute(httpGet);
+            HttpEntity entity = httpResponse.getEntity();
+            in = entity.getContent();
+
+            long length = entity.getContentLength();
+            if (length <= 0) {
+                System.out.println("下载文件不存在！");
+                return;
+            }
+
+            System.out.println("The response value of token:" + httpResponse.getFirstHeader("token"));
+
+            File file = new File(getActivity().getExternalFilesDir(null)+"/userdata/"+username);
+            if(!file.exists()){
+                file.createNewFile();
+            }
+
+            out = new FileOutputStream(file);
+            byte[] buffer = new byte[4096];
+            int readLength = 0;
+            while ((readLength=in.read(buffer)) > 0) {
+                byte[] bytes = new byte[readLength];
+                System.arraycopy(buffer, 0, bytes, 0, readLength);
+                out.write(bytes);
+            }
+
+            out.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+            try {
+                if(in != null){
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if(out != null){
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public  void registerOfGet(String filename){
+        OutputStream out = null;
+        InputStream in = null;
+        HttpURLConnection conn=null;
+        try {
+            String data="filename="+filename;
+            URL url=new URL("http://119.23.206.213:80/Login/download?"+data);
+            conn=(HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");//设置请求方式
+            conn.setConnectTimeout(10000);//设置连接超时时间
+            conn.setReadTimeout(5000);//设置读取超时时间
+            conn.connect();//开始连接
+            int responseCode=conn.getResponseCode();//获取响应吗
+            if(responseCode==200){
+                //访问成功
+                InputStream is=conn.getInputStream();//得到InputStream输入流
+                File file = new File(getActivity().getExternalFilesDir(null)+"/userdata/"+username);
+                if(!file.exists()){
+                    file.createNewFile();
+                }
+
+                out = new FileOutputStream(file);
+                byte[] buffer = new byte[4096];
+                int readLength = 0;
+                while ((readLength=in.read(buffer)) > 0) {
+                    byte[] bytes = new byte[readLength];
+                    System.arraycopy(buffer, 0, bytes, 0, readLength);
+                    out.write(bytes);
+                }
+
+                out.flush();
+
+            }else{
+                //访问失败
+                String state = "lose";
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+            if(conn!=null){//如果conn不等于空，则关闭连接
+                conn.disconnect();
+            }
+            try {
+                if(in != null){
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if(out != null){
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+    public void download3() {
+        HttpURLConnection conn=null;
+        FileOutputStream fout = null;
+        InputStream in = null;
+
+        try{
+
+            URL url = new URL("http://119.23.206.213:80/Login/download");
+            conn=(HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");//设置请求方式
+            conn.setConnectTimeout(10000);//设置连接超时时间
+            conn.setReadTimeout(5000);//设置读取超时时间
+
+            //POST请求的参数
+            OutputStream out=conn.getOutputStream();//获得输出流对象，用于向服务器写数据
+            String data = "fileName=20180427_150643_652.png";
+            out.write(data.getBytes());//向服务器写数据;
+            out.close();//关闭输出流
+            Log.d("download", "dddsdsdsadasasf");
+            conn.connect();
+            Log.d("download", "dddsdsdsadasasf");
+            int responseCode=conn.getResponseCode();//获取响应吗
+            if(responseCode==200) {
+                in = conn.getInputStream();// send request to
+                // server
+                File file = new File(getActivity().getExternalFilesDir(null) + "/userdata/" + username+"/gg.png");
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                fout = new FileOutputStream(file);
+                byte[] buffer = new byte[4096];
+                int readLength = 0;
+                while ((readLength = in.read(buffer)) > 0) {
+                    byte[] bytes = new byte[readLength];
+                    System.arraycopy(buffer, 0, bytes, 0, readLength);
+                    fout.write(bytes);
+                }
+
+                fout.flush();
+            }
+            }catch(Exception e){
+                e.printStackTrace();
+            }finally{
+                try {
+                    if(in != null){
+                        in.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    if(fout != null){
+                        fout.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 }

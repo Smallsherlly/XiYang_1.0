@@ -199,6 +199,20 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
                 public void onClick(final View view) {
                     HandEdit hand = DbHelper.getInstance().getHandEdit(Long.valueOf(holder.creation.getTag().toString()));
                     hand.setTrashed(1);
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            final String state=NetUilts.sendHandEditOfGet(hand);
+
+                            getActivity().runOnUiThread(new Runnable() {//执行任务在主线程中
+                                @Override
+                                public void run() {//就是在主线程中操作
+                                    Toast.makeText(getActivity(), state, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }).start();
                     DbHelper.getInstance().updateHandEdit(hand,true);
                     removeItem(holder.getAdapterPosition());
                 }
