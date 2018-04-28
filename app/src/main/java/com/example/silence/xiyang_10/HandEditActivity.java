@@ -141,18 +141,23 @@ public class HandEditActivity extends AppCompatActivity {
             }
         });
         Intent intent = getIntent();
-        username = intent.getStringExtra("username");
+        if(intent.getBooleanExtra("fromModel",false)){
+            username = "admin";
+        }else{
+            username = intent.getStringExtra("username");
+        }
+
         if(intent.getStringExtra("Creation")!=null){
             cur_handedit.setCreation(intent.getStringExtra("Creation"));
             HandEdit hand = DbHelper.getInstance().getHandEdit(Long.valueOf(intent.getStringExtra("Creation")));
             Log.i("creation",intent.getStringExtra("Creation")+hand.getJson_path());
             File json_file = new File(hand.getJson_path());
-            title.setText(hand.getTitle());
-            if(!json_file.exists()){
-                int index = hand.getJson_path().indexOf("2018");
-                String filename = hand.getJson_path().substring(index);
-                onDownload(filename,null,null);
-            }
+//            title.setText(hand.getTitle());
+//            if(!json_file.exists()){
+//                int index = hand.getJson_path().indexOf("2018");
+//                String filename = hand.getJson_path().substring(index);
+//                onDownload(filename,null,null);
+//            }
             jsonCompile(json_file);
         }else{
             cur_handedit.setCreation(0L);
@@ -168,6 +173,7 @@ public class HandEditActivity extends AppCompatActivity {
                 File cur_file = insertNull();
                 Intent tent = getIntent();
                 String username = tent.getStringExtra("username");
+
                 final long tag = System.currentTimeMillis();
                 HandEdit handedit = new HandEdit();
                 handedit.setTitle(title.getText().toString());
@@ -196,8 +202,11 @@ public class HandEditActivity extends AppCompatActivity {
                     + getResources().getResourceEntryName(R.drawable.ic_default_adimage);
                     handedit.setCover_path(path);
                 }
+                if(tent.getBooleanExtra("fromModel",false)){
+
+                }
                 Log.d("Cover_path",handedit.getCover_path());
-                if(cur_handedit.getCreation()!=0L){
+                if(cur_handedit.getCreation()!=0L&&!tent.getBooleanExtra("fromModel",false)){
                     handedit.setCreation(cur_handedit.getCreation());
                 }else{
                     handedit.setCreation(Calendar.getInstance().getTimeInMillis());

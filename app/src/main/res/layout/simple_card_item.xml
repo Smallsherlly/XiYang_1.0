@@ -23,7 +23,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@android:id/icon"
+            android:id="@+id/iconx"
             android:layout_width="@dimen/simple_card_image_width"
             android:layout_height="@dimen/simple_card_image_height"
             android:background="@android:color/darker_gray"
@@ -52,7 +52,7 @@
                 app:enable_flashing="false"
                 app:siShape="@raw/heart"/>
             <TextView
-                android:id="@android:id/title"
+                android:id="@+id/titlex"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
@@ -62,44 +62,45 @@
                 android:textStyle="normal" />
 
             <TextView
-                android:id="@android:id/text1"
+                android:id="@+id/textx"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@android:id/title"
+                android:layout_below="@id/titlex"
                 android:lines="1"
                 android:text="Description"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
             <View
-                android:id="@+id/spacer"
+                android:id="@+id/spacerx"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:layout_below="@android:id/text1"
+                android:layout_below="@id/textx"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
                 android:background="@android:color/darker_gray" />
 
             <android.support.v7.widget.AppCompatButton
-                android:id="@android:id/button1"
+                android:id="@+id/buttonx"
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/spacer"
-                android:text="FREE SAMPLE"
+                android:layout_marginLeft="40dp"
+                android:layout_below="@+id/spacerx"
+                android:text="打开模板"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="@color/colorButton" />
 
-            <android.support.v7.widget.AppCompatButton
-                android:id="@android:id/button2"
-                style="@style/Base.Widget.AppCompat.Button.Borderless"
+            <TextView
+                android:id="@+id/creationx"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@android:id/button1"
-                android:layout_toRightOf="@android:id/button1"
-                android:text="REVIEW"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/colorButton" />
-
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/buttonx"
+                android:layout_below="@id/textx"
+                android:layout_alignParentRight="true"
+                android:hint="creation"
+                />
         </RelativeLayout>
 
     </LinearLayout>

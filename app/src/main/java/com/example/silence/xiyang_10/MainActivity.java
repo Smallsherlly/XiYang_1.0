@@ -175,13 +175,34 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
                     public void run() {//就是在主线程中操作
                        // Toast.makeText(MainActivity.this, state, Toast.LENGTH_SHORT).show();
                         Log.i("data",state);
-                        dataStringManage(state);
+                        if(!state.equals("无此用户数据"))
+                            dataStringManage(state);
                     }
                 });
             }
         }).start();
        }
+       // 导入模板
+        if(DbHelper.getInstance().getAllHandEdits("admin",false).size() == 0){
 
+            new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    final String state= NetUilts.getDatabase("admin");
+
+                    runOnUiThread(new Runnable() {//执行任务在主线程中
+                        @Override
+                        public void run() {//就是在主线程中操作
+                            // Toast.makeText(MainActivity.this, state, Toast.LENGTH_SHORT).show();
+                            Log.i("data",state);
+                            if(!state.equals("无此用户数据"))
+                                dataStringManage(state);
+                        }
+                    });
+                }
+            }).start();
+        }
 
         //DbHelper.getInstance(this).onCreate(db);
         Toast.makeText(this,DbHelper.getInstance(this).getDatabaseName(),Toast.LENGTH_SHORT).show();

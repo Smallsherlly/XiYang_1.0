@@ -51,6 +51,7 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     List<SearchViewFragment.Book> mylist;
     List<SearchViewFragment.Book> searchlist;
     SwipeRefreshLayout mSwipeLayout;
+    Handler mHandler;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,10 +71,7 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case 1:
-                    HandEdit hand = data.getExtras().getParcelable("HandEdit");
-                    adapter.addItem(adapter.getItemCount(),new Book(hand.getTitle(),hand.getAuthor(),hand.getCover_path(),hand.getCreation()));
-                    adapter.notifyDataSetChanged();
-                    Log.d("result","comback");
+                    mHandler.sendEmptyMessageDelayed(0, 2000);
             }
         }
     }
@@ -83,7 +81,7 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
         super.onViewCreated(view, savedInstanceState);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView02);
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_ly);
-        Handler mHandler = new Handler()
+        mHandler = new Handler()
         {
             public void handleMessage(android.os.Message msg)
             {
@@ -274,7 +272,7 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
             holder.creation.setTag(item.creation);
 
             picasso.cancelRequest(holder.imageView);
-            Log.i("imageUrl",item.imageUrl+"result");
+            Log.i("imageUrl",item.imageUrl);
             picasso
                     .load(item.imageUrl)
                     .noPlaceholder()

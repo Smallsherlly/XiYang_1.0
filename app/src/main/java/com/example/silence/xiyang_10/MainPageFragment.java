@@ -1,6 +1,7 @@
 package com.example.silence.xiyang_10;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +24,15 @@ import com.ToxicBakery.viewpager.transforms.ABaseTransformer;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
+import com.example.silence.xiyang_10.db.DbHelper;
+import com.example.silence.xiyang_10.models.HandEdit;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 
@@ -175,25 +182,26 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
         final TextView description;
         final ImageView imageView;
         final Button button1;
-        final Button button2;
         final int marginBottom;
+        final TextView creationx;
 
         public TwoLinesViewHolder(final View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(android.R.id.title);
-            description = (TextView) itemView.findViewById(android.R.id.text1);
-            imageView = (ImageView) itemView.findViewById(android.R.id.icon);
+            title = (TextView) itemView.findViewById(R.id.titlex);
+            description = (TextView) itemView.findViewById(R.id.textx);
+            imageView = (ImageView) itemView.findViewById(R.id.iconx);
+            creationx = (TextView) itemView.findViewById(R.id.creationx);
             marginBottom = ((ViewGroup.MarginLayoutParams) itemView.getLayoutParams()).bottomMargin;
-            button1 = (Button) itemView.findViewById(android.R.id.button1);
-            button2 = (Button) itemView.findViewById(android.R.id.button2);
+            button1 = (Button) itemView.findViewById(R.id.buttonx);
+
         }
     }
     private class Adapter extends RecyclerView.Adapter<TwoLinesViewHolder> {
         private final Picasso picasso;
         private final int navigationHeight;
-        private final Book[] data;
+        private List<SearchViewFragment.Book> data;
 
-        public Adapter(final Context context, final int navigationHeight, final boolean hasAppBarLayout, final Book[] data) {
+        public Adapter(final Context context, final int navigationHeight, final boolean hasAppBarLayout, final List<SearchViewFragment.Book> data) {
             this.navigationHeight = navigationHeight;
             this.data = data;
             this.picasso = Picasso.with(context);
@@ -206,27 +214,13 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
             holder.button1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
-                    Snackbar snackbar =
-                            Snackbar.make(mRoot, "Button 1 of item " + holder.getAdapterPosition(), Snackbar.LENGTH_LONG)
-                                    .setAction(
-                                            "Action",
-                                            null
-                                    );
-                    snackbar.show();
-                }
-            });
-
-            holder.button2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View view) {
-                    Snackbar snackbar = Snackbar.make(mRoot, "Button 2 of item " + holder.getAdapterPosition(),
-                            Snackbar.LENGTH_LONG
-                    )
-                            .setAction(
-                                    "Action",
-                                    null
-                            );
-                    snackbar.show();
+                    Intent intent = new Intent(getContext(),HandEditActivity.class);
+                    Intent userdata = getActivity().getIntent();
+                    String username = userdata.getStringExtra("username");
+                    intent.putExtra("username",username);
+                    intent.putExtra("fromModel",true);
+                    intent.putExtra("Creation", holder.creationx.getTag().toString());
+                    startActivity(intent);
                 }
             });
 
@@ -241,10 +235,14 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
                 ((ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams()).bottomMargin = holder.marginBottom;
             }
 
-            final Book item = data[position];
+            final SearchViewFragment.Book item = data.get(position);
             holder.title.setText(item.title);
-            holder.description.setText("By zhuye" );
+            holder.description.setText(item.author);
             holder.imageView.setImageBitmap(null);
+            Date date = new Date(item.creation);
+            java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            holder.creationx.setText(format.format(date));
+            holder.creationx.setTag(item.creation);
 
             picasso.cancelRequest(holder.imageView);
 
@@ -257,34 +255,44 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
         }
         @Override
         public int getItemCount() {
-            return data.length;
+            return data.size();
         }
     }
-    private Book[] createData() {
-        return new Book[]{
-                new Book("The Flight", "Scott Masterson", "http://i.imgur.com/dyyP2iO.jpg"),
-                new Book("Room of Plates", "Ali Conners", "http://i.imgur.com/da6QIlR.jpg"),
-                new Book("The Sleek Boot", "Sandra Adams", "http://i.imgur.com/YHoOJh4.jpg"),
-                new Book("Night Hunting", "Janet Perkins", "http://i.imgur.com/3jxqrKP.jpg"),
-                new Book("Rain and Coffee", "Peter Carlsson", "http://i.imgur.com/AZRynvM.jpg"),
-                new Book("Ocean View", "Trevor Hansen", "http://i.imgur.com/IvhOJcw.jpg"),
-                new Book("Lovers Of The Roof", "Britta Holt", "http://i.imgur.com/pxgI1b4.png"),
-                new Book("Lessons from Delhi", "Mary Johnson", "http://i.imgur.com/oT1WYX9.jpg"),
-                new Book("Mountaineers", "Abbey Christensen", "http://i.imgur.com/CLLDz.jpg"),
-                new Book("Plains In The Night", "David Park", "http://i.imgur.com/7MrSvXE.jpg?1"),
-                new Book("Dear Olivia", "Sylvia Sorensen", "http://i.imgur.com/3mkUuux.jpg"),
-                new Book("Driving Lessons", "Halime Carver", "http://i.imgur.com/LzYAfFL.jpg"),
-        };
+    private List<SearchViewFragment.Book> createData() {
+        List<HandEdit> handEdits = DbHelper.getInstance().getAllHandEdits("admin",false);
+        List<SearchViewFragment.Book> book = new ArrayList<>();
+        for(HandEdit hand:handEdits){
+            book.add(new SearchViewFragment.Book(hand.getTitle(),hand.getAuthor(),hand.getCover_path(),hand.getCreation()));
+            Log.d("result",hand.getTitle()+":"+hand.getJson_path());
+        }
+
+
+        return book;
+    }
+
+    private List<SearchViewFragment.Book> findData(String pattern) {
+
+        List<HandEdit> handEdits = DbHelper.getInstance().getHandEditsByPattern("admin",pattern);
+        List<SearchViewFragment.Book> book = new ArrayList<>();
+        for(HandEdit hand:handEdits){
+            book.add(new SearchViewFragment.Book(hand.getTitle(),hand.getAuthor(),hand.getCover_path(),hand.getCreation()));
+            Log.d("result",hand.getTitle()+":"+hand.getJson_path());
+        }
+
+
+        return book;
     }
     static class Book {
         final String title;
         final String author;
         final String imageUrl;
+        final Long creation;
 
-        Book(final String title, final String author, final String imageUrl) {
+        Book(final String title, final String author, final String imageUrl,final Long creation) {
             this.title = title;
             this.author = author;
             this.imageUrl = imageUrl;
+            this.creation = creation;
         }
     }
     // 开始自动翻页
