@@ -103,24 +103,30 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
             File imgsrc = new File(fields[4]);
             if(!imgsrc.exists()){
                 int index = fields[4].indexOf("2018");
-                String filename = fields[4].substring(index);
-                onDownload(filename,null,null);
+                if(index != -1){
+                    String filename = fields[4].substring(index);
+                    onDownload(filename,fields[3]);
+                }
+
             }
             imgsrc = new File(fields[5]);
             if(!imgsrc.exists()){
                 int index = fields[5].indexOf("2018");
-                String filename = fields[5].substring(index);
-                onDownload(filename,null,null);
+                if(index != -1){
+                    String filename = fields[5].substring(index);
+                    onDownload(filename,fields[3]);
+                }
+
             }
             DbHelper.getInstance().updateHandEdit(handEdit,false);
         }
 
     }
 
-    public void onDownload(String filename, @Nullable DragScaleView view, @Nullable EditorBean bean) {
+    public void onDownload(String filename,String loadname) {
         mProgressDialog.show();
         HttpBody body = new HttpBody();
-        body.setUrl("http://119.23.206.213:80/Login/upload/userdata/"+username+"/"+filename)
+        body.setUrl("http://119.23.206.213:80/Login/upload/userdata/"+loadname+"/"+filename)
                 .setConnTimeOut(6000)
                 .setFileSaveDir(MainActivity.this.getExternalFilesDir(null)+"/userdata/"+username)
                 .setReadTimeOut(5 * 60 * 1000);
@@ -182,27 +188,7 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
             }
         }).start();
        }
-       // 导入模板
-        if(DbHelper.getInstance().getAllHandEdits("admin",false).size() == 0){
-
-            new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    final String state= NetUilts.getDatabase("admin");
-
-                    runOnUiThread(new Runnable() {//执行任务在主线程中
-                        @Override
-                        public void run() {//就是在主线程中操作
-                            // Toast.makeText(MainActivity.this, state, Toast.LENGTH_SHORT).show();
-                            Log.i("data",state);
-                            if(!state.equals("无此用户数据"))
-                                dataStringManage(state);
-                        }
-                    });
-                }
-            }).start();
-        }
+     
 
         //DbHelper.getInstance(this).onCreate(db);
         Toast.makeText(this,DbHelper.getInstance(this).getDatabaseName(),Toast.LENGTH_SHORT).show();
