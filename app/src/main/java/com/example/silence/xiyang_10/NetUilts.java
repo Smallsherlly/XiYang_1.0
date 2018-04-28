@@ -167,10 +167,10 @@ public class NetUilts {
         return null;
 
     }
-    public static String  updateHandEditOfGet(HandEdit hand){
+    public static String  getDatabase(String username){
         HttpURLConnection conn=null;
         try {
-            URL url=new URL("http://119.23.206.213:80/Login/updateHandEdit");
+            URL url=new URL("http://119.23.206.213:80/Login/getDatabase");
             conn=(HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");//设置请求方式
             conn.setConnectTimeout(10000);//设置连接超时时间
@@ -178,10 +178,7 @@ public class NetUilts {
             //connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
             //POST请求的参数
             OutputStream out=conn.getOutputStream();//获得输出流对象，用于向服务器写数据
-            String data="creation="+String.valueOf(hand.getCreation())+"&"+"lastmodification="+String.valueOf(hand.getLastModification())
-                    +"&"+"zannumber="+String.valueOf(hand.getZan_number())+"&"+"author="+hand.getAuthor()+"&"+"jsonpath="+hand.getJson_path()+"&"
-                    +"coverpath="+hand.getCover_path()+"&"+"title="+hand.getTitle()+"&"+"content="+hand.getContent()+"&"+"archived="+String.valueOf(hand.getArchived())
-                    +"&"+"trashed="+String.valueOf(hand.getTrashed());
+            String data="author="+username;
             out.write(data.getBytes());//向服务器写数据;
             out.close();//关闭输出流
             conn.connect();//开始连接

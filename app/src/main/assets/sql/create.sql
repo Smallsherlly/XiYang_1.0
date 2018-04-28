@@ -11,7 +11,7 @@ CREATE
 		title TEXT,
 		content TEXT,
 		archived INTEGER,
-		trashed INTEGER,
+		trashed INTEGER
 	);
 	
 --DROP table handedits;

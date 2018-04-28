@@ -28,15 +28,20 @@
         android:scaleType="center"
         android:layout_alignParentEnd="true"
         android:src="@drawable/ic_del_circle_white_24dp" />
-
-    <android.support.v7.widget.RecyclerView android:id="@+id/RecyclerView02"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_ly"
         android:layout_below="@id/search"
-        android:paddingBottom="0dp"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="0dp" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <android.support.v7.widget.RecyclerView android:id="@+id/RecyclerView02"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:paddingBottom="0dp"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="0dp" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/open_handedit"

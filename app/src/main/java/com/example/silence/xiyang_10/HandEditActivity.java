@@ -885,12 +885,12 @@ public class HandEditActivity extends AppCompatActivity {
         final DragScaleView imageView = sampleview.findViewWithTag(Long.toString(bean.getTag()));
         final int left= imageView.getLeft();
         final int top = imageView.getTop();
-        File imgsrc = new File(bean.getContent());
-        if(!imgsrc.exists()){
-            int index = bean.getContent().indexOf("2018");
-            String filename = bean.getContent().substring(index);
-            onDownload(filename,imageView,bean);
-        }
+//        File imgsrc = new File(bean.getContent());
+//        if(!imgsrc.exists()){
+//            int index = bean.getContent().indexOf("2018");
+//            String filename = bean.getContent().substring(index);
+//            onDownload(filename,imageView,bean);
+//        }
         Log.i("position",String.valueOf(left)+"+"+String.valueOf(top));
         //处理点击事件（删除）
         imageView.setOnClickListener(new View.OnClickListener(){

@@ -5,9 +5,11 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -48,6 +50,7 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     private searchCallBack callBack;
     List<SearchViewFragment.Book> mylist;
     List<SearchViewFragment.Book> searchlist;
+    SwipeRefreshLayout mSwipeLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,6 +82,38 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
     public void onViewCreated(final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView02);
+        mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_ly);
+        Handler mHandler = new Handler()
+        {
+            public void handleMessage(android.os.Message msg)
+            {
+                switch (msg.what)
+                {
+                    case 0:
+                        //刷新adapter
+                        final BaseActivity activity = (BaseActivity) getActivity();
+                        searchlist = findData("");
+                        search_adapter = new SearchViewFragment.Adapter(getContext(), activity.getBottomNavigation().getNavigationHeight(), false,searchlist);
+                        mRecyclerView.setAdapter(search_adapter);
+                        //为了保险起见可以先判断当前是否在刷新中（旋转的小圈圈在旋转）....
+                        if(mSwipeLayout.isRefreshing()){
+                            //关闭刷新动画
+                            mSwipeLayout.setRefreshing(false);
+                        }
+                        break;
+
+                }
+            };
+        };
+        mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //这里可以做一下下拉刷新的操作
+                //例如下面代码，在方法中发送一个handler模拟延时操作
+                mHandler.sendEmptyMessageDelayed(0, 2000);
+            }
+        });
+
         editText = (EditText) view.findViewById(R.id.editText);
         search = (ImageView) view.findViewById(R.id.search);
         search.setOnClickListener(new View.OnClickListener() {

@@ -1,6 +1,7 @@
 package com.example.silence.xiyang_10;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.IdRes;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +25,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Explode;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -34,7 +37,14 @@ import com.ToxicBakery.viewpager.transforms.ABaseTransformer;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
+import com.example.silence.xiyang_10.RichEditor.DragScaleView;
+import com.example.silence.xiyang_10.RichEditor.EditorBean;
 import com.example.silence.xiyang_10.db.DbHelper;
+import com.example.silence.xiyang_10.models.HandEdit;
+import com.example.silence.xiyang_10.myhttputils.FailedMsgUtils;
+import com.example.silence.xiyang_10.myhttputils.MyHttpUtils;
+import com.example.silence.xiyang_10.myhttputils.bean.CommCallback;
+import com.example.silence.xiyang_10.myhttputils.bean.HttpBody;
 import com.example.silence.xiyang_10.runtimepermissions.PermissionsManager;
 import com.example.silence.xiyang_10.runtimepermissions.PermissionsResultAction;
 import com.stephentuso.welcome.WelcomeHelper;
@@ -58,8 +68,8 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
     public static Context mcontext;
     public Uri sketchUri;
     FragmentManager mFragmentManager;
-
-
+    String username;
+    private ProgressDialog mProgressDialog;
 
     @Override
     public void loadingProgress(boolean showLoader) {
@@ -75,6 +85,69 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
 
     }
 
+    public void dataStringManage(String data){
+        String[] parts = data.split(";");
+        for(int i=0; i<parts.length; i++){
+            String[] fields = parts[i].split(",");
+            HandEdit handEdit = new HandEdit();
+            handEdit.setCreation(fields[0]);
+            handEdit.setLastModification(fields[1]);
+            handEdit.setZan_number(Long.valueOf(fields[2]));
+            handEdit.setAuthor(fields[3]);
+            handEdit.setJson_path(fields[4]);
+            handEdit.setCover_path(fields[5]);
+            handEdit.setTitle(fields[6]);
+            handEdit.setContent(fields[7]);
+            handEdit.setArchived(Integer.valueOf(fields[8]));
+            handEdit.setTrashed(Integer.valueOf(fields[9]));
+            File imgsrc = new File(fields[4]);
+            if(!imgsrc.exists()){
+                int index = fields[4].indexOf("2018");
+                String filename = fields[4].substring(index);
+                onDownload(filename,null,null);
+            }
+            imgsrc = new File(fields[5]);
+            if(!imgsrc.exists()){
+                int index = fields[5].indexOf("2018");
+                String filename = fields[5].substring(index);
+                onDownload(filename,null,null);
+            }
+            DbHelper.getInstance().updateHandEdit(handEdit,false);
+        }
+
+    }
+
+    public void onDownload(String filename, @Nullable DragScaleView view, @Nullable EditorBean bean) {
+        mProgressDialog.show();
+        HttpBody body = new HttpBody();
+        body.setUrl("http://119.23.206.213:80/Login/upload/userdata/"+username+"/"+filename)
+                .setConnTimeOut(6000)
+                .setFileSaveDir(MainActivity.this.getExternalFilesDir(null)+"/userdata/"+username)
+                .setReadTimeOut(5 * 60 * 1000);
+
+        MyHttpUtils.build()
+                .setHttpBody(body)
+                .onExecuteDwonload(new CommCallback() {
+
+                    @Override
+                    public void onSucceed(Object o) {
+                        mProgressDialog.dismiss();
+                       // view.setImageURI(Uri.parse(bean.getContent()));
+                        // ToastUtils.showToast(HandEditActivity.this, "下载完成");
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        ToastUtils.showToast(MainActivity.this, FailedMsgUtils.getErrMsgStr(throwable));
+                    }
+
+                    @Override
+                    public void onDownloading(long total, long current) {
+                        System.out.println(total + "-------" + current);
+                        //tvProgress.setText(new DecimalFormat("######0.00").format(((double) current / total) * 100) + "%");//保留两位小数
+                    }
+                });
+    }
     public static Context getAppContext() {
         return MainActivity.mcontext;
     }
@@ -83,6 +156,32 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
         super.onCreate(savedInstanceState);
         SQLiteDatabase db = DbHelper.getInstance(this).getDatabase(true);
         DbHelper.getInstance(this).onCreate(db);
+        mProgressDialog = new ProgressDialog(MainActivity.this);
+        mProgressDialog.setMessage("正从云端下载文件，请稍候");
+        Intent intent = getIntent();
+        username = intent.getStringExtra("username");
+
+        //检查本地是否有用户数据，如没有，则尝试从服务器同步
+       if(DbHelper.getInstance().getAllHandEdits(username,false).size() == 0){
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                final String state= NetUilts.getDatabase(username);
+
+                runOnUiThread(new Runnable() {//执行任务在主线程中
+                    @Override
+                    public void run() {//就是在主线程中操作
+                       // Toast.makeText(MainActivity.this, state, Toast.LENGTH_SHORT).show();
+                        Log.i("data",state);
+                        dataStringManage(state);
+                    }
+                });
+            }
+        }).start();
+       }
+
 
         //DbHelper.getInstance(this).onCreate(db);
         Toast.makeText(this,DbHelper.getInstance(this).getDatabaseName(),Toast.LENGTH_SHORT).show();
