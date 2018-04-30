@@ -97,11 +97,47 @@ public class NetUilts {
 
     }
 
-    public static String registerOfGet(String username,String password,String qqnum,String phonenum){
+    public static String registerOfPost(String username,String password,String qqnum,String phonenum,String icon_path){
         HttpURLConnection conn=null;
         try {
-            String data="username="+username+"&"+"password="+password+"&"+"qqnum="+qqnum+"&"+"phonenum="+phonenum;
-            URL url=new URL("http://119.23.206.213:80/Login/Register?"+data);
+            URL url=new URL("http://119.23.206.213:80/Login/Register");
+            conn=(HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");//设置请求方式
+            conn.setConnectTimeout(10000);//设置连接超时时间
+            conn.setReadTimeout(5000);//设置读取超时时间
+
+            //POST请求的参数
+            OutputStream out=conn.getOutputStream();//获得输出流对象，用于向服务器写数据
+            String data="username="+username+"&"+"password="+password+"&"+"qqnum="+qqnum+"&"+"phonenum="+phonenum+"&"+"icon_path="+icon_path;
+            out.write(data.getBytes());//向服务器写数据;
+            out.close();//关闭输出流
+            conn.connect();//开始连接
+            int responseCode=conn.getResponseCode();//获取响应吗
+            if(responseCode==200){
+                //访问成功
+                InputStream is=conn.getInputStream();//得到InputStream输入流
+                String state=getstateFromInputstream(is);
+                return state;
+            }else{
+                //访问失败
+                String state = "lose";
+                return state;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+            if(conn!=null){//如果conn不等于空，则关闭连接
+                conn.disconnect();
+            }
+        }
+        return null;
+
+    }
+    public static String iconPathGet(String username){
+        HttpURLConnection conn=null;
+        try {
+            String data="username="+username;
+            URL url=new URL("http://119.23.206.213:80/Login/geticonpath?"+data);
             conn=(HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");//设置请求方式
             conn.setConnectTimeout(10000);//设置连接超时时间
@@ -128,6 +164,43 @@ public class NetUilts {
         return null;
 
     }
+    public static String iconPathPost(String username,String icon_path){
+        HttpURLConnection conn=null;
+        try {
+            URL url=new URL("http://119.23.206.213:80/Login/posticonpath");
+            conn=(HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");//设置请求方式
+            conn.setConnectTimeout(10000);//设置连接超时时间
+            conn.setReadTimeout(5000);//设置读取超时时间
+
+            //POST请求的参数
+            OutputStream out=conn.getOutputStream();//获得输出流对象，用于向服务器写数据
+            String data="username="+username+"&"+"icon_path="+icon_path;
+            out.write(data.getBytes());//向服务器写数据;
+            out.close();//关闭输出流
+            conn.connect();//开始连接
+            int responseCode=conn.getResponseCode();//获取响应吗
+            if(responseCode==200){
+                //访问成功
+                InputStream is=conn.getInputStream();//得到InputStream输入流
+                String state=getstateFromInputstream(is);
+                return state;
+            }else{
+                //访问失败
+                String state = "lose";
+                return state;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+            if(conn!=null){//如果conn不等于空，则关闭连接
+                conn.disconnect();
+            }
+        }
+        return null;
+
+    }
+
     public static String  sendHandEditOfGet(HandEdit hand){
         HttpURLConnection conn=null;
         try {

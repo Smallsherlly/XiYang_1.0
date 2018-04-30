@@ -150,6 +150,7 @@ public class HandEditActivity extends AppCompatActivity {
         if(intent.getStringExtra("Creation")!=null){
             cur_handedit.setCreation(intent.getStringExtra("Creation"));
             HandEdit hand = DbHelper.getInstance().getHandEdit(Long.valueOf(intent.getStringExtra("Creation")));
+            title.setText(hand.getTitle());
             Log.i("creation",intent.getStringExtra("Creation")+hand.getJson_path());
             File json_file = new File(hand.getJson_path());
 //            title.setText(hand.getTitle());
@@ -168,7 +169,6 @@ public class HandEditActivity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(HandEditActivity.this,"you click save ",Toast.LENGTH_SHORT).show();
                 //insertContent(contentColor,contentSize,ContentType.CONTENT);
                 File cur_file = insertNull();
                 Intent tent = getIntent();
@@ -179,7 +179,8 @@ public class HandEditActivity extends AppCompatActivity {
                 handedit.setTitle(title.getText().toString());
                 handedit.setAuthor(username);
                 handedit.setJson_path(cur_file.getPath());
-
+                String str = null;
+                handedit.setContent(str);
 
                 Log.i("creation",String.valueOf(cur_handedit.getCreation()));
                 for(EditorBean bean:editorList){
@@ -226,7 +227,10 @@ public class HandEditActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {//执行任务在主线程中
                             @Override
                             public void run() {//就是在主线程中操作
-                                Toast.makeText(HandEditActivity.this, state, Toast.LENGTH_SHORT).show();
+                                if(state.equals("插入成功"))
+                                    Toast.makeText(HandEditActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                                else
+                                    Toast.makeText(HandEditActivity.this, "保存失败", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -336,7 +340,6 @@ public class HandEditActivity extends AppCompatActivity {
     public  void reloadBean(){
         editorList.clear();
         List<EditorBean> bean = (List<EditorBean>) (JsonCreater.StringToEditorbean(sampleview.getTag().toString()));
-        EditorBean mybean = bean.get(0);
         if(bean!=null){
             for (EditorBean editorBean : bean) {
                 switch (editorBean.getType()) {
@@ -444,6 +447,7 @@ public class HandEditActivity extends AppCompatActivity {
             //jsonObject = new JSONObject(readFile(f,getActivity()));
             if(f == null){
                 jsonObject = new JSONObject(readFile("sample.json",this));
+
             }else{
                 jsonObject = new JSONObject(readFile(f,this));
                 parent.removeView(sampleview);
@@ -474,7 +478,7 @@ public class HandEditActivity extends AppCompatActivity {
             /* add Layout Parameters in just created view and set as the contentView of the activity */
             sampleview.setLayoutParams(new WindowManager.LayoutParams(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT));
             //setContentView(sampleView);
-
+            reloadBean();
         } else {
             Log.e("Json2View", "Could not load valid json file");
             Toast.makeText(this,"it's null",Toast.LENGTH_SHORT).show();

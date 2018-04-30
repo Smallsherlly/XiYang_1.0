@@ -111,6 +111,8 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="#9a9a9a"
                 android:textSize="12sp"
+                android:id="@+id/forget"
+                android:clickable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/forgot_your_password"

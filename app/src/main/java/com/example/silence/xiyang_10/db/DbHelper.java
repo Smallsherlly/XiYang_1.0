@@ -33,13 +33,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
-//
-//import it.feio.android.omniHandEdits.OmniHandEdits;
-//import it.feio.android.omniHandEdits.async.upgrade.UpgradeProcessor;
+
 
 import com.example.silence.xiyang_10.MainActivity;
 import com.example.silence.xiyang_10.models.*;
-//import it.feio.android.omniHandEdits.utils.*;
+
 
 
 public class DbHelper extends SQLiteOpenHelper {

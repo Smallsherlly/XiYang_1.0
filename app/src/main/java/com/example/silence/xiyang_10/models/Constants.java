@@ -18,8 +18,8 @@ package com.example.silence.xiyang_10.models;
 
 public interface Constants extends ConstantsBase {
 
-  String TAG = "Omni HandEdits FOSS";
-  String EXTERNAL_STORAGE_FOLDER = "Omni HandEdits Foss";
-  String PACKAGE = "it.feio.android.omniHandEdits.foss";
+  String TAG = "HandEdits FOSS";
+  String EXTERNAL_STORAGE_FOLDER = "HandEdits Foss";
+  String PACKAGE = "it.feio.android.HandEdits.foss";
   String PREFS_NAME = PACKAGE + "_preferences";
 }

@@ -188,10 +188,9 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
             }
         }).start();
        }
-     
+
 
         //DbHelper.getInstance(this).onCreate(db);
-        Toast.makeText(this,DbHelper.getInstance(this).getDatabaseName(),Toast.LENGTH_SHORT).show();
         setContentView(R.layout.activity_main);// 设置布局文件
         mcontext = getApplicationContext();
         // 隐藏标题栏

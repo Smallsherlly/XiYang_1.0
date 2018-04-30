@@ -48,11 +48,12 @@ public class RegisterActivity extends AppCompatActivity {
                 String password=edt_password.getText().toString();
                 String qqnum = edt_qqnum.getText().toString();
                 String phonenum = edt_phonenum.getText().toString();
+                String icon_path = null;
                 new Thread(new Runnable() {
 
                     @Override
                     public void run() {
-                        final String state=NetUilts.registerOfGet(username, password,qqnum,phonenum);
+                        final String state=NetUilts.registerOfPost(username, password,qqnum,phonenum,icon_path);
 
                         runOnUiThread(new Runnable() {//执行任务在主线程中
                             @Override

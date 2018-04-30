@@ -11,6 +11,7 @@ import android.transition.Explode;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.stephentuso.welcome.WelcomeHelper;
@@ -22,6 +23,7 @@ import com.stephentuso.welcome.WelcomeHelper;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText edt_username;
     private EditText edt_password;
+    private TextView forget;
     private Button go;
     private CardView cv;
     private FloatingActionButton fab;
@@ -35,6 +37,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         //setListener();
         go.setOnClickListener(this);
         fab.setOnClickListener(this);
+        forget.setOnClickListener(this);
         welcomeScreen = new WelcomeHelper(this, MyWelcomeActivity.class);
         welcomeScreen.show(savedInstanceState);
     }
@@ -42,6 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void initView() {
         edt_username = findViewById(R.id.et_username);
         edt_password = findViewById(R.id.et_password);
+        forget = findViewById(R.id.forget);
         go = findViewById(R.id.bt_go);
         fab = findViewById(R.id.fab);
     }
@@ -57,6 +61,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.fab:
                 reget();
+                break;
+            case R.id.forget:
+                Toast.makeText(this,"找林书思去！",Toast.LENGTH_SHORT).show();
         }
     }
     private void doget(final String username, final String password) {
