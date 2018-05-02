@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/mine_fragment"
-    android:background="#d9dada"
+    android:background="@mipmap/mine_background"
     android:orientation="vertical">
 
     <com.example.silence.xiyang_10.RoundImageButton
@@ -13,7 +13,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:scaleType="fitXY"
-        android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
         android:background="#00000000"
         android:src="@drawable/ic_touxiang2"/>
@@ -28,7 +28,7 @@
     <com.sackcentury.shinebuttonlib.ShineButton
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_gravity="right"
+        android:layout_alignParentRight="true"
         android:layout_marginTop="50dp"
         android:layout_marginRight="5dp"
         android:src="@android:color/darker_gray"
@@ -42,6 +42,7 @@
         android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/round_touxiang"
         android:textSize="20sp"
         android:text=""/>
 
@@ -49,20 +50,23 @@
         android:id="@+id/qqnum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/username"
         android:textSize="20sp"
         android:text=""/>
     <Button
         android:id="@+id/phonenum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/qqnum"
         android:textSize="20sp"
         android:text=""/>
     <Button
         android:id="@+id/synchronize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_below="@id/phonenum"
+        android:layout_centerHorizontal="true"
         android:text="同步云端数据"/>
 
     
-</LinearLayout>
+</RelativeLayout>
