@@ -1,4 +1,7 @@
 -- Create table for HANDEDITS
+
+DROP table handedits;
+
 CREATE
 	TABLE IF NOT EXISTS handedits
 	(
@@ -13,6 +16,6 @@ CREATE
 		archived INTEGER,
 		trashed INTEGER
 	);
-	
---DROP table handedits;
+
+
 

@@ -58,11 +58,13 @@
 
 
     预留加载模块
+
     <RelativeLayout
         android:id="@+id/et_custom_editor"
         android:layout_width="360dp"
-        android:layout_height="528dp">
-    </RelativeLayout>
+        android:layout_height="@dimen/height"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"></RelativeLayout>
 
 
 

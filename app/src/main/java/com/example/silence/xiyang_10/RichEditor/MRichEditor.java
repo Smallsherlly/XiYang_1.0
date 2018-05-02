@@ -23,7 +23,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
-import com.example.silence.xiyang_10.MyEditClass;
 import com.example.silence.xiyang_10.R;
 
 import java.io.ByteArrayInputStream;

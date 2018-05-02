@@ -5,7 +5,6 @@
     <dimen name="fab_margin_right">16dp</dimen>
     <dimen name="simple_card_image_width">90dp</dimen>
     <dimen name="simple_card_image_height">120dp</dimen>
-
     <item name="app_gravity" format="integer" type="integer">80</item>
     <bool name="is_tablet">false</bool>
     <dimen name="activity_vertical_margin">16dp</dimen>

@@ -6,9 +6,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -101,10 +103,12 @@ public class HandEditActivity extends AppCompatActivity {
     private Timer delayTimer;
     private HandEdit cur_handedit;
     private ProgressDialog mProgressDialog;
+    private int dpi;
     @Override
     public void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_handedit);
+        dpi = getResources().getDisplayMetrics().densityDpi;
         initUI();
         initInputDialog();//初始化输入对话框
         initListener();//初始化监听器
@@ -432,7 +436,9 @@ public class HandEditActivity extends AppCompatActivity {
         File file2 = StorageHelper.createNewAttachmentFile(this, username,".json");
         try {
             FileOutputStream outputStream = new FileOutputStream(file2);
-            outputStream.write(JsonCreater.createJsonStr(sampleview,editorList).getBytes());
+
+            Log.i("DPI!!",String.valueOf(getResources().getDisplayMetrics().densityDpi));
+            outputStream.write(JsonCreater.createJsonStr(sampleview,editorList,dpi/160).getBytes());
             outputStream.close();
         }catch (IOException e){
             e.printStackTrace();
@@ -499,9 +505,7 @@ public class HandEditActivity extends AppCompatActivity {
                     case CONTENT:
                         insertContent(ContentType.CONTENT);
                         break;
-//                    case TITLE:
-//                        insertContent(titleSize, titleColor, ContentType.TITLE);
-//                        break;
+
                     case IMG:
                         break;
                 }
@@ -729,6 +733,9 @@ public class HandEditActivity extends AppCompatActivity {
         //内容就空两格
         String contentStr = dialog.getContent();
         tvContent.setText(contentStr);
+//        AssetManager aManager=getResources().getAssets();
+//        Typeface font=Typeface.createFromAsset(aManager, "guanggaotiJIAN.ttf");
+//        tvContent.setTypeface(font);
         sampleview.addView(tvContent);//添加到编辑器视图中
         editorList.add(new EditorBean(type, contentStr, tag));//添加到编辑器列表中
     }
@@ -736,7 +743,8 @@ public class HandEditActivity extends AppCompatActivity {
         String tag = Long.toString(bean.getTag());
         final MyText tvContent = sampleview.findViewWithTag(tag);
         contentColor = tvContent.getCurrentTextColor();
-        contentSize = (int)tvContent.getTextSize()/2;
+        Log.i("INSERTSIZE:",String.valueOf(tvContent.getTextSize()));
+        contentSize = (int)tvContent.getTextSize()/(dpi/160);
 
         /**
          *初始化修改对话框--------之所以写在这里 是因为要对象序列化--局部有效原则----如果弄成全局的,那么tvContent永远是最新一个--删除就会出错哦
@@ -898,12 +906,12 @@ public class HandEditActivity extends AppCompatActivity {
         final DragScaleView imageView = sampleview.findViewWithTag(Long.toString(bean.getTag()));
         final int left= imageView.getLeft();
         final int top = imageView.getTop();
-//        File imgsrc = new File(bean.getContent());
-//        if(!imgsrc.exists()){
-//            int index = bean.getContent().indexOf("2018");
-//            String filename = bean.getContent().substring(index);
-//            onDownload(filename,imageView,bean);
-//        }
+        File imgsrc = new File(bean.getContent());
+        if(!imgsrc.exists()){
+            int index = bean.getContent().indexOf("2018");
+            String filename = bean.getContent().substring(index);
+            onDownload(filename,imageView,bean);
+        }
         Log.i("position",String.valueOf(left)+"+"+String.valueOf(top));
         //处理点击事件（删除）
         imageView.setOnClickListener(new View.OnClickListener(){
@@ -1072,7 +1080,7 @@ public class HandEditActivity extends AppCompatActivity {
         Bitmap images = BitmapFactory.decodeFile(filePath, TakePhotoUtils.getOptions(filePath, 4));//压缩图片的大小，按4倍来压缩
         imageView.setImageBitmap(images);
         sampleview.addView(imageView);//添加到编辑器中
-        editorList.add(new EditorBean(ContentType.IMG, Uri.fromFile(new File(bitmapUri.getPath())).toString(), tag));//添加到列表中
+        editorList.add(new EditorBean(ContentType.IMG,bitmapUri.getPath().toString(), tag));//添加到列表中
     }
     private void takeSketch() {
         File f = StorageHelper.createNewAttachmentFile(this, ".png");
@@ -1123,7 +1131,7 @@ public class HandEditActivity extends AppCompatActivity {
     delayTimer.schedule(task, interval);
 }
     public void onDownload(String filename,@Nullable DragScaleView view,@Nullable EditorBean bean) {
-      //  mProgressDialog.show();
+        mProgressDialog.show();
         HttpBody body = new HttpBody();
         body.setUrl("http://119.23.206.213:80/Login/upload/userdata/"+username+"/"+filename)
                 .setConnTimeOut(6000)
@@ -1136,7 +1144,7 @@ public class HandEditActivity extends AppCompatActivity {
 
                     @Override
                     public void onSucceed(Object o) {
-               //         mProgressDialog.dismiss();
+                        mProgressDialog.dismiss();
                         view.setImageURI(Uri.parse(bean.getContent()));
                        // ToastUtils.showToast(HandEditActivity.this, "下载完成");
                     }

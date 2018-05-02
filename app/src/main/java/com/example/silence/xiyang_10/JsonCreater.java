@@ -2,6 +2,7 @@ package com.example.silence.xiyang_10;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -24,12 +25,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class JsonCreater {
 
+
     public static List<EditorBean> StringToEditorbean(String str){
         List<EditorBean> result = new CopyOnWriteArrayList<> ();;
         String[] beanlist = str.split(",");
         String[] beanstr;
-        if(str.length() == 0)
+
+        if(str.length() == 0||str.length()==2)
             return null;
+        Log.i("BUG",str+str.length());
         for(int i=0; i<beanlist.length; i++){
             beanstr = beanlist[i].substring(beanlist[i].indexOf("{")+1,beanlist[i].indexOf("}")).split(";",3);
             if(beanstr[0].equals("IMG")){
@@ -44,7 +48,7 @@ public class JsonCreater {
         return  result;
     }
 
-    public static String addImageJson(RelativeLayout view, Long tag,String url){
+    public static String addImageJson(RelativeLayout view, Long tag,String url,int multiple){
         DragScaleView imageView = (DragScaleView)view.findViewWithTag(Long.toString(tag));
         StringBuilder imageString = new StringBuilder("");
         if(imageView == null){
@@ -57,7 +61,7 @@ public class JsonCreater {
             "\t\t\"properties\": [{\n"+
             "\t\t\t\"name\": \"src\",\n"+
             "\t\t\t\"type\": \"url\",\n"+
-            "\t\t\t\"value\": \""+"/sdcard/takephoto/"+url+"\"\n"+
+            "\t\t\t\"value\": \""+url+"\"\n"+
             "\t\t},\n"+
 
             "\t\t{\n"+
@@ -69,32 +73,32 @@ public class JsonCreater {
             "\t\t{\n"+
             "\t\t\t\"name\": \"layout_width\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
-            "\t\t\t\"value\": \""+imageView.getWidth()+"\"\n"+
+            "\t\t\t\"value\": \""+imageView.getWidth()/multiple+"dp\"\n"+
             "\t\t},\n"+
 
             "\t\t{\n"+
             "\t\t\t\"name\": \"layout_height\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
-            "\t\t\t\"value\": \""+imageView.getHeight()+"\"\n"+
+            "\t\t\t\"value\": \""+imageView.getHeight()/multiple+"dp\"\n"+
             "\t\t},\n"+
 
             "\t\t{\n"+
             "\t\t\t\"name\": \"layout_marginLeft\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
-            "\t\t\t\"value\": \""+imageView.getLeft()+"\"\n"+
+            "\t\t\t\"value\": \""+imageView.getLeft()/multiple+"dp\"\n"+
             "\t\t},\n"+
 
             "\t\t{\n"+
             "\t\t\t\"name\": \"layout_marginTop\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
-            "\t\t\t\"value\": \""+imageView.getTop()+"\"\n"+
+            "\t\t\t\"value\": \""+imageView.getTop()/multiple+"dp\"\n"+
             "\t\t}]\n"+
             "\t\t}\n");
 
         return imageString.toString();
     }
 
-    public static String addContentJson(RelativeLayout view, Long tag,String content){
+    public static String addContentJson(RelativeLayout view, Long tag,String content,int multiple){
         MyText textView = (MyText) view.findViewWithTag(Long.toString(tag));
         int color = textView.getCurrentTextColor();
         int rgb = color & 0xffffff;
@@ -108,6 +112,7 @@ public class JsonCreater {
         }
         int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
         int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
+        Log.i("TextSize",String.valueOf(textView.getTextSize()));
         textView.measure(w, h);
 
         imageString.append(
@@ -140,27 +145,26 @@ public class JsonCreater {
             "\t\t{\n"+
             "\t\t\t\"name\": \"textSize\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
-            "\t\t\t\"value\": \""+(int)(textView.getTextSize()/2)+"\"\n"+
+            "\t\t\t\"value\": \""+(int)(textView.getTextSize()/multiple)+"\"\n"+
             "\t\t},\n"+
 
             "\t\t{\n"+
             "\t\t\t\"name\": \"layout_marginLeft\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
-            "\t\t\t\"value\": \""+textView.getLeft()+"\"\n"+
+            "\t\t\t\"value\": \""+textView.getLeft()/multiple+"dp\"\n"+
             "\t\t},\n"+
 
             "\t\t{\n"+
             "\t\t\t\"name\": \"layout_marginTop\",\n"+
             "\t\t\t\"type\": \"dimen\",\n"+
-            "\t\t\t\"value\": \""+textView.getTop()+"\"\n"+
+            "\t\t\t\"value\": \""+textView.getTop()/multiple+"dp\"\n"+
             "\t\t}]\n"+
             "\t\t}\n");
-
 
         return imageString.toString();
     }
 
-    public static String createJsonStr(RelativeLayout view, List<EditorBean> editorList) {
+    public static String createJsonStr(RelativeLayout view, List<EditorBean> editorList,int multiple) {
         StringBuilder json;
         json = new StringBuilder("");//String拼接不出长字符，用可变长度的String
         //构造json文件
@@ -200,11 +204,11 @@ public class JsonCreater {
             count--;
             switch (editorBean.getType()) {
                 case CONTENT:
-                    json.append(JsonCreater.addContentJson(view,editorBean.getTag(),editorBean.getContent()));
+                    json.append(JsonCreater.addContentJson(view,editorBean.getTag(),editorBean.getContent(),multiple));
                     break;
                 case IMG:
-                    String url = TakePhotoUtils.getImageName(TakePhotoUtils.getImageAbsolutePath((Activity)view.getContext(), Uri.parse(editorBean.getContent())));
-                    json.append(JsonCreater.addImageJson(view,editorBean.getTag(),url));
+                    //String url = TakePhotoUtils.getImageName(TakePhotoUtils.getImageAbsolutePath((Activity)view.getContext(), Uri.parse(editorBean.getContent())));
+                    json.append(JsonCreater.addImageJson(view,editorBean.getTag(),editorBean.getContent(),multiple));
                     break;
             }
         }

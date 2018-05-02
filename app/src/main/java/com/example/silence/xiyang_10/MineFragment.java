@@ -118,8 +118,9 @@ public class MineFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {//执行任务在主线程中
                     @Override
                     public void run() {//就是在主线程中操作
-                        if(!state.equals("获取头像失败")&&state.equals(null)){
-                            test_button.setImageURI(Uri.parse(state));
+                        if(!state.equals("获取头像失败")&&!(state.equals("null"))){
+                            Log.i("iconpath",String.valueOf(state.length()));
+                            test_button.setImageURI(Uri.fromFile(new File(state)));
                         }
                         Log.i("iconpath",state);
 
@@ -378,5 +379,5 @@ public class MineFragment extends Fragment {
                 });
     }
 
- 
+
 }

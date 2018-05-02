@@ -28,6 +28,12 @@
         android:scaleType="center"
         android:layout_alignParentEnd="true"
         android:src="@drawable/ic_del_circle_white_24dp" />
+    <TextView
+        android:layout_below="@id/search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="下拉刷新"
+        android:layout_centerInParent="true"/>
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_ly"
         android:layout_below="@id/search"

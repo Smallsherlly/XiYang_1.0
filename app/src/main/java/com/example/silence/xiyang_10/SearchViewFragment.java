@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -273,8 +274,9 @@ public class SearchViewFragment extends android.support.v4.app.Fragment {
 
             picasso.cancelRequest(holder.imageView);
             Log.i("imageUrl",item.imageUrl);
+            String path = "file://"+item.imageUrl;
             picasso
-                    .load(item.imageUrl)
+                    .load(path)
                     .noPlaceholder()
                     .resizeDimen(R.dimen.simple_card_image_width, R.dimen.simple_card_image_height)
                     .centerCrop()

@@ -1,5 +1,6 @@
 package com.example.silence.xiyang_10;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -68,7 +69,7 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
     SwipeRefreshLayout mSwipeLayout;
     List<SearchViewFragment.Book> searchlist;
     MainPageFragment.Adapter search_adapter;
-
+    private ProgressDialog mProgressDialog;
     public MainPageFragment(){
 
     }
@@ -86,6 +87,8 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
         Intent intent = getActivity().getIntent();
         username = intent.getStringExtra("username");
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_ly);
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("正从云端下载文件，请稍候");
         mHandler = new Handler()
         {
             public void handleMessage(android.os.Message msg)
@@ -93,29 +96,11 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
                 switch (msg.what)
                 {
                     case 0:
-                        //刷新adapter
-                        new Thread(new Runnable() {
 
-                            @Override
-                            public void run() {
-                                final String state= NetUilts.getDatabase("admin");
-
-                                getActivity().runOnUiThread(new Runnable() {//执行任务在主线程中
-                                    @Override
-                                    public void run() {//就是在主线程中操作
-                                        // Toast.makeText(MainActivity.this, state, Toast.LENGTH_SHORT).show();
-                                        Log.i("data",state);
-                                        if(!state.equals("无此用户数据"))
-                                            dataStringManage(state);
-                                    }
-                                });
-                            }
-                        }).start();
                         final BaseActivity activity = (BaseActivity) getActivity();
                         searchlist = createData();
                         search_adapter = new MainPageFragment.Adapter(getContext(), activity.getBottomNavigation().getNavigationHeight(), false,searchlist);
                         mRecyclerView.setAdapter(search_adapter);
-                        //为了保险起见可以先判断当前是否在刷新中（旋转的小圈圈在旋转）....
                         if(mSwipeLayout.isRefreshing()){
                             //关闭刷新动画
                             mSwipeLayout.setRefreshing(false);
@@ -128,9 +113,27 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
         mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                //刷新adapter
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        final String state= NetUilts.getDatabase("admin");
+
+                        getActivity().runOnUiThread(new Runnable() {//执行任务在主线程中
+                            @Override
+                            public void run() {//就是在主线程中操作
+                                // Toast.makeText(MainActivity.this, state, Toast.LENGTH_SHORT).show();
+                                Log.i("data",state);
+                                if(!state.equals("无此用户数据"))
+                                    dataStringManage(state);
+                            }
+                        });
+                    }
+                }).start();
                 //这里可以做一下下拉刷新的操作
                 //例如下面代码，在方法中发送一个handler模拟延时操作
-                mHandler.sendEmptyMessageDelayed(0, 2000);
+                mHandler.sendEmptyMessageDelayed(0, 3000);
             }
         });
         mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView01);
@@ -177,9 +180,10 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
 
     public void onDownload(String filename,String loadname) {
         HttpBody body = new HttpBody();
+        //mProgressDialog.show();
         body.setUrl("http://119.23.206.213:80/Login/upload/userdata/"+loadname+"/"+filename)
                 .setConnTimeOut(6000)
-                .setFileSaveDir(getActivity().getExternalFilesDir(null)+"/userdata/"+username)
+                .setFileSaveDir(getActivity().getExternalFilesDir(null)+"/userdata/"+loadname)
                 .setReadTimeOut(5 * 60 * 1000);
 
         MyHttpUtils.build()
@@ -190,6 +194,13 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
                     public void onSucceed(Object o) {
                         // view.setImageURI(Uri.parse(bean.getContent()));
                         // ToastUtils.showToast(HandEditActivity.this, "下载完成");
+                        //mProgressDialog.dismiss();
+
+                        //为了保险起见可以先判断当前是否在刷新中（旋转的小圈圈在旋转）....
+//                        if(mSwipeLayout.isRefreshing()){
+//                            //关闭刷新动画
+//                            mSwipeLayout.setRefreshing(false);
+//                        }
                     }
 
                     @Override
@@ -406,9 +417,9 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
             holder.creationx.setTag(item.creation);
 
             picasso.cancelRequest(holder.imageView);
-
+            String path = "file://"+item.imageUrl;
             picasso
-                    .load(item.imageUrl)
+                    .load(path)
                     .noPlaceholder()
                     .resizeDimen(R.dimen.simple_card_image_width, R.dimen.simple_card_image_height)
                     .centerCrop()
