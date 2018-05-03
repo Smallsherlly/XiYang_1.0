@@ -13,8 +13,11 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.silence.xiyang_10.models.StorageHelper;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -119,6 +122,18 @@ public class TakePhotoUtils {
      * @return
      */
     public static File getOwnCacheDirectory(Context context, String cacheDir) {
+        File appCacheDir = null;
+        //判断sd卡正常挂载并且拥有权限的时候创建文件
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) && hasExternalStoragePermission(context)) {
+            appCacheDir = new File(Environment.getExternalStorageDirectory(), cacheDir);
+        }
+        if (appCacheDir == null || !appCacheDir.exists() && !appCacheDir.mkdirs()) {
+            appCacheDir = context.getCacheDir();
+        }
+        return appCacheDir;
+    }
+
+    public static File getOwnDirectory(Context context, String cacheDir) {
         File appCacheDir = null;
         //判断sd卡正常挂载并且拥有权限的时候创建文件
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) && hasExternalStoragePermission(context)) {
@@ -411,15 +426,16 @@ public class TakePhotoUtils {
      * @param quality  图片保存的质量
      * @throws Exception
      */
-    public static String saveFile(Context mActivity, Bitmap bm, String fileName, int quality) throws Exception {
+    public static String saveFile(@Nullable Context mActivity, @Nullable String username, Bitmap bm, String fileName, int quality) throws Exception {
         File dirFile = new File(fileName);
         String imageName = getImageName(fileName);
         File copyFile = null;
         boolean isTakePhoto = true;
         //如果没有在takephoto目录下 就复制图片到该目录
-        if (!fileName.contains("takephoto")) {
+        if (username!=null&&!fileName.contains(username)) {
             isTakePhoto = false;
-            File takephoto = getOwnCacheDirectory(mActivity, "takephoto");
+            //File takephoto = getOwnCacheDirectory(mActivity, "takephoto");
+            File takephoto = StorageHelper.createNewAttachmentFile(mActivity, username,".png");
             copyFile = new File(takephoto.getAbsolutePath(), imageName);
             FileInputStream fis = new FileInputStream(dirFile);
             FileOutputStream fos = new FileOutputStream(copyFile);

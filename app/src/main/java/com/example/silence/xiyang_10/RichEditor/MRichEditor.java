@@ -201,9 +201,9 @@ public class MRichEditor extends RelativeLayout {
     /**
      * 插入图片
      */
-    public void insertImg() {
-        insertImg(photoUri);
-    }
+//    public void insertImg() {
+//        insertImg(photoUri);
+//    }
 
     /**
      * 插入图片
@@ -211,19 +211,19 @@ public class MRichEditor extends RelativeLayout {
      * @param data onactivityresult返回的data------拍照完成之后调用这个
      * @desc 用于适配部分手机 onactivityresult返回为空的情况
      */
-    public void insertImg(Intent data) {
-        Uri uri = null;
-        if (data != null && data.getData() != null) {
-            uri = data.getData();
-
-        }
-        if (uri == null) {
-            if (photoUri != null) {
-                uri = photoUri;
-            }
-        }
-        insertImg(uri);
-    }
+//    public void insertImg(Intent data) {
+//        Uri uri = null;
+//        if (data != null && data.getData() != null) {
+//            uri = data.getData();
+//
+//        }
+//        if (uri == null) {
+//            if (photoUri != null) {
+//                uri = photoUri;
+//            }
+//        }
+//        insertImg(uri);
+//    }
 
     /**
      * 通过uri插入图片---带(长按即可)删除功能（不能修改--删除再添加即可）
@@ -231,54 +231,54 @@ public class MRichEditor extends RelativeLayout {
      * @param bitmapUri
      */
 
-    public void insertImg(Uri bitmapUri) {
-        final long tag = System.currentTimeMillis();//使用当前时间的毫秒值来标记当前内容，便于删除列表中的记录
-        final ImageView imageView = new ImageView(context);
-        //处理长按事件（删除）
-        imageView.setOnLongClickListener(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("删除");
-                builder.setIcon(R.mipmap.delete);
-                builder.setMessage("您确定要删除这张图片吗?");
-                builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        editor.removeView(imageView);//移除图片
-                        removeEditorBeanByTag(tag);
-                    }
-                });
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-                builder.create().show();
-                return true;
-            }
-        });
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400);//为了便于预览格式，这里讲图片的高度固定为400dp了，不然图片太大整个页面都是图片，不便于浏览文字
-        imageView.setLayoutParams(params);
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        /**
-         * 下面是对图片进行压缩处理---并且统一复制到sdcard的takephoto文件夹
-         */
-        String filePath = TakePhotoUtils.getRealFilePathByUri(context, bitmapUri);//图片的真实路径
-        try {
-            filePath = TakePhotoUtils.saveFile(context, BitmapFactory.decodeFile(filePath), filePath, imgQuality);//压缩图片得到真实路径，imgQuality为图片的质量，按100制，默认图片质量20%（即压缩80%），现在主流手机使用20%最佳---平均下来150k左右
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        /**
-         * imageview对大图显示效果不好，这里对原图进行压缩
-         */
-        Bitmap images = BitmapFactory.decodeFile(filePath, TakePhotoUtils.getOptions(filePath, 4));//压缩图片的大小，按4倍来压缩
-        imageView.setImageBitmap(images);
-        editor.addView(imageView);//添加到编辑器中
-        editorList.add(new EditorBean(ContentType.IMG, Uri.fromFile(new File(filePath)).toString(), tag));//添加到列表中
-    }
+//    public void insertImg(Uri bitmapUri) {
+//        final long tag = System.currentTimeMillis();//使用当前时间的毫秒值来标记当前内容，便于删除列表中的记录
+//        final ImageView imageView = new ImageView(context);
+//        //处理长按事件（删除）
+//        imageView.setOnLongClickListener(new OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//                builder.setTitle("删除");
+//                builder.setIcon(R.mipmap.delete);
+//                builder.setMessage("您确定要删除这张图片吗?");
+//                builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        editor.removeView(imageView);//移除图片
+//                        removeEditorBeanByTag(tag);
+//                    }
+//                });
+//                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//
+//                    }
+//                });
+//                builder.create().show();
+//                return true;
+//            }
+//        });
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400);//为了便于预览格式，这里讲图片的高度固定为400dp了，不然图片太大整个页面都是图片，不便于浏览文字
+//        imageView.setLayoutParams(params);
+//        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//        /**
+//         * 下面是对图片进行压缩处理---并且统一复制到sdcard的takephoto文件夹
+//         */
+//        String filePath = TakePhotoUtils.getRealFilePathByUri(context, bitmapUri);//图片的真实路径
+//        try {
+//            filePath = TakePhotoUtils.saveFile(context, BitmapFactory.decodeFile(filePath), filePath, imgQuality);//压缩图片得到真实路径，imgQuality为图片的质量，按100制，默认图片质量20%（即压缩80%），现在主流手机使用20%最佳---平均下来150k左右
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        /**
+//         * imageview对大图显示效果不好，这里对原图进行压缩
+//         */
+//        Bitmap images = BitmapFactory.decodeFile(filePath, TakePhotoUtils.getOptions(filePath, 4));//压缩图片的大小，按4倍来压缩
+//        imageView.setImageBitmap(images);
+//        editor.addView(imageView);//添加到编辑器中
+//        editorList.add(new EditorBean(ContentType.IMG, Uri.fromFile(new File(filePath)).toString(), tag));//添加到列表中
+//    }
 
     /**
      * 移除对象---按tag

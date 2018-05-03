@@ -747,8 +747,18 @@ public class DynamicHelper {
                     ((ImageView) view).setImageBitmap(property.getValueBitmap());
                 }
                 case URL:{
-                    Bitmap bitmap = BitmapFactory.decodeFile((String)(property.value));
-                    ((ImageView) view).setImageBitmap(bitmap);
+//                    Bitmap bitmap = BitmapFactory.decodeFile((String)(property.value));
+                    String filePath = (String)(property.value);
+//                    try {
+//                        filePath = TakePhotoUtils.saveFile(null,null,bitmap,(String)(property.value),10);//压缩图片得到真实路径，imgQuality为图片的质量，按100制，默认图片质量20%（即压缩80%），现在主流手机使用20%最佳---平均下来150k左右
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+                    /**
+                     * imageview对大图显示效果不好，这里对原图进行压缩
+                     */
+                    Bitmap images = BitmapFactory.decodeFile(filePath, TakePhotoUtils.getOptions(filePath, 4));//压缩图片的大小，按4倍来压缩
+                    ((ImageView) view).setImageBitmap(images);
                 }
                 break;
             }

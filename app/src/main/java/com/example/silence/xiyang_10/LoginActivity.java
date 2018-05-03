@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.silence.xiyang_10.runtimepermissions.PermissionsManager;
+import com.example.silence.xiyang_10.runtimepermissions.PermissionsResultAction;
 import com.stephentuso.welcome.WelcomeHelper;
 
 /**
@@ -34,12 +36,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initView();
+
         //setListener();
         go.setOnClickListener(this);
         fab.setOnClickListener(this);
         forget.setOnClickListener(this);
         welcomeScreen = new WelcomeHelper(this, MyWelcomeActivity.class);
         welcomeScreen.show(savedInstanceState);
+
+        PermissionsManager.getInstance().requestAllManifestPermissionsIfNecessary(this, new PermissionsResultAction() {
+            @Override
+            public void onGranted() {//权限通过了
+            }
+
+            @Override
+            public void onDenied(String permission) {//权限拒绝了
+
+            }
+        });
+
     }
 
     private void initView() {
@@ -73,11 +88,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void run() {
-                Explode explode = new Explode();
-                explode.setDuration(500);
-
-                getWindow().setExitTransition(explode);
-                getWindow().setEnterTransition(explode);
+//                Explode explode = new Explode();
+//                explode.setDuration(500);
+//
+//                getWindow().setExitTransition(explode);
+//                getWindow().setEnterTransition(explode);
                 final String state=NetUilts.loginOfGet(username, password);
 
 
@@ -93,13 +108,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Toast.makeText(LoginActivity.this, "账号或密码错误!", Toast.LENGTH_SHORT).show();
                         }else{
                             Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                            ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);
+                            //ActivityOptionsCompat oc2 = ActivityOptionsCompat.makeSceneTransitionAnimation(LoginActivity.this);
                             Intent i2 = new Intent(LoginActivity.this,MainActivity.class);
                             String [] str = state.split(",");
                             i2.putExtra("username",str[0]);
                             i2.putExtra("qqnum",str[2]);
                             i2.putExtra("phonenum",str[3]);
-                            startActivity(i2, oc2.toBundle());
+                            startActivity(i2);
                         }
                     }
                 });

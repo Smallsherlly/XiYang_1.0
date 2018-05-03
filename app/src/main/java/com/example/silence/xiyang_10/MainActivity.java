@@ -220,23 +220,23 @@ public class MainActivity extends BaseActivity implements BottomNavigation.OnMen
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-
-        PermissionsManager.getInstance().requestAllManifestPermissionsIfNecessary(this, new PermissionsResultAction() {
-            @Override
-            public void onGranted() {//权限通过了
-            }
-
-            @Override
-            public void onDenied(String permission) {//权限拒绝了
-
-            }
-        });
+//
+//        PermissionsManager.getInstance().requestAllManifestPermissionsIfNecessary(this, new PermissionsResultAction() {
+//            @Override
+//            public void onGranted() {//权限通过了
+//            }
+//
+//            @Override
+//            public void onDenied(String permission) {//权限拒绝了
+//
+//            }
+//        });
 
         // 补间动画
-        Explode explode = new Explode();
-        explode.setDuration(400);
-        getWindow().setExitTransition(explode);
-        getWindow().setEnterTransition(explode);
+//        Explode explode = new Explode();
+//        explode.setDuration(400);
+//        getWindow().setExitTransition(explode);
+//        getWindow().setEnterTransition(explode);
 
         initializeBottomNavigation(savedInstanceState);// 初始化底部导航栏
         initializeUI(savedInstanceState);// 初始化界面

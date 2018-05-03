@@ -3,6 +3,8 @@ package com.example.silence.xiyang_10;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -20,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +46,7 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,6 +93,7 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
         mSwipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_ly);
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setMessage("正从云端下载文件，请稍候");
+
         mHandler = new Handler()
         {
             public void handleMessage(android.os.Message msg)
@@ -292,7 +297,7 @@ public class MainPageFragment extends Fragment implements ViewPager.OnPageChange
     private void loadTestDatas() {
         //本地图片集合
         for(int position=0; position<3; position++) {
-            localImages.add(getResId("ic_test_" + position, R.drawable.class));
+            localImages.add(getResId("ic_test_" + position, R.mipmap.class));
         }
     }
 

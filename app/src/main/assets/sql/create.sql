@@ -1,6 +1,6 @@
 -- Create table for HANDEDITS
 
-DROP table handedits;
+--DROP table handedits;
 
 CREATE
 	TABLE IF NOT EXISTS handedits
